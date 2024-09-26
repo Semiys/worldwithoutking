@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://cjtnb2gp8jjr3"]
+
+[ext_resource type="Script" path="res://scripts/menu.gd" id="1_jmd5e"]
+[ext_resource type="Texture2D" uid="uid://c0cieu1ifsc0w" path="res://assets/sprites/bg_menu/c360645588aa489b18a201a61c8a6d4b.jpg" id="2_1klb6"]
+
+[node name="Menu" type="Node2D"]
+position = Vector2(0, 2)
+script = ExtResource("1_jmd5e")
+
+[node name="Play" type="Button" parent="."]
+z_index = 2
+offset_left = 944.0
+offset_top = 243.0
+offset_right = 1221.0
+offset_bottom = 289.0
+text = "ИГРАТЬ
+"
+
+[node name="Settings" type="Button" parent="."]
+z_index = 2
+offset_left = 943.0
+offset_top = 319.0
+offset_right = 1220.0
+offset_bottom = 365.0
+text = "НАСТРОЙКИ
+"
+
+[node name="Quit" type="Button" parent="."]
+z_index = 2
+offset_left = 945.0
+offset_top = 393.0
+offset_right = 1222.0
+offset_bottom = 439.0
+text = "ВЫЙТИ ИЗ ИГРЫ"
+
+[node name="C360645588Aa489b18a201a61c8a6d4b" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(640, 358)
+scale = Vector2(1, 0.991667)
+texture = ExtResource("2_1klb6")
+
+[connection signal="pressed" from="Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]
