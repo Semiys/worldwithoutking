@@ -1,9 +1,10 @@
-[gd_scene load_steps=17 format=4 uid="uid://bhm1pyt73nnvo"]
+[gd_scene load_steps=18 format=4 uid="uid://bhm1pyt73nnvo"]
 
 [ext_resource type="Texture2D" uid="uid://d0dqdf2g8k5bw" path="res://assets/sprites/worldsp/Green Woods/Assets/Props.png" id="1_05i73"]
 [ext_resource type="Texture2D" uid="uid://cbvqhkhrq5yjc" path="res://assets/sprites/worldsp/Green Woods/Assets/Tiles.png" id="2_bs82s"]
 [ext_resource type="Texture2D" uid="uid://bvt38xxcwas8" path="res://assets/sprites/worldsp/Green Woods/Assets/Trees.png" id="3_eso3e"]
 [ext_resource type="PackedScene" uid="uid://cnqfmmik5l8gl" path="res://scenes/player.tscn" id="4_17ljo"]
+[ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="5_a0tlk"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2au00"]
 texture = ExtResource("1_05i73")
@@ -1438,3 +1439,12 @@ tile_set = SubResource("TileSet_p4yf2")
 
 [node name="Player" parent="." instance=ExtResource("4_17ljo")]
 position = Vector2(438, 416)
+
+[node name="Enemy" parent="." instance=ExtResource("5_a0tlk")]
+position = Vector2(360, 356)
+
+[node name="Enemy2" parent="." instance=ExtResource("5_a0tlk")]
+position = Vector2(278, 471)
+
+[node name="Enemy3" parent="." instance=ExtResource("5_a0tlk")]
+position = Vector2(405, 500)
