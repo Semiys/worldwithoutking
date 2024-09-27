@@ -8,6 +8,7 @@ var defense = 5
 var experience = 0
 var level = 1
 
+@onready var anim=$AnimatedSprite2D
 func _ready():
 	set_up_input_map()
 
@@ -15,9 +16,14 @@ func _physics_process(_delta: float) -> void:
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if direction:
 		velocity = direction * SPEED
+		anim.play("run")
+		if direction.x < 0:
+			$AnimatedSprite2D.flip_h = true
+		elif direction.x > 0:
+			$AnimatedSprite2D.flip_h = false
 	else:
 		velocity = Vector2.ZERO
-	
+		anim.play("Idle")
 	move_and_slide()
 
 func attack():
