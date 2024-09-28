@@ -9,11 +9,12 @@ var experience = 0
 var level = 1
 
 @onready var anim = $AnimatedSprite2D
-
+@onready var player_ui = preload("res://scripts/hpbar.gd").new()
 func _ready():
+	add_child(player_ui)
 	set_up_input_map()
 	load_player_stats()  # Добавляем загрузку данных при старте
-
+	update_ui()
 func _physics_process(_delta: float) -> void:
 	if not anim.is_playing() or (anim.animation == "Idle" or anim.animation == "run"):
 		var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -82,7 +83,7 @@ func take_damage(amount: int):
 	health -= actual_damage
 	print("Игрок получил", actual_damage, "урона. Осталось здоровья:", health)
 	anim.play("hurt")
-	update_ui()  # Обновляем UI после получения урона
+	update_ui()
 	if health <= 0:
 		die()
 
@@ -150,26 +151,15 @@ func _input(event):
 
 # Добавляем новую функцию для обновления UI
 func update_ui():
-	# Обновляем полоску здоровья
-	$HealthBar.value = health
-	$HealthBar.max_value = max_health
-	
-	# Обновляем полоску опыта
-	var experience_needed = level * 100
-	$ExperienceBar.value = experience
-	$ExperienceBar.max_value = experience_needed
-	
-	# Обновляем текст уровня
-	$LevelLabel.text = "Уровень: " + str(level)
-	
-	# Обновляем текст атаки и защиты
-	$StatsLabel.text = "Атака: " + str(attack_power) + " | Защита: " + str(defense)
-	
-	# Обновляем текст здоровья
-	$HealthLabel.text = str(health) + " / " + str(max_health)
-	
-	# Обновляем текст опыта
-	$ExperienceLabel.text = str(experience) + " / " + str(experience_needed)
+	var player_data = {
+		"health": health,
+		"max_health": max_health,
+		"attack_power": attack_power,
+		"defense": defense,
+		"experience": experience,
+		"level": level
+	}
+	player_ui.update_ui(player_data)
 
 # Функция для сохранения данных игрока
 func save_data():
