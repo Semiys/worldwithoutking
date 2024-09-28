@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://cnqfmmik5l8gl"]
+[gd_scene load_steps=25 format=3 uid="uid://cnqfmmik5l8gl"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_4s4wn"]
 [ext_resource type="Texture2D" uid="uid://brbl2bweh3opk" path="res://assets/sprites/playerim/Fullmain.png" id="1_ehgvu"]
@@ -18,86 +18,6 @@ region = Rect2(100, 0, 50, 37)
 [sub_resource type="AtlasTexture" id="AtlasTexture_i6b0c"]
 atlas = ExtResource("1_ehgvu")
 region = Rect2(150, 0, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_8avo5"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(0, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_igdpa"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(50, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_cpnpn"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(100, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_3hmjh"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(150, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_fe8ps"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(200, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_iob5b"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(250, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4tv4y"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(300, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_lvngh"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(350, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_s3v72"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(400, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_lrfuf"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(450, 148, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_dfdnn"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(0, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hwkyq"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(50, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1w6pt"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(100, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_f475e"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(150, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_j1ysv"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(200, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_fho6y"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(250, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_0p8jb"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(300, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_gkp0c"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(350, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rutcp"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(400, 185, 50, 37)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_s1ory"]
-atlas = ExtResource("1_ehgvu")
-region = Rect2(450, 185, 50, 37)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_f08ya"]
 atlas = ExtResource("1_ehgvu")
@@ -184,71 +104,6 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_8avo5")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_igdpa")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_cpnpn")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_3hmjh")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_fe8ps")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_iob5b")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4tv4y")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_lvngh")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_s3v72")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_lrfuf")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_dfdnn")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_hwkyq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_1w6pt")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_f475e")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_j1ysv")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_fho6y")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_0p8jb")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_gkp0c")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_rutcp")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_s1ory")
-}],
-"loop": false,
-"name": &"attack",
-"speed": 12.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_f08ya")
 }, {
 "duration": 1.0,
@@ -317,7 +172,7 @@ script = ExtResource("1_4s4wn")
 position = Vector2(0.0937511, 1)
 scale = Vector2(0.99625, 1)
 sprite_frames = SubResource("SpriteFrames_o28wr")
-animation = &"attack"
+animation = &"Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 5)
@@ -327,41 +182,3 @@ shape = SubResource("CapsuleShape2D_6wk0f")
 zoom = Vector2(3.2, 3.2)
 process_callback = 0
 position_smoothing_enabled = true
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="HealthBar" type="ProgressBar" parent="CanvasLayer"]
-offset_left = -196.0
-offset_top = -109.0
-offset_right = -126.0
-offset_bottom = -82.0
-
-[node name="ExperienceBar" type="ProgressBar" parent="CanvasLayer"]
-offset_left = -196.0
-offset_top = -79.0
-offset_right = -125.0
-offset_bottom = -52.0
-
-[node name="LevelLabel" type="Label" parent="CanvasLayer"]
-offset_left = -55.0
-offset_top = -86.0
-offset_right = 55.0
-offset_bottom = -63.0
-
-[node name="StatsLabel" type="Label" parent="CanvasLayer"]
-offset_left = -194.0
-offset_top = -50.0
-offset_right = -125.0
-offset_bottom = -11.0
-
-[node name="HealthLabel" type="Label" parent="CanvasLayer"]
-offset_left = 137.0
-offset_top = -109.0
-offset_right = 196.0
-offset_bottom = -86.0
-
-[node name="ExperienceLabel" type="Label" parent="CanvasLayer"]
-offset_left = -72.0
-offset_top = -108.0
-offset_right = 97.0
-offset_bottom = -85.0

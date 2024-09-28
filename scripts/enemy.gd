@@ -5,28 +5,58 @@ var health = 50
 var attack_power = 5
 var defense = 2
 var target = null
+var is_aggro = false
+var min_distance = 20.0  # Минимальное расстояние до игрока
+var knockback_strength = 5.0  # Сила отталкивания
+var knockback_duration = 0.2  # Длительность отталкивания в секундах
+var knockback_timer = 0.0  # Таймер для отслеживания длительности отталкивания
 
 @onready var anim = $AnimatedSprite2D
+@onready var aggro_area = $AggroArea
 
 func _ready():
 	target = get_node("/root/Game/Player")  # Укажите путь до узла игрока
+	aggro_area.connect("body_entered", _on_aggro_area_body_entered)
+	aggro_area.connect("body_exited", _on_aggro_area_body_exited)
 
 func _physics_process(delta):
-	if target:
+	if knockback_timer > 0:
+		knockback_timer -= delta
+		move_and_slide()
+	elif is_aggro and target:
 		var direction = (target.position - position).normalized()
-		velocity = direction * SPEED
-		anim.play("run")
-		if direction.x < 0:
-			$AnimatedSprite2D.flip_h = true
+		var distance = position.distance_to(target.position)
+		
+		if distance > min_distance:
+			velocity = direction * SPEED
+			anim.play("run")
+			if direction.x < 0:
+				$AnimatedSprite2D.flip_h = true
+			else:
+				$AnimatedSprite2D.flip_h = false
 		else:
-			$AnimatedSprite2D.flip_h = false
+			velocity = Vector2.ZERO
+			anim.play("run")  # Добавьте анимацию "idle" для ожидания
+			
+			# Логика отталкивания при близком контакте
+			var knockback_direction = (position - target.position).normalized()
+			velocity = knockback_direction * knockback_strength
+			knockback_timer = knockback_duration
 	else:
 		velocity = Vector2.ZERO
-		if "Idle" in anim.get_animation_names():
-			anim.play("Idle")
-		else:
-			anim.play("run")  # Используйте существующую анимацию в качестве резервной
+		anim.play("run")  # Используем анимацию "idle" по умолчанию
+	
 	move_and_slide()
+
+func _on_aggro_area_body_entered(body):
+	if body == target:
+		is_aggro = true
+		print("Враг заметил игрока!")
+
+func _on_aggro_area_body_exited(body):
+	if body == target:
+		is_aggro = false
+		print("Враг потерял игрока из виду.")
 
 func attack():
 	print("Враг атакует! Сила атаки:", attack_power)
@@ -46,13 +76,6 @@ func die():
 	var player = get_node("/root/Game/Player")
 	player.score += 10
 	print("Награда получена: +10 очков")
-	if "run" in anim.get_animation_names():
-		anim.play("run")
-	else:
-		print("Анимация 'run' отсутствует. Используется 'Idle' по умолчанию.")
-		if "Idle" in anim.get_animation_names():
-			anim.play("Idle")
-		else:
-			print("Анимация 'Idle' также отсутствует.")
-			self.collision_layer = 0
-			self.collision_mask = 0
+	anim.play("death")  # Используем анимацию "death" при смерти
+	self.collision_layer = 0
+	self.collision_mask = 0
