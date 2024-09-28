@@ -11,7 +11,7 @@ var target = null
 func _ready():
 	target = get_node("/root/Game/Player")  # Укажите путь до узла игрока
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if target:
 		var direction = (target.position - position).normalized()
 		velocity = direction * SPEED

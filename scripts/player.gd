@@ -9,7 +9,7 @@ var experience = 0
 var level = 1
 
 @onready var anim = $AnimatedSprite2D
-@onready var player_ui = preload("res://scripts/hpbar.gd").new()
+@onready var player_ui = preload("res://scripts/player_ui.gd").new()
 func _ready():
 	add_child(player_ui)
 	set_up_input_map()
