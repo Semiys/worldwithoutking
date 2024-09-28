@@ -1,12 +1,7 @@
-<<<<<<< HEAD
 [gd_scene load_steps=25 format=3 uid="uid://cnqfmmik5l8gl"]
-=======
-[gd_scene load_steps=46 format=3 uid="uid://cnqfmmik5l8gl"]
->>>>>>> d1fbfc218c0f79a21b3646f04617cc04cbe6b44b
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_4s4wn"]
 [ext_resource type="Texture2D" uid="uid://brbl2bweh3opk" path="res://assets/sprites/playerim/Fullmain.png" id="1_ehgvu"]
-[ext_resource type="Script" path="res://scripts/hpbar.gd" id="3_2kv6h"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ls6oq"]
 atlas = ExtResource("1_ehgvu")
@@ -187,45 +182,3 @@ shape = SubResource("CapsuleShape2D_6wk0f")
 zoom = Vector2(3.2, 3.2)
 process_callback = 0
 position_smoothing_enabled = true
-<<<<<<< HEAD
-=======
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-script = ExtResource("3_2kv6h")
-
-[node name="HealthBar" type="ProgressBar" parent="CanvasLayer"]
-offset_left = -196.0
-offset_top = -109.0
-offset_right = -126.0
-offset_bottom = -82.0
-
-[node name="ExperienceBar" type="ProgressBar" parent="CanvasLayer"]
-offset_left = -196.0
-offset_top = -79.0
-offset_right = -125.0
-offset_bottom = -52.0
-
-[node name="LevelLabel" type="Label" parent="CanvasLayer"]
-offset_left = -55.0
-offset_top = -86.0
-offset_right = 55.0
-offset_bottom = -63.0
-
-[node name="StatsLabel" type="Label" parent="CanvasLayer"]
-offset_left = -198.0
-offset_top = -10.0
-offset_right = -129.0
-offset_bottom = 29.0
-
-[node name="HealthLabel" type="Label" parent="CanvasLayer"]
-offset_left = 137.0
-offset_top = -109.0
-offset_right = 196.0
-offset_bottom = -86.0
-
-[node name="ExperienceLabel" type="Label" parent="CanvasLayer"]
-offset_left = -72.0
-offset_top = -108.0
-offset_right = 97.0
-offset_bottom = -85.0
->>>>>>> d1fbfc218c0f79a21b3646f04617cc04cbe6b44b
