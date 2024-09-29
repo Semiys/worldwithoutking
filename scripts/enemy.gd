@@ -6,16 +6,18 @@ var attack_power = 5
 var defense = 2
 var target = null
 var is_aggro = false
-var min_distance = 20.0  # Минимальное расстояние до игрока
-var knockback_strength = 5.0  # Сила отталкивания
-var knockback_duration = 0.2  # Длительность отталкивания в секундах
-var knockback_timer = 0.0  # Таймер для отслеживания длительности отталкивания
+var min_distance = 20.0
+var knockback_strength = 5.0
+var knockback_duration = 0.2
+var knockback_timer = 0.0
+var attack_cooldown = 1.0  # Время между атаками
+var current_cooldown = 0.0  # Текущее время до следующей атаки
 
 @onready var anim = $AnimatedSprite2D
 @onready var aggro_area = $AggroArea
 
 func _ready():
-	target = get_node("/root/Game/Player")  # Укажите путь до узла игрока
+	target = get_node("/root/Game/Player")
 	aggro_area.connect("body_entered", _on_aggro_area_body_entered)
 	aggro_area.connect("body_exited", _on_aggro_area_body_exited)
 
@@ -36,15 +38,22 @@ func _physics_process(delta):
 				$AnimatedSprite2D.flip_h = false
 		else:
 			velocity = Vector2.ZERO
-			anim.play("run")  # Добавьте анимацию "idle" для ожидания
+			anim.play("run")
 			
-			# Логика отталкивания при близком контакте
 			var knockback_direction = (position - target.position).normalized()
 			velocity = knockback_direction * knockback_strength
 			knockback_timer = knockback_duration
+			
+			# Атака игрока
+			if current_cooldown <= 0:
+				attack()
+				current_cooldown = attack_cooldown
+		
+		# Уменьшаем время до следующей атаки
+		current_cooldown -= delta
 	else:
 		velocity = Vector2.ZERO
-		anim.play("run")  # Используем анимацию "idle" по умолчанию
+		anim.play("run")
 	
 	move_and_slide()
 
@@ -60,7 +69,8 @@ func _on_aggro_area_body_exited(body):
 
 func attack():
 	print("Враг атакует! Сила атаки:", attack_power)
-	# Добавьте логику атаки игрока
+	if target:
+		target.take_damage(attack_power)
 
 func take_damage(amount: int):
 	var actual_damage = max(amount - defense, 0)
@@ -72,10 +82,9 @@ func take_damage(amount: int):
 func die():
 	print("Враг умер")
 	queue_free()
-	# Добавьте логику награды или других действий
 	var player = get_node("/root/Game/Player")
-	player.score += 10
-	print("Награда получена: +10 очков")
-	anim.play("death")  # Используем анимацию "death" при смерти
+	player.gain_experience(10)
+	print("Награда получена: +10 опыта")
+	anim.play("death")
 	self.collision_layer = 0
 	self.collision_mask = 0
