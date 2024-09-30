@@ -9,12 +9,15 @@ var experience = 0
 var level = 1
 
 @onready var anim = $AnimatedSprite2D
-@onready var player_ui = preload("res://scenes/player_ui.tscn").instantiate()
+@onready var inventory = $player_ui/Inventory 
 func _ready():
-	add_child(player_ui)
 	set_up_input_map()
 	load_player_stats()  # Добавляем загрузку данных при старте
 	update_ui()
+	if inventory:
+		inventory.add_item_to_first_slot("sword")
+	else:
+		print("Ошибка: узел Inventory не найден")
 func _physics_process(_delta: float) -> void:
 	if not anim.is_playing() or (anim.animation == "Idle" or anim.animation == "run"):
 		var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -148,6 +151,13 @@ func _input(event):
 		attack()
 	elif event.is_action_pressed("interact"):
 		interact()
+	elif event.is_action_pressed("open_inventory"):
+		print("Кнопка I нажата")
+		var player_ui = $player_ui
+		if player_ui:
+			player_ui.toggle_inventory()
+		else:
+			print("Ошибка: узел Player_UI не найден")
 
 # Добавляем новую функцию для обновления UI
 func update_ui():
@@ -159,7 +169,8 @@ func update_ui():
 		"experience": experience,
 		"level": level
 	}
-	player_ui.update_ui(player_data)
+	$player_ui.update_ui(player_data)
+	
 
 # Функция для сохранения данных игрока
 func save_data():

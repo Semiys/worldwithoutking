@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3 uid="uid://74hichutmo4m"]
+
+[ext_resource type="Script" path="res://scripts/Slot.gd" id="1_vx6nk"]
+[ext_resource type="PackedScene" uid="uid://c37xmhai5ieys" path="res://scenes/Item.tscn" id="2_y8gfd"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jxd5o"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.672838, 0.580229, 0.514231, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.904533, 0.80253, 0.248035, 1)
+border_blend = true
+
+[node name="Panel" type="Panel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_jxd5o")
+script = ExtResource("1_vx6nk")
+
+[node name="TextureRect" parent="." instance=ExtResource("2_y8gfd")]
+layout_mode = 1

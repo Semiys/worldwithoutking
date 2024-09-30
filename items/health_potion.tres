@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemResource" load_steps=2 format=3 uid="uid://dmgx6hki66svb"]
+
+[ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_y6ro5"]
+
+[resource]
+script = ExtResource("1_y6ro5")
+item_name = "Зелье здоровья"
+type = "Consumable"
+description = "Восстанавливает 50 очков здоровья"
+stackable = true
+max_stack_size = 10

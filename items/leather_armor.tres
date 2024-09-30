@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemResource" load_steps=2 format=3 uid="uid://bxsms3invmx03"]
+
+[ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_yiqnb"]
+
+[resource]
+script = ExtResource("1_yiqnb")
+item_name = "Кожаная броня"
+type = "Armor"
+description = "Легкая броня, обеспечивающая базовую защиту"
+stackable = false
+max_stack_size = 1

@@ -6,7 +6,7 @@ extends CanvasLayer
 @onready var stats_label: Label = $StatsLabel
 @onready var health_label: Label = $HealthLabel
 @onready var experience_label: Label = $ExperienceLabel
-
+@onready var inventory = $Inventory
 func _ready():
 	# 1. Настройка HealthBar:
 	#health_bar.set("theme_override_styles/fill", load("res://resources/health_bar_fg.tres"))
@@ -33,7 +33,10 @@ func _ready():
 	#exp_icon.texture = load("res://assets/icons/exp_icon.png")
 	#add_child(exp_icon)
 	#exp_icon.position = Vector2(10, 40)  # Настройте позицию
-	pass
+	if inventory:
+		inventory.visible = false
+	else:
+		print("Ошибка: узел Inventory не найден в Player_UI")
 
 func update_ui(player_data: Dictionary):
 	animate_value(health_bar, player_data.health)
@@ -51,3 +54,9 @@ func update_ui(player_data: Dictionary):
 func animate_value(progress_bar: ProgressBar, target_value: float):
 	var tween = create_tween()
 	tween.tween_property(progress_bar, "value", target_value, 0.5).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+func toggle_inventory():
+	if inventory:
+		inventory.visible = !inventory.visible
+		print("Видимость инвентаря изменена на: ", inventory.visible)
+	else:
+		print("Ошибка: узел инвентаря не найден в Player_UI")

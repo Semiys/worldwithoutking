@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://ckpokp7o3nlve"]
+
+[sub_resource type="FontVariation" id="FontVariation_gtv8a"]
+
+[resource]
+default_font = SubResource("FontVariation_gtv8a")
