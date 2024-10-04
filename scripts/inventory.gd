@@ -14,6 +14,7 @@ func _ready():
 		inv_slot.connect("item_removed", Callable(self, "_on_item_removed"))
 	call_deferred("add_item_to_first_slot", "Меч")
 	call_deferred("add_item_to_second_slot", "Зелье здоровья")
+	connect("visibility_changed", Callable(self, "_on_visibility_changed"))
 func _on_item_added(item):
 	print("Предмет добавлен в слот: ", item.item_name)
 
@@ -60,7 +61,8 @@ func slot_gui_input(event: InputEvent, slot: SlotClass):
 				if !holding_item and slot.item:
 					holding_item = slot.pickFromSlot()
 					holding_item.global_position = get_global_mouse_position() - holding_item.size / 2
-					add_child(holding_item)
+					if holding_item.get_parent() != self:
+						add_child(holding_item)
 			else:
 				# Конец перетаскивания
 				if holding_item:
@@ -75,6 +77,7 @@ func slot_gui_input(event: InputEvent, slot: SlotClass):
 						holding_item = null
 					else:
 						slot.putIntoSlot(holding_item)
+					if holding_item and holding_item.get_parent() == self:
 						remove_child(holding_item)
 					holding_item = null
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
@@ -84,22 +87,7 @@ func slot_gui_input(event: InputEvent, slot: SlotClass):
 		elif event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:
 			if slot.item:
 				delete_item(slot)
-#func update_holding_item():
-	#if holding_item:
-		#holding_item.global_position = get_global_mouse_position()
-		#if not holding_item.is_inside_tree():
-			#add_child(holding_item)
-		#holding_item.global_position = get_global_mouse_position()
-		#holding_item.z_index = 1000  # Устанавливаем высокий z_index, чтобы предмет был поверх всего
-	#else:
-		#for child in get_children():
-			#if child is TextureRect and child != $GridContainer:
-				#remove_child(child)
-				#child.queue_free()
 
-#func _input(_event):
-	#if holding_item:
-		#holding_item.global_position = get_global_mouse_position()
 
 func _process(_delta):
 	if holding_item:
@@ -111,7 +99,11 @@ func get_slot_under_mouse() -> SlotClass:
 		if slot.get_global_rect().has_point(mouse_pos):
 			return slot
 	return null
-
+func get_empty_slot() -> SlotClass:
+	for slot in inventory_slots.get_children():
+		if not slot.item:
+			return slot
+	return null
 func add_item(item_name: String, quantity: int = 1):
 	var item_resource = item_database.get_item(item_name)
 	if item_resource:
@@ -175,3 +167,28 @@ func show_item_count(item_name: String):
 func _unhandled_input(event):
 	if event.is_action_pressed("count_health_potions"):
 		show_item_count("Зелье здоровья")
+func _on_visibility_changed():
+	if not visible and holding_item:
+		var target_slot = get_slot_under_mouse()
+		if target_slot and not target_slot.item:
+			target_slot.putIntoSlot(holding_item)
+		else:
+			var empty_slot = find_empty_slot()
+			if empty_slot:
+				empty_slot.putIntoSlot(holding_item)
+			else:
+				add_item(holding_item.item_name, holding_item.item_quantity)
+		if holding_item.get_parent() == self:
+			remove_child(holding_item)
+		holding_item = null
+func find_empty_slot() -> SlotClass:
+	for slot in inventory_slots.get_children():
+		if not slot.item:
+			return slot
+	return null
+# Добавьте эту функцию для поиска оригинального слота предмета
+func get_original_slot() -> SlotClass:
+	for slot in inventory_slots.get_children():
+		if not slot.item:
+			return slot
+	return null
