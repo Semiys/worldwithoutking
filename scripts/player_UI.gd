@@ -7,32 +7,8 @@ extends CanvasLayer
 @onready var health_label: Label = $HealthLabel
 @onready var experience_label: Label = $ExperienceLabel
 @onready var inventory = $Inventory
+
 func _ready():
-	# 1. Настройка HealthBar:
-	#health_bar.set("theme_override_styles/fill", load("res://resources/health_bar_fg.tres"))
-	#health_bar.set("theme_override_styles/background", load("res://resources/health_bar_bg.tres"))
-
-	# 2. Настройка ExperienceBar:
-	#experience_bar.set("theme_override_styles/fill", load("res://resources/exp_bar_fg.tres"))
-	#experience_bar.set("theme_override_styles/background", load("res://resources/exp_bar_bg.tres"))
-
-	# 3. Настройка меток:
-	#var main_font = load("res://resources/main_font.tres")
-	#level_label.set("theme_override_fonts/font", main_font)
-	#stats_label.set("theme_override_fonts/font", main_font)
-	#health_label.set("theme_override_fonts/font", main_font)
-	#experience_label.set("theme_override_fonts/font", main_font)
-
-	# 4. Добавление иконок:
-	#var health_icon = TextureRect.new()
-	#health_icon.texture = load("res://assets/icons/health_icon.png")
-	#add_child(health_icon)
-	#health_icon.position = Vector2(10, 10)  # Настройте позицию
-
-	#var exp_icon = TextureRect.new()
-	#exp_icon.texture = load("res://assets/icons/exp_icon.png")
-	#add_child(exp_icon)
-	#exp_icon.position = Vector2(10, 40)  # Настройте позицию
 	if inventory:
 		inventory.visible = false
 	else:
@@ -54,9 +30,19 @@ func update_ui(player_data: Dictionary):
 func animate_value(progress_bar: ProgressBar, target_value: float):
 	var tween = create_tween()
 	tween.tween_property(progress_bar, "value", target_value, 0.5).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+
 func toggle_inventory():
 	if inventory:
 		inventory.visible = !inventory.visible
 		print("Видимость инвентаря изменена на: ", inventory.visible)
 	else:
 		print("Ошибка: узел инвентаря не найден в Player_UI")
+
+func show_tooltip(item):
+	var tooltip = $Tooltip
+	tooltip.text = item.description
+	tooltip.visible = true
+	tooltip.position = get_viewport().get_mouse_position() + Vector2(10, 10)
+
+func hide_tooltip():
+	$Tooltip.visible = false

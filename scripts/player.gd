@@ -4,20 +4,29 @@ const SPEED = 100.0
 var health = 100
 var max_health = 100
 var attack_power = 10
-var defense = 5
+var defense = 1
 var experience = 0
 var level = 1
 
 @onready var anim = $AnimatedSprite2D
 @onready var inventory = $player_ui/Inventory 
+@onready var equipment = {
+	"weapon": null,
+	"armor": null
+}
+@onready var item_database = get_node("/root/ItemDatabase")
+
 func _ready():
 	set_up_input_map()
-	load_player_stats()  # Добавляем загрузку данных при старте
+	load_player_stats()
 	update_ui()
+	add_to_group("player")
 	if inventory:
-		inventory.add_item_to_first_slot("sword")
+		inventory.add_item_to_first_slot("Меч")
+		inventory.add_item_to_second_slot("Зелье здоровья")
 	else:
 		print("Ошибка: узел Inventory не найден")
+
 func _physics_process(_delta: float) -> void:
 	if not anim.is_playing() or (anim.animation == "Idle" or anim.animation == "run"):
 		var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -40,7 +49,6 @@ func attack():
 	print("Игрок атакует! Сила атаки:", attack_power)
 	anim.play("attack")
 	
-	# Поиск ближайшего врага
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var closest_enemy = null
 	var closest_distance = INF
@@ -51,11 +59,9 @@ func attack():
 			closest_enemy = enemy
 			closest_distance = distance
 	
-	# Нанесение урона ближайшему врагу
-	if closest_enemy and closest_distance <= 50:  # Предполагаем, что радиус атаки 50 пикселей
+	if closest_enemy and closest_distance <= 50:
 		closest_enemy.take_damage(attack_power)
 	
-	# Ждем окончания анимации атаки
 	await anim.animation_finished
 	anim.play("Idle")
 	
@@ -63,7 +69,6 @@ func interact():
 	print("Игрок взаимодействует с предметом")
 	anim.play("interact")
 	
-	# Поиск ближайшего интерактивного объекта
 	var interactables = get_tree().get_nodes_in_group("interactables")
 	var closest_interactable = null
 	var closest_distance = INF
@@ -74,11 +79,9 @@ func interact():
 			closest_interactable = interactable
 			closest_distance = distance
 	
-	# Взаимодействие с ближайшим объектом
-	if closest_interactable and closest_distance <= 50:  # Предполагаем, что радиус взаимодействия 50 пикселей
+	if closest_interactable and closest_distance <= 50:
 		closest_interactable.interact(self)
 	
-	# Ждем окончания анимации взаимодействия
 	await anim.animation_finished
 
 func take_damage(amount: int):
@@ -93,33 +96,28 @@ func take_damage(amount: int):
 func die():
 	print("Игрок умер")
 	anim.play("die")
-	set_physics_process(false)  # Отключаем физическую обработку
-	set_process_input(false)  # Отключаем обработку ввода
+	set_physics_process(false)
+	set_process_input(false)
 	
-	# Отображаем экран смерти
 	var death_screen = preload("res://scenes/deathscenes.tscn").instantiate()
 	get_tree().current_scene.add_child(death_screen)
 	
-	# Ждем окончания анимации смерти
 	await anim.animation_finished
 	
-	# Сохраняем статистику игрока
 	save_player_stats()
 	
-	# Ждем 3 секунды перед перезапуском уровня
 	await get_tree().create_timer(3.0).timeout
 	
-	# Перезапускаем текущий уровень
 	get_tree().reload_current_scene()
 
 func gain_experience(amount: int):
 	experience += amount
 	print("Получено", amount, "опыта. Всего опыта:", experience)
 	check_level_up()
-	update_ui()  # Обновляем UI после получения опыта
+	update_ui()
 
 func check_level_up():
-	var experience_needed = level * 100  # Простая формула для необходимого опыта
+	var experience_needed = level * 100
 	if experience >= experience_needed:
 		level_up()
 
@@ -131,7 +129,7 @@ func level_up():
 	defense += 1
 	print("Уровень повышен! Текущий уровень:", level)
 	anim.play("level_up")
-	update_ui()  # Обновляем UI после повышения уровня
+	update_ui()
 
 func set_up_input_map():
 	if not InputMap.has_action("attack"):
@@ -145,7 +143,11 @@ func set_up_input_map():
 		var event = InputEventKey.new()
 		event.keycode = KEY_E
 		InputMap.action_add_event("interact", event)
-
+	if not InputMap.has_action("count_health_potions"):
+		InputMap.add_action("count_health_potions")
+		var event = InputEventKey.new()
+		event.keycode = KEY_C
+		InputMap.action_add_event("count_health_potions", event)
 func _input(event):
 	if event.is_action_pressed("attack"):
 		attack()
@@ -159,7 +161,6 @@ func _input(event):
 		else:
 			print("Ошибка: узел Player_UI не найден")
 
-# Добавляем новую функцию для обновления UI
 func update_ui():
 	var player_data = {
 		"health": health,
@@ -170,9 +171,7 @@ func update_ui():
 		"level": level
 	}
 	$player_ui.update_ui(player_data)
-	
 
-# Функция для сохранения данных игрока
 func save_data():
 	var save_dict = {
 		"health": health,
@@ -184,7 +183,12 @@ func save_data():
 		"position": {
 			"x": position.x,
 			"y": position.y
-		}
+		},
+		"equipment": {
+			"weapon": equipment["weapon"].item_name if equipment["weapon"] else null,
+			"armor": equipment["armor"].item_name if equipment["armor"] else null
+		},
+		"inventory": inventory.save_inventory()
 	}
 	return save_dict
 	
@@ -204,7 +208,6 @@ func save_player_stats():
 	else:
 		print("Ошибка при сохранении статистики игрока")
 
-# Функция для загрузки данных игрока
 func load_player_stats():
 	var save_path = "user://saves/player_stats.json"
 	var file = FileAccess.open(save_path, FileAccess.READ)
@@ -233,4 +236,41 @@ func load_data(data):
 	experience = data["experience"]
 	level = data["level"]
 	position = Vector2(data["position"]["x"], data["position"]["y"])
+	
+	if "equipment" in data:
+		if data["equipment"]["weapon"]:
+			equip_weapon(item_database.get_item(data["equipment"]["weapon"]))
+		if data["equipment"]["armor"]:
+			equip_armor(item_database.get_item(data["equipment"]["armor"]))
+	
+	if "inventory" in data:
+		inventory.load_inventory(data["inventory"])
+	
+	update_ui()
+
+func equip_weapon(weapon_item):
+	if equipment["weapon"]:
+		inventory.add_item(equipment["weapon"].item_name)
+	equipment["weapon"] = weapon_item
+	attack_power += weapon_item.effect.get("attack", 0)
+	update_ui()
+
+func equip_armor(armor_item):
+	if equipment["armor"]:
+		inventory.add_item(equipment["armor"].item_name)
+	equipment["armor"] = armor_item
+	defense += armor_item.effect.get("defense", 0)
+	update_ui()
+
+func heal(amount):
+	health = min(health + amount, max_health)
+	
+	update_ui()
+
+func boost_attack(amount):
+	attack_power += amount
+	update_ui()
+
+func boost_defense(amount):
+	defense += amount
 	update_ui()

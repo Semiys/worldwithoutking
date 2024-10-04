@@ -11,3 +11,4 @@ type = "Weapon"
 description = "Острый меч для ближнего боя"
 stackable = false
 max_stack_size = 1
+effect = {}
