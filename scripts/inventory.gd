@@ -192,3 +192,50 @@ func get_original_slot() -> SlotClass:
 		if not slot.item:
 			return slot
 	return null
+func save_inventory():
+	var inventory_data = []
+	for slot in inventory_slots.get_children():
+		if slot.item:
+			inventory_data.append({
+				"item_name": slot.item.item_name,
+				"quantity": slot.item.item_quantity
+			})
+	return inventory_data
+func load_inventory(inventory_data):
+	for slot in inventory_slots.get_children():
+		if slot.item:
+			slot.pickFromSlot()
+	
+	for item_data in inventory_data:
+		add_item(item_data["item_name"], item_data["quantity"])
+
+func update_holding_item():
+	if holding_item:
+		holding_item.global_position = get_global_mouse_position() - holding_item.size / 2
+func show_item_tooltip(item):
+	var tooltip = get_node("Tooltip")
+	if tooltip:
+		tooltip.set_item_info(item)
+		tooltip.show()
+		tooltip.global_position = get_global_mouse_position() + Vector2(10, 10)
+
+func hide_item_tooltip():
+	var tooltip = get_node("Tooltip")
+	if tooltip:
+		tooltip.hide()
+func use_item(slot):
+	if slot.item:
+		var item_name = slot.item.item_name
+		var item_resource = item_database.get_item(item_name)
+		if item_resource:
+			var player = get_tree().get_first_node_in_group("player")
+			if player:
+				item_resource.use(player)
+				slot.item.decrease_item_quantity(1)
+				if slot.item.item_quantity <= 0:
+					slot.pickFromSlot()
+				print("Использован предмет: ", item_name)
+			else:
+				print("Игрок не найден")
+		else:
+			print("Предмет не найден в базе данных: ", item_name)

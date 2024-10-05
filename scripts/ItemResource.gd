@@ -27,3 +27,22 @@ func apply_effect(player):
 				player.boost_attack(effect["attack"])
 			"defense":
 				player.boost_defense(effect["defense"])
+func to_dictionary() -> Dictionary:
+	return {
+		"item_name": item_name,
+		"icon": icon.resource_path if icon else "",
+		"type": type,
+		"description": description,
+		"stackable": stackable,
+		"max_stack_size": max_stack_size,
+		"effect": effect
+	}
+
+func from_dictionary(data: Dictionary):
+	item_name = data["item_name"]
+	icon = load(data["icon"]) if data["icon"] else null
+	type = data["type"]
+	description = data["description"]
+	stackable = data["stackable"]
+	max_stack_size = data["max_stack_size"]
+	effect = data["effect"]

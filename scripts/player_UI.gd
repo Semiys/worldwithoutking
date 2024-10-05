@@ -46,3 +46,15 @@ func show_tooltip(item):
 
 func hide_tooltip():
 	$Tooltip.visible = false
+func _on_inventory_item_used(item_name):
+	var player = get_parent()
+	player.use_item(item_name)
+
+func _on_inventory_item_equipped(item_name, slot):
+	var player = get_parent()
+	var item_resource = player.item_database.get_item(item_name)
+	if item_resource:
+		if slot == "weapon":
+			player.equip_weapon(item_resource)
+		elif slot == "armor":
+			player.equip_armor(item_resource)

@@ -44,3 +44,18 @@ func drop_data(_position, _data):
 		inventory.update_holding_item()
 func has_item() -> bool:
 	return item != null
+func _gui_input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			if item:
+				var inventory = find_parent("Inventory")
+				inventory.use_item(self)
+
+func _on_mouse_entered():
+	if item:
+		var inventory = find_parent("Inventory")
+		inventory.show_item_tooltip(item)
+
+func _on_mouse_exited():
+	var inventory = find_parent("Inventory")
+	inventory.hide_item_tooltip()

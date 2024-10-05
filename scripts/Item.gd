@@ -43,3 +43,13 @@ func get_drag_data(_position):
 	set_drag_preview(control)
 
 	return data
+func get_item_info():
+	var item_resource = get_node("/root/ItemDatabase").get_item(item_name)
+	if item_resource:
+		return {
+			"name": item_name,
+			"description": item_resource.description,
+			"type": item_resource.type,
+			"quantity": item_quantity
+		}
+	return null

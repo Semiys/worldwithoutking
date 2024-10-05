@@ -250,9 +250,15 @@ func load_data(data):
 
 func equip_weapon(weapon_item):
 	if equipment["weapon"]:
+		attack_power -= equipment["weapon"].effect.get("attack", 0)
 		inventory.add_item(equipment["weapon"].item_name)
 	equipment["weapon"] = weapon_item
-	attack_power += weapon_item.effect.get("attack", 0)
+	if "attack" in weapon_item.effect:
+		attack_power += weapon_item.effect["attack"]
+		print("Экипирован меч. Бонус к атаке:", weapon_item.effect["attack"])
+		print("Новая сила атаки:", attack_power)
+	else:
+		print("У оружия нет эффекта атаки")
 	update_ui()
 
 func equip_armor(armor_item):
@@ -274,3 +280,17 @@ func boost_attack(amount):
 func boost_defense(amount):
 	defense += amount
 	update_ui()
+func use_item(item_name: String):
+	var item_resource = item_database.get_item(item_name)
+	if item_resource:
+		match item_resource.type:
+			"Consumable":
+				item_resource.apply_effect(self)
+			"Weapon":
+				equip_weapon(item_resource)
+			"Armor":
+				equip_armor(item_resource)
+		inventory.remove_item(item_name, 1)
+		update_ui()
+	else:
+		print("Предмет не найден в базе данных: ", item_name)
