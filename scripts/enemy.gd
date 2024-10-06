@@ -17,6 +17,7 @@ var current_cooldown = 0.0  # Текущее время до следующей 
 @onready var aggro_area = $AggroArea
 
 func _ready():
+	add_to_group("enemies")
 	target = get_node("/root/Game/Player")
 	aggro_area.connect("body_entered", _on_aggro_area_body_entered)
 	aggro_area.connect("body_exited", _on_aggro_area_body_exited)
@@ -69,13 +70,18 @@ func _on_aggro_area_body_exited(body):
 
 func attack():
 	print("Враг атакует! Сила атаки:", attack_power)
-	if target:
+	if target and target.has_method("take_damage"):
 		target.take_damage(attack_power)
 
 func take_damage(amount: int):
 	var actual_damage = max(amount - defense, 0)
 	health -= actual_damage
 	print("Враг получил", actual_damage, "урона. Осталось здоровья:", health)
+	if target:
+		var knockback_direction = (position - target.position).normalized()
+		velocity = knockback_direction * knockback_strength * 1  # Увеличиваем силу отталкивания
+		knockback_timer = knockback_duration * 1.5  # Увеличиваем время отталкивания
+	
 	if health <= 0:
 		die()
 
@@ -83,8 +89,9 @@ func die():
 	print("Враг умер")
 	queue_free()
 	var player = get_node("/root/Game/Player")
-	player.gain_experience(10)
-	print("Награда получена: +10 опыта")
+	if player and player.has_method("gain_experience"):
+		player.gain_experience(10)
+		print("Награда получена: +10 опыта")
 	anim.play("death")
 	self.collision_layer = 0
 	self.collision_mask = 0

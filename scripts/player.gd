@@ -15,8 +15,15 @@ var level = 1
 	"armor": null
 }
 @onready var item_database = get_node("/root/ItemDatabase")
+@onready var attack_area = $AttackArea
+@onready var attack_collision = $AttackArea/CollisionShape2D
+var can_deal_damage = false
+var is_attacking = false
+var attack_cooldown = 0.5
+var current_attack_cooldown = 0
 
 func _ready():
+	
 	set_up_input_map()
 	load_player_stats()
 	update_ui()
@@ -26,8 +33,11 @@ func _ready():
 		inventory.add_item_to_second_slot("Зелье здоровья")
 	else:
 		print("Ошибка: узел Inventory не найден")
-
+	attack_collision.disabled = true
+	attack_area.connect("body_entered", Callable(self, "_on_AttackArea_body_entered"))
+	
 func _physics_process(_delta: float) -> void:
+	current_attack_cooldown -= _delta
 	if not anim.is_playing() or (anim.animation == "Idle" or anim.animation == "run"):
 		var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		if direction:
@@ -35,8 +45,10 @@ func _physics_process(_delta: float) -> void:
 			anim.play("run")
 			if direction.x < 0:
 				$AnimatedSprite2D.flip_h = true
+				attack_area.scale.x = -1
 			elif direction.x > 0:
 				$AnimatedSprite2D.flip_h = false
+				attack_area.scale.x = 1
 		else:
 			velocity = Vector2.ZERO
 			if anim.animation != "attack":
@@ -44,27 +56,42 @@ func _physics_process(_delta: float) -> void:
 	else:
 		velocity=Vector2.ZERO
 	move_and_slide()
-
+	attack_area.scale.x = -1 if $AnimatedSprite2D.flip_h else 1
 func attack():
-	print("Игрок атакует! Сила атаки:", attack_power)
-	anim.play("attack")
-	
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	var closest_enemy = null
-	var closest_distance = INF
-	
-	for enemy in enemies:
-		var distance = global_position.distance_to(enemy.global_position)
-		if distance < closest_distance:
-			closest_enemy = enemy
-			closest_distance = distance
-	
-	if closest_enemy and closest_distance <= 50:
-		closest_enemy.take_damage(attack_power)
-	
-	await anim.animation_finished
-	anim.play("Idle")
-	
+	if not is_attacking and current_attack_cooldown <= 0:
+		is_attacking = true
+		current_attack_cooldown = attack_cooldown
+		print("Игрок атакует! Сила атаки:", attack_power)
+		anim.play("attack")
+		attack_collision.disabled = false
+		# Регистрация урона происходит на определенных кадрах анимации
+		var damage_frames = [3, 7, 12]  # Кадры, на которых будет наноситься урон
+		# Регистрация урона происходит на определенном кадре анимации
+		
+		while anim.animation == "attack":
+			
+			await anim.frame_changed
+			if anim.frame in damage_frames:
+				_check_for_hit()
+			if anim.frame == anim.sprite_frames.get_frame_count("attack") - 1:
+				break
+			
+				
+		
+		attack_collision.disabled = true
+		is_attacking = false
+		
+		anim.play("Idle")
+func _check_for_hit():
+	var bodies = attack_area.get_overlapping_bodies()
+	for body in bodies:
+		if body.is_in_group("enemies") and body.has_method("take_damage"):
+			body.take_damage(attack_power)
+			print("Урон нанесен врагу на кадре", anim.frame)
+func _on_AttackArea_body_entered(body):
+	if body.is_in_group("enemies") and can_deal_damage:
+		if body.has_method("take_damage"):
+			body.take_damage(attack_power)
 func interact():
 	print("Игрок взаимодействует с предметом")
 	anim.play("interact")
