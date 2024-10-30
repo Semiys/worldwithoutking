@@ -1,0 +1,42 @@
+[gd_scene load_steps=8 format=3 uid="uid://bj84wjqc462sw"]
+
+[ext_resource type="Script" path="res://scripts/generatorgd/worldgenerator.gd" id="1_0rrt7"]
+[ext_resource type="TileSet" uid="uid://j6y684hm2oij" path="res://scenes/world_generator/Tile_set_World/ground_and_plants.tres" id="1_rcxrt"]
+
+[sub_resource type="Gradient" id="Gradient_o6w3r"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0.0584416, 0.233766, 0.837662)
+colors = PackedColorArray(0, 0, 1, 1, 0, 1, 0, 1, 0.734036, 0.444314, 0.0241395, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_nfa3d"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_53yp0"]
+width = 256
+height = 256
+color_ramp = SubResource("Gradient_o6w3r")
+noise = SubResource("FastNoiseLite_nfa3d")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_y8sf2"]
+frequency = 0.3052
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_78pt8"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_y8sf2")
+
+[node name="Worldgenerator" type="Node2D"]
+script = ExtResource("1_0rrt7")
+noise_height_text = SubResource("NoiseTexture2D_53yp0")
+noise_tree_text = SubResource("NoiseTexture2D_78pt8")
+
+[node name="water" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_rcxrt")
+
+[node name="terrain" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_rcxrt")
+
+[node name="grass" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_rcxrt")
+
+[node name="plants" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_rcxrt")
