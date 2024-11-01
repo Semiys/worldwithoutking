@@ -1,0 +1,15 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://5ha1dbq7uaco"]
+
+[ext_resource type="Texture2D" uid="uid://lxj1q8b28x1m" path="res://assets/sprites/worldsp/Pixelole's overword Tileset1.0 free/MasterSimple.png" id="1_6xbqb"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qv47a"]
+texture = ExtResource("1_6xbqb")
+margins = Vector2i(10, 13)
+texture_region_size = Vector2i(32, 32)
+0:2/0 = 0
+0:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16, -16, -16)
+
+[resource]
+tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_qv47a")

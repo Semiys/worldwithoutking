@@ -1,8 +1,7 @@
-[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://j6y684hm2oij"]
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://j6y684hm2oij"]
 
 [ext_resource type="Texture2D" uid="uid://cbvqhkhrq5yjc" path="res://assets/sprites/worldsp/Green Woods/Assets/Tiles.png" id="1_eix8f"]
 [ext_resource type="Texture2D" uid="uid://d0dqdf2g8k5bw" path="res://assets/sprites/worldsp/Green Woods/Assets/Props.png" id="2_pdrh5"]
-[ext_resource type="Texture2D" uid="uid://b5b51sc1383dk" path="res://assets/sprites/worldsp/Dungeon_Tileset.png" id="3_jdtfn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1uffn"]
 texture = ExtResource("1_eix8f")
@@ -18,11 +17,29 @@ texture_region_size = Vector2i(32, 32)
 1:1/0/terrains_peering_bit/top_left_corner = 0
 1:1/0/terrains_peering_bit/top_side = 0
 1:1/0/terrains_peering_bit/top_right_corner = 0
-4:3/0 = 0
-4:4/0 = 0
-5:4/0 = 0
-5:3/0 = 0
 5:1/0 = 0
+5:1/0/terrain_set = 0
+5:1/0/terrain = 0
+5:1/0/terrains_peering_bit/right_side = 0
+5:1/0/terrains_peering_bit/bottom_right_corner = 0
+5:1/0/terrains_peering_bit/bottom_side = 0
+5:1/0/terrains_peering_bit/bottom_left_corner = 0
+5:1/0/terrains_peering_bit/left_side = 0
+5:1/0/terrains_peering_bit/top_left_corner = 0
+5:1/0/terrains_peering_bit/top_side = 0
+5:1/0/terrains_peering_bit/top_right_corner = 0
+5:2/0 = 0
+5:2/0/terrain_set = 0
+5:2/0/terrain = 0
+5:2/0/terrains_peering_bit/right_side = 0
+5:2/0/terrains_peering_bit/bottom_right_corner = 0
+5:2/0/terrains_peering_bit/bottom_side = 0
+5:2/0/terrains_peering_bit/bottom_left_corner = 0
+5:2/0/terrains_peering_bit/left_side = 0
+5:2/0/terrains_peering_bit/top_left_corner = 0
+5:2/0/terrains_peering_bit/top_side = 0
+5:2/0/terrains_peering_bit/top_right_corner = 0
+5:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rgjoc"]
 texture = ExtResource("2_pdrh5")
@@ -33,16 +50,11 @@ texture_region_size = Vector2i(32, 32)
 0:2/1 = 1
 0:2/1/z_index = 2
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_eel6s"]
-texture = ExtResource("3_jdtfn")
-texture_region_size = Vector2i(32, 32)
-1:2/0 = 0
-
 [resource]
 tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 1
 terrain_set_0/mode = 0
 terrain_set_0/terrain_0/name = "Terrain 0"
 terrain_set_0/terrain_0/color = Color(0, 1, 0, 1)
 sources/0 = SubResource("TileSetAtlasSource_1uffn")
 sources/1 = SubResource("TileSetAtlasSource_rgjoc")
-sources/2 = SubResource("TileSetAtlasSource_eel6s")
