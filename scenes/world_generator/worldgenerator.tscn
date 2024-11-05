@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bj84wjqc462sw"]
+[gd_scene load_steps=13 format=3 uid="uid://bj84wjqc462sw"]
 
 [ext_resource type="Script" path="res://scripts/generatorgd/worldgenerator.gd" id="1_0rrt7"]
 [ext_resource type="TileSet" uid="uid://j6y684hm2oij" path="res://scenes/world_generator/Tile_set_World/ground_and_plants.tres" id="1_rcxrt"]
@@ -10,6 +10,8 @@ offsets = PackedFloat32Array(0.0584416, 0.233766, 0.668831)
 colors = PackedColorArray(0, 0, 1, 1, 0, 1, 0, 1, 0.734036, 0.444314, 0.0241395, 1)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_nfa3d"]
+frequency = 0.005
+offset = Vector3(-107.15, -456.14, 20)
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_53yp0"]
 width = 256
@@ -18,17 +20,38 @@ color_ramp = SubResource("Gradient_o6w3r")
 noise = SubResource("FastNoiseLite_nfa3d")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_y8sf2"]
-frequency = 0.3052
+frequency = 0.02
+offset = Vector3(-250, 3.45, 21)
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_78pt8"]
 width = 256
 height = 256
 noise = SubResource("FastNoiseLite_y8sf2")
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hr362"]
+frequency = 0.003
+offset = Vector3(571.43, -350.88, 29)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_h1e1e"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_hr362")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_2mwf4"]
+frequency = 0.004
+offset = Vector3(392.86, -421.05, 300)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0u7uh"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_2mwf4")
+
 [node name="Worldgenerator" type="Node2D"]
 script = ExtResource("1_0rrt7")
 noise_height_text = SubResource("NoiseTexture2D_53yp0")
 noise_tree_text = SubResource("NoiseTexture2D_78pt8")
+noise_temp_text = SubResource("NoiseTexture2D_h1e1e")
+noise_moisture_text = SubResource("NoiseTexture2D_0u7uh")
 
 [node name="water" type="TileMapLayer" parent="."]
 tile_set = ExtResource("2_sxsnw")
