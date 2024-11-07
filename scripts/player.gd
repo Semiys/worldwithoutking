@@ -35,7 +35,7 @@ func _ready():
 		print("Ошибка: узел Inventory не найден")
 	attack_collision.disabled = true
 	attack_area.connect("body_entered", Callable(self, "_on_AttackArea_body_entered"))
-	
+
 func _physics_process(_delta: float) -> void:
 	current_attack_cooldown -= _delta
 	if not anim.is_playing() or (anim.animation == "Idle" or anim.animation == "run"):

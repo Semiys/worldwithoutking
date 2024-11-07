@@ -13,6 +13,33 @@ func _ready():
 		inventory.visible = false
 	else:
 		print("Ошибка: узел Inventory не найден в Player_UI")
+	# Подписываемся на изменение размера окна
+	get_tree().root.connect("size_changed", Callable(self, "_on_window_resize"))
+	# Инициализируем начальное положение UI
+	_on_window_resize()
+
+func _on_window_resize():
+	# Получаем размер окна
+	var window_size = get_viewport().get_visible_rect().size
+	
+	# Настраиваем позиции элементов UI относительно размера окна
+	health_bar.position = Vector2(20, window_size.y - 100)
+	health_bar.size.x = window_size.x * 0.2
+	
+	experience_bar.position = Vector2(20, window_size.y - 60)
+	experience_bar.size.x = window_size.x * 0.2
+	
+	level_label.position = Vector2(20, 20)
+	stats_label.position = Vector2(window_size.x - 200, 20)
+	health_label.position = Vector2(health_bar.position.x + health_bar.size.x + 10, health_bar.position.y)
+	experience_label.position = Vector2(experience_bar.position.x + experience_bar.size.x + 10, experience_bar.position.y)
+	
+	if inventory and inventory.visible:
+		# Центрируем инвентарь
+		inventory.position = Vector2(
+			(window_size.x - inventory.size.x) / 2,
+			(window_size.y - inventory.size.y) / 2
+		)
 
 func update_ui(player_data: Dictionary):
 	animate_value(health_bar, player_data.health)
@@ -34,6 +61,8 @@ func animate_value(progress_bar: ProgressBar, target_value: float):
 func toggle_inventory():
 	if inventory:
 		inventory.visible = !inventory.visible
+		if inventory.visible:
+			_on_window_resize() # Обновляем позицию инвентаря при открытии
 		print("Видимость инвентаря изменена на: ", inventory.visible)
 	else:
 		print("Ошибка: узел инвентаря не найден в Player_UI")
@@ -42,10 +71,22 @@ func show_tooltip(item):
 	var tooltip = $Tooltip
 	tooltip.text = item.description
 	tooltip.visible = true
-	tooltip.position = get_viewport().get_mouse_position() + Vector2(10, 10)
+	# Адаптивное позиционирование подсказки
+	var mouse_pos = get_viewport().get_mouse_position()
+	var window_size = get_viewport().get_visible_rect().size
+	var tooltip_pos = mouse_pos + Vector2(10, 10)
+	
+	# Проверяем, не выходит ли подсказка за пределы экрана
+	if tooltip_pos.x + tooltip.size.x > window_size.x:
+		tooltip_pos.x = mouse_pos.x - tooltip.size.x - 10
+	if tooltip_pos.y + tooltip.size.y > window_size.y:
+		tooltip_pos.y = mouse_pos.y - tooltip.size.y - 10
+		
+	tooltip.position = tooltip_pos
 
 func hide_tooltip():
 	$Tooltip.visible = false
+
 func _on_inventory_item_used(item_name):
 	var player = get_parent()
 	player.use_item(item_name)
