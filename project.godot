@@ -37,6 +37,10 @@ open_inventory={
 ]
 }
 
+[layer_names]
+
+2d_physics/layer_5="village_bounds"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
