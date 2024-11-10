@@ -21,6 +21,7 @@ var can_deal_damage = false
 var is_attacking = false
 var attack_cooldown = 0.5
 var current_attack_cooldown = 0
+var damage_number_scene = preload("res://scenes/damage_number.tscn")
 
 func _ready():
 	
@@ -57,6 +58,16 @@ func _physics_process(_delta: float) -> void:
 		velocity=Vector2.ZERO
 	move_and_slide()
 	attack_area.scale.x = -1 if $AnimatedSprite2D.flip_h else 1
+
+func spawn_damage_number(damage: int, pos: Vector2):
+	var damage_number = damage_number_scene.instantiate()
+	var label = damage_number.get_node("Label")
+	label.text = str(damage)
+	damage_number.global_position = pos
+	get_tree().current_scene.add_child(damage_number)
+	var anim_player = damage_number.get_node("AnimationPlayer")
+	anim_player.play("showDamage")
+
 func attack():
 	if not is_attacking and current_attack_cooldown <= 0:
 		is_attacking = true
@@ -82,16 +93,21 @@ func attack():
 		is_attacking = false
 		
 		anim.play("Idle")
+
 func _check_for_hit():
 	var bodies = attack_area.get_overlapping_bodies()
 	for body in bodies:
 		if body.is_in_group("enemies") and body.has_method("take_damage"):
 			body.take_damage(attack_power)
+			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
 			print("Урон нанесен врагу на кадре", anim.frame)
+
 func _on_AttackArea_body_entered(body):
 	if body.is_in_group("enemies") and can_deal_damage:
 		if body.has_method("take_damage"):
 			body.take_damage(attack_power)
+			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
+
 func interact():
 	print("Игрок взаимодействует с предметом")
 	anim.play("interact")
@@ -175,6 +191,7 @@ func set_up_input_map():
 		var event = InputEventKey.new()
 		event.keycode = KEY_C
 		InputMap.action_add_event("count_health_potions", event)
+
 func _input(event):
 	if event.is_action_pressed("attack"):
 		attack()
@@ -307,6 +324,7 @@ func boost_attack(amount):
 func boost_defense(amount):
 	defense += amount
 	update_ui()
+
 func use_item(item_name: String):
 	var item_resource = item_database.get_item(item_name)
 	if item_resource:
