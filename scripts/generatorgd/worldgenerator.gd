@@ -10,6 +10,7 @@ extends Node2D # Наследуем от Node2D для работы с 2D гра
 # Сцена поселения и игрока
 @export var village_scene:PackedScene
 @onready var player = get_tree().get_root().get_node("Game/Player") # Получаем ссылку на игрока
+@onready var camera = get_tree().get_root().get_node("Game/Player/Camera2D") # Получаем ссылку на камеру
 
 # Настройки размещения поселений
 const VILLAGE_MIN_DISTANCE = 50 # Уменьшаем минимальное расстояние между деревнями
@@ -17,6 +18,7 @@ const VILLAGE_SIZE = 80 # Уменьшаем размер деревни
 const VILLAGE_BORDER = 20 # Уменьшаем отступ от края карты
 const WATER_SAFE_DISTANCE = 5 # Уменьшаем безопасное расстояние от воды
 const MAX_GENERATION_ATTEMPTS = 5 # Максимальное количество попыток генерации мира
+const WATER_BORDER_WIDTH = 32 # Ширина водной границы в тайлах
 
 enum Biome {OCEAN, BEACH, TUNDRA, FOREST, PLAINS, DESERT}
 enum SettlementType {VILLAGE}
@@ -37,6 +39,12 @@ var water_atlas=Vector2i(0,2) # Координаты тайла воды
 var grass_tiles_arr=[] # Массив для тайлов травы
 var terrain_grass_int=0 # Индекс текущего тайла травы
 var grass_atlas_arr=[Vector2i(1,1),Vector2i(5,1),Vector2i(5,0),Vector2i(5,2)]
+# Массив тайлов для пустыни
+var desert_atlas_arr=[
+	Vector2i(2,6), # Обычный песок
+	Vector2i(3,6), # Песок с кактусом
+	Vector2i(0,4)  # Песок с камнями
+]
 
 var thread: Thread
 
@@ -81,7 +89,15 @@ func _ready() -> void:
 		# Генерируем мир
 		generate_world_data()
 		generate_river_data()
+		generate_water_borders() # Добавляем водные границы
 		place_settlements()
+		
+		# Настраиваем ограничения камеры
+		if camera:
+			camera.limit_left = 0
+			camera.limit_top = 0 
+			camera.limit_right = width * 32
+			camera.limit_bottom = height * 32
 		
 		# Проверяем успешность генерации
 		if settlements.size() > 0:
@@ -120,6 +136,19 @@ func _ready() -> void:
 					# Сбрасываем счетчик попыток и пробуем заново
 					attempts = 0
 					print("Не удалось создать деревню даже в безопасной зоне. Начинаем новый цикл генерации...")
+
+# Функция генерации водных границ
+func generate_water_borders() -> void:
+	for x in width:
+		for y in height:
+			# Проверяем, находится ли точка в пределах границы
+			if x < WATER_BORDER_WIDTH or x >= width - WATER_BORDER_WIDTH or y < WATER_BORDER_WIDTH or y >= height - WATER_BORDER_WIDTH:
+				# Устанавливаем воду
+				cell_map[x][y] = Biome.OCEAN
+				$terrain.erase_cell(Vector2i(x,y))
+				$grass.erase_cell(Vector2i(x,y))
+				$plants.erase_cell(Vector2i(x,y))
+				$water.set_cell(Vector2i(x,y), 0, water_atlas)
 
 # Функция принудительного создания безопасной зоны для деревни
 func force_create_safe_zone() -> void:
@@ -223,9 +252,9 @@ func generate_world_data() -> void:
 			else:
 				match biome:
 					Biome.BEACH:
-						$terrain.set_cell(Vector2i(x,y), 0, Vector2i(0,4))
+						$terrain.set_cell(Vector2i(x,y), 3, Vector2i(4,4))
 					Biome.TUNDRA:
-						$terrain.set_cell(Vector2i(x,y), 0, Vector2i(3,4))
+						$terrain.set_cell(Vector2i(x,y), 8, Vector2i(0,0))
 					Biome.FOREST:
 						$grass.set_cell(Vector2i(x,y), 0, grass_atlas_arr.pick_random())
 						if tree_val > 0.4:
@@ -233,7 +262,7 @@ func generate_world_data() -> void:
 					Biome.PLAINS:
 						$grass.set_cell(Vector2i(x,y), 0, grass_atlas_arr.pick_random())
 					Biome.DESERT:
-						$terrain.set_cell(Vector2i(x,y), 0, Vector2i(1,3))
+						$terrain.set_cell(Vector2i(x,y), 5, desert_atlas_arr.pick_random())
 	
 	print("Количество равнин на карте: ", plains_count)
 
