@@ -18,7 +18,7 @@ var current_cooldown = 0.0  # Текущее время до следующей 
 
 func _ready():
 	add_to_group("enemies")
-	target = get_node("/root/Game/Player")
+	target = get_tree().get_nodes_in_group("player")[0]
 	aggro_area.connect("body_entered", _on_aggro_area_body_entered)
 	aggro_area.connect("body_exited", _on_aggro_area_body_exited)
 
@@ -27,8 +27,8 @@ func _physics_process(delta):
 		knockback_timer -= delta
 		move_and_slide()
 	elif is_aggro and target:
-		var direction = (target.position - position).normalized()
-		var distance = position.distance_to(target.position)
+		var direction = (target.global_position - global_position).normalized()
+		var distance = global_position.distance_to(target.global_position)
 		
 		if distance > min_distance:
 			velocity = direction * SPEED
@@ -40,12 +40,10 @@ func _physics_process(delta):
 		else:
 			velocity = Vector2.ZERO
 			anim.play("run")
-			
-			var knockback_direction = (position - target.position).normalized()
+			var knockback_direction = (global_position - target.global_position).normalized()
 			velocity = knockback_direction * knockback_strength
 			knockback_timer = knockback_duration
-			
-			# Атака игрока
+			# Изменено: теперь враг отталкивается от игрока при получении урона, а не при атаке
 			if current_cooldown <= 0:
 				attack()
 				current_cooldown = attack_cooldown
@@ -88,7 +86,7 @@ func take_damage(amount: int):
 func die():
 	print("Враг умер")
 	queue_free()
-	var player = get_node("/root/Game/Player")
+	var player = get_tree().get_nodes_in_group("player")[0]
 	if player and player.has_method("gain_experience"):
 		player.gain_experience(10)
 		print("Награда получена: +10 опыта")

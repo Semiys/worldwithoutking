@@ -9,7 +9,7 @@ extends Node2D # Наследуем от Node2D для работы с 2D гра
 
 # Сцена поселения и игрока
 @export var village_scene:PackedScene
-@onready var player = get_parent().get_node("Player") # Получаем ссылку на игрока из родительской сцены game
+@onready var player = get_tree().get_root().get_node("Game/Player") # Получаем ссылку на игрока
 
 # Настройки размещения поселений
 const VILLAGE_MIN_DISTANCE = 50 # Уменьшаем минимальное расстояние между деревнями
@@ -78,7 +78,10 @@ func _ready() -> void:
 		var safe_settlement = find_safe_settlement()
 		if safe_settlement != null:
 			if player:
+				# Устанавливаем позицию игрока
 				player.position = Vector2(safe_settlement.position.x * 32, safe_settlement.position.y * 32)
+				# Важно: добавляем игрока в группу
+				player.add_to_group("player")
 				print("Игрок перемещен в безопасную деревню: ", player.position)
 			else:
 				print("ВНИМАНИЕ: Игрок не найден в сцене!")
@@ -339,6 +342,9 @@ func spawn_settlement(scene: PackedScene, pos: Vector2i, type: int) -> void:
 		return
 		
 	settlement_instance.position = Vector2(pos.x * 32, pos.y * 32)
+	# Добавляем игрока в группу для доступа врагам
+	if player:
+		player.add_to_group("player")
 	add_child(settlement_instance)
 	
 	var settlement = Settlement.new(type, pos, settlement_instance)
