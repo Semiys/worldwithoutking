@@ -1,9 +1,13 @@
 extends CharacterBody2D
 
-const SPEED = 1000.0
+const BASE_SPEED = 1000.0
+const BASE_ATTACK_COOLDOWN = 0.5
+
+var speed = BASE_SPEED
 var health = 100
 var max_health = 100
-var attack_power = 10
+var base_attack_power = 10 # Базовая сила атаки
+var attack_power = base_attack_power # Текущая сила атаки с учетом всех бонусов
 var defense = 1
 var experience = 0
 var level = 1
@@ -12,14 +16,15 @@ var level = 1
 @onready var inventory = $player_ui/Inventory 
 @onready var equipment = {
 	"weapon": null,
-	"armor": null
+	"armor": null,
+	"damage_item": null # Добавляем слот для предмета урона
 }
 @onready var item_database = get_node("/root/ItemDatabase")
 @onready var attack_area = $AttackArea
 @onready var attack_collision = $AttackArea/CollisionShape2D
 var can_deal_damage = false
 var is_attacking = false
-var attack_cooldown = 0.5
+var attack_cooldown = BASE_ATTACK_COOLDOWN
 var current_attack_cooldown = 0
 var damage_number_scene = preload("res://scenes/damage_number.tscn")
 
@@ -42,7 +47,7 @@ func _physics_process(_delta: float) -> void:
 	if not anim.is_playing() or (anim.animation == "Idle" or anim.animation == "run"):
 		var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		if direction:
-			velocity = direction * SPEED
+			velocity = direction * speed # Используем обновленную скорость
 			anim.play("run")
 			if direction.x < 0:
 				$AnimatedSprite2D.flip_h = true
@@ -166,11 +171,31 @@ func check_level_up():
 
 func level_up():
 	level += 1
-	max_health += 10
+	# Увеличение здоровья
+	max_health += 10 + level * 2
 	health = max_health
-	attack_power += 2
-	defense += 1
+	
+	# Увеличение базового урона (квадратичная формула)
+	base_attack_power = 10 + pow(level, 1.5)
+	update_total_attack_power() # Обновляем общий урон
+	
+	# Увеличение защиты (логарифмическая формула)
+	defense = 1 + floor(3 * log(level + 1))
+	
+	# Увеличение скорости (линейная формула с замедлением роста)
+	speed = BASE_SPEED * (1 + (level * 0.1) / (1 + level * 0.05))
+	
+	# Уменьшение времени перезарядки атаки (экспоненциальная формула с ограничением)
+	attack_cooldown = max(BASE_ATTACK_COOLDOWN * pow(0.95, level - 1), 0.1)
+	
 	print("Уровень повышен! Текущий уровень:", level)
+	print("Новые характеристики:")
+	print("Здоровье:", max_health)
+	print("Урон:", attack_power)
+	print("Защита:", defense)
+	print("Скорость:", speed)
+	print("Время перезарядки атаки:", attack_cooldown)
+	
 	anim.play("level_up")
 	update_ui()
 
@@ -220,17 +245,21 @@ func save_data():
 	var save_dict = {
 		"health": health,
 		"max_health": max_health,
+		"base_attack_power": base_attack_power,
 		"attack_power": attack_power,
 		"defense": defense,
 		"experience": experience,
 		"level": level,
+		"speed": speed,
+		"attack_cooldown": attack_cooldown,
 		"position": {
 			"x": position.x,
 			"y": position.y
 		},
 		"equipment": {
 			"weapon": equipment["weapon"].item_name if equipment["weapon"] else null,
-			"armor": equipment["armor"].item_name if equipment["armor"] else null
+			"armor": equipment["armor"].item_name if equipment["armor"] else null,
+			"damage_item": equipment["damage_item"].item_name if equipment["damage_item"] else null
 		},
 		"inventory": inventory.save_inventory()
 	}
@@ -275,10 +304,13 @@ func load_player_stats():
 func load_data(data):
 	health = data["health"]
 	max_health = data["max_health"]
+	base_attack_power = data.get("base_attack_power", 10)
 	attack_power = data["attack_power"]
 	defense = data["defense"]
 	experience = data["experience"]
 	level = data["level"]
+	speed = data.get("speed", BASE_SPEED)
+	attack_cooldown = data.get("attack_cooldown", BASE_ATTACK_COOLDOWN)
 	position = Vector2(data["position"]["x"], data["position"]["y"])
 	
 	if "equipment" in data:
@@ -286,23 +318,37 @@ func load_data(data):
 			equip_weapon(item_database.get_item(data["equipment"]["weapon"]))
 		if data["equipment"]["armor"]:
 			equip_armor(item_database.get_item(data["equipment"]["armor"]))
+		if data["equipment"]["damage_item"]:
+			equip_damage_item(item_database.get_item(data["equipment"]["damage_item"]))
 	
 	if "inventory" in data:
 		inventory.load_inventory(data["inventory"])
 	
 	update_ui()
 
+func update_total_attack_power():
+	attack_power = base_attack_power
+	if equipment["weapon"]:
+		attack_power += equipment["weapon"].effect.get("attack", 0)
+	if equipment["damage_item"]:
+		attack_power += equipment["damage_item"].effect.get("attack", 0)
+
 func equip_weapon(weapon_item):
 	if equipment["weapon"]:
-		attack_power -= equipment["weapon"].effect.get("attack", 0)
 		inventory.add_item(equipment["weapon"].item_name)
 	equipment["weapon"] = weapon_item
-	if "attack" in weapon_item.effect:
-		attack_power += weapon_item.effect["attack"]
-		print("Экипирован меч. Бонус к атаке:", weapon_item.effect["attack"])
-		print("Новая сила атаки:", attack_power)
-	else:
-		print("У оружия нет эффекта атаки")
+	update_total_attack_power()
+	print("Экипирован меч. Бонус к атаке:", weapon_item.effect.get("attack", 0))
+	print("Новая сила атаки:", attack_power)
+	update_ui()
+
+func equip_damage_item(damage_item):
+	if equipment["damage_item"]:
+		inventory.add_item(equipment["damage_item"].item_name)
+	equipment["damage_item"] = damage_item
+	update_total_attack_power()
+	print("Экипирован предмет урона. Бонус к атаке:", damage_item.effect.get("attack", 0))
+	print("Новая сила атаки:", attack_power)
 	update_ui()
 
 func equip_armor(armor_item):
@@ -318,7 +364,8 @@ func heal(amount):
 	update_ui()
 
 func boost_attack(amount):
-	attack_power += amount
+	base_attack_power += amount
+	update_total_attack_power()
 	update_ui()
 
 func boost_defense(amount):
@@ -335,6 +382,8 @@ func use_item(item_name: String):
 				equip_weapon(item_resource)
 			"Armor":
 				equip_armor(item_resource)
+			"DamageItem":
+				equip_damage_item(item_resource)
 		inventory.remove_item(item_name, 1)
 		update_ui()
 	else:
