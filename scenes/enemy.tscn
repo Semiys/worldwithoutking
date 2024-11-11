@@ -4,8 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://81ryxlw3ukoi" path="res://assets/sprites/Run-Sheet.png" id="2_udpt5"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ndcp2"]
-radius = 3.0
-height = 8.0
+radius = 12.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_33yfv"]
 atlas = ExtResource("2_udpt5")
@@ -59,7 +58,7 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8714k"]
-radius = 64.0312
+radius = 112.0
 
 [node name="Enemy" type="CharacterBody2D"]
 script = ExtResource("1_3pv8k")
@@ -68,8 +67,8 @@ script = ExtResource("1_3pv8k")
 shape = SubResource("CapsuleShape2D_ndcp2")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(1.90735e-06, -5)
-scale = Vector2(0.304688, 0.296875)
+position = Vector2(-4.76837e-07, -12)
+scale = Vector2(0.75, 0.71875)
 sprite_frames = SubResource("SpriteFrames_dxdeg")
 animation = &"run"
 

@@ -12,6 +12,37 @@ var defense = 1
 var experience = 0
 var level = 1
 
+# Переменные для способностей
+var dodge_cooldown = 3.0
+var aoe_attack_cooldown = 5.0
+var line_attack_cooldown = 4.0
+var invulnerability_cooldown = 15.0
+var aura_damage_cooldown = 8.0
+
+var current_dodge_cooldown = 0.0
+var current_aoe_cooldown = 0.0
+var current_line_cooldown = 0.0
+var current_invuln_cooldown = 0.0
+var current_aura_cooldown = 0.0
+
+var is_invulnerable = false
+var aura_damage_active = false
+
+# Переменные для визуализации радиусов
+var dodge_range = 100.0 # Уменьшен базовый радиус
+var aoe_radius = 50.0 # Уменьшен базовый радиус
+var line_width = 15.0 # Уменьшена базовая ширина
+var line_length = 100.0 # Уменьшена базовая длина
+var aura_radius = 75.0 # Уменьшен базовый радиус
+
+# Переменные для отслеживания зажатых кнопок
+var is_dodge_pressed = false
+var is_aoe_pressed = false
+var is_line_pressed = false
+var is_aura_pressed = false
+
+var is_aoe_targeting = false # Для отслеживания режима прицеливания АОЕ
+
 @onready var anim = $AnimatedSprite2D
 @onready var inventory = $player_ui/Inventory 
 @onready var equipment = {
@@ -29,7 +60,6 @@ var current_attack_cooldown = 0
 var damage_number_scene = preload("res://scenes/damage_number.tscn")
 
 func _ready():
-	
 	set_up_input_map()
 	load_player_stats()
 	update_ui()
@@ -43,9 +73,16 @@ func _ready():
 	attack_area.connect("body_entered", Callable(self, "_on_AttackArea_body_entered"))
 
 func _physics_process(_delta: float) -> void:
+	# Обновление кулдаунов способностей
+	current_dodge_cooldown = max(0, current_dodge_cooldown - _delta)
+	current_aoe_cooldown = max(0, current_aoe_cooldown - _delta)
+	current_line_cooldown = max(0, current_line_cooldown - _delta)
+	current_invuln_cooldown = max(0, current_invuln_cooldown - _delta)
+	current_aura_cooldown = max(0, current_aura_cooldown - _delta)
+	
 	current_attack_cooldown -= _delta
 	if not anim.is_playing() or (anim.animation == "Idle" or anim.animation == "run"):
-		var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+		var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 		if direction:
 			velocity = direction * speed # Используем обновленную скорость
 			anim.play("run")
@@ -63,6 +100,91 @@ func _physics_process(_delta: float) -> void:
 		velocity=Vector2.ZERO
 	move_and_slide()
 	attack_area.scale.x = -1 if $AnimatedSprite2D.flip_h else 1
+	
+	# Проверка периодического урона ауры
+	if aura_damage_active:
+		apply_aura_damage()
+		
+	queue_redraw() # Перерисовываем визуализацию радиусов
+
+func _draw():
+	# Рисуем радиусы способностей только когда соответствующие кнопки зажаты
+	if is_dodge_pressed and current_dodge_cooldown <= 0:
+		draw_circle(Vector2.ZERO, dodge_range * (1 + level * 0.1), Color(0, 1, 0, 0.1))
+		
+	if is_aoe_pressed and current_aoe_cooldown <= 0:
+		var mouse_pos = get_local_mouse_position()
+		draw_circle(mouse_pos, aoe_radius * (1 + level * 0.1), Color(1, 0, 0, 0.2))
+		
+	if is_line_pressed and current_line_cooldown <= 0:
+		var direction = Vector2.RIGHT if !$AnimatedSprite2D.flip_h else Vector2.LEFT
+		var line_end = direction * (line_length * (1 + level * 0.1))
+		draw_line(Vector2.ZERO, line_end, Color(0, 0, 1, 0.2), line_width * (1 + level * 0.05))
+		
+	if is_aura_pressed and aura_damage_active:
+		draw_circle(Vector2.ZERO, aura_radius * (1 + level * 0.1), Color(1, 1, 0, 0.1))
+
+func dodge():
+	if current_dodge_cooldown <= 0:
+		current_dodge_cooldown = dodge_cooldown
+		var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+		if direction == Vector2.ZERO:
+			direction = Vector2.RIGHT if !$AnimatedSprite2D.flip_h else Vector2.LEFT
+		velocity = direction * (speed * (2 + level * 0.2)) # Увеличение скорости уклонения с уровнем
+		move_and_slide()
+
+func start_aoe_targeting():
+	if current_aoe_cooldown <= 0:
+		is_aoe_targeting = true
+
+func aoe_attack():
+	if is_aoe_targeting:
+		current_aoe_cooldown = aoe_attack_cooldown
+		var mouse_pos = get_global_mouse_position()
+		var enemies = get_tree().get_nodes_in_group("enemies")
+		for enemy in enemies:
+			var distance = mouse_pos.distance_to(enemy.global_position)
+			if distance <= aoe_radius * (1 + level * 0.1):
+				enemy.take_damage(attack_power * (0.8 + level * 0.1)) # Увеличение урона с уровнем
+				spawn_damage_number(attack_power * (0.8 + level * 0.1), enemy.global_position + Vector2(0, -50))
+		is_aoe_targeting = false
+
+func line_attack():
+	if current_line_cooldown <= 0:
+		current_line_cooldown = line_attack_cooldown
+		var direction = Vector2.RIGHT if !$AnimatedSprite2D.flip_h else Vector2.LEFT
+		var enemies = get_tree().get_nodes_in_group("enemies")
+		
+		for enemy in enemies:
+			var to_enemy = enemy.global_position - global_position
+			if abs(to_enemy.angle_to(direction)) < 0.2:
+				var distance = global_position.distance_to(enemy.global_position)
+				if distance <= line_length * (1 + level * 0.1):
+					enemy.take_damage(attack_power * (1 + level * 0.15)) # Увеличение урона с уровнем
+					spawn_damage_number(attack_power * (1 + level * 0.15), enemy.global_position + Vector2(0, -50))
+
+func activate_invulnerability():
+	if current_invuln_cooldown <= 0:
+		current_invuln_cooldown = invulnerability_cooldown
+		is_invulnerable = true
+		await get_tree().create_timer(2.0 + level * 0.3).timeout # Увеличение длительности с уровнем
+		is_invulnerable = false
+
+func activate_aura_damage():
+	if current_aura_cooldown <= 0:
+		current_aura_cooldown = aura_damage_cooldown
+		aura_damage_active = true
+		await get_tree().create_timer(3.0 + level * 0.2).timeout # Увеличение длительности с уровнем
+		aura_damage_active = false
+
+func apply_aura_damage():
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		var distance = global_position.distance_to(enemy.global_position)
+		if distance <= aura_radius * (1 + level * 0.1):
+			enemy.take_damage(attack_power * (0.2 + level * 0.05)) # Увеличение урона с уровнем
+			spawn_damage_number(attack_power * (0.2 + level * 0.05), enemy.global_position + Vector2(0, -50))
+	await get_tree().create_timer(1.0).timeout
 
 func spawn_damage_number(damage: int, pos: Vector2):
 	var damage_number = damage_number_scene.instantiate()
@@ -133,6 +255,9 @@ func interact():
 	await anim.animation_finished
 
 func take_damage(amount: int):
+	if is_invulnerable:
+		return
+		
 	var actual_damage = max(amount - defense, 0)
 	health -= actual_damage
 	print("Игрок получил", actual_damage, "урона. Осталось здоровья:", health)
@@ -216,6 +341,39 @@ func set_up_input_map():
 		var event = InputEventKey.new()
 		event.keycode = KEY_C
 		InputMap.action_add_event("count_health_potions", event)
+		
+	# Добавляем привязки клавиш для способностей
+	for i in range(1, 6):
+		if not InputMap.has_action("ability_" + str(i)):
+			InputMap.add_action("ability_" + str(i))
+			var event = InputEventKey.new()
+			event.keycode = KEY_1 + i - 1  # KEY_1, KEY_2, etc.
+			InputMap.action_add_event("ability_" + str(i), event)
+			
+	# Добавляем привязки WASD для движения
+	if not InputMap.has_action("move_left"):
+		InputMap.add_action("move_left")
+		var event = InputEventKey.new()
+		event.keycode = KEY_A
+		InputMap.action_add_event("move_left", event)
+		
+	if not InputMap.has_action("move_right"):
+		InputMap.add_action("move_right")
+		var event = InputEventKey.new()
+		event.keycode = KEY_D
+		InputMap.action_add_event("move_right", event)
+		
+	if not InputMap.has_action("move_up"):
+		InputMap.add_action("move_up")
+		var event = InputEventKey.new()
+		event.keycode = KEY_W
+		InputMap.action_add_event("move_up", event)
+		
+	if not InputMap.has_action("move_down"):
+		InputMap.add_action("move_down")
+		var event = InputEventKey.new()
+		event.keycode = KEY_S
+		InputMap.action_add_event("move_down", event)
 
 func _input(event):
 	if event.is_action_pressed("attack"):
@@ -229,6 +387,40 @@ func _input(event):
 			player_ui.toggle_inventory()
 		else:
 			print("Ошибка: узел Player_UI не найден")
+	# Обработка способностей и их визуализации
+	elif event.is_action_pressed("ability_1"):
+		is_dodge_pressed = true
+		queue_redraw()
+	elif event.is_action_released("ability_1"):
+		is_dodge_pressed = false
+		queue_redraw()
+		dodge()
+	elif event.is_action_pressed("ability_2"):
+		is_aoe_pressed = true
+		queue_redraw()
+		start_aoe_targeting()
+	elif event.is_action_released("ability_2"):
+		is_aoe_pressed = false
+		queue_redraw()
+	elif event.is_action_pressed("ability_3"):
+		is_line_pressed = true
+		queue_redraw()
+	elif event.is_action_released("ability_3"):
+		is_line_pressed = false
+		queue_redraw()
+		line_attack()
+	elif event.is_action_pressed("ability_4"):
+		activate_invulnerability()
+	elif event.is_action_pressed("ability_5"):
+		is_aura_pressed = true
+		queue_redraw()
+		activate_aura_damage()
+	elif event.is_action_released("ability_5"):
+		is_aura_pressed = false
+		queue_redraw()
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if is_aoe_targeting:
+			aoe_attack()
 
 func update_ui():
 	var player_data = {
