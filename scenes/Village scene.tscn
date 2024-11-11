@@ -1,0 +1,220 @@
+[gd_scene load_steps=44 format=3 uid="uid://c4mgas7b70pyd"]
+
+[ext_resource type="Texture2D" uid="uid://brw46jp6n5rw7" path="res://Village assets/Трава.png" id="1_fvd43"]
+[ext_resource type="Texture2D" uid="uid://cp3txysrfm28u" path="res://Village assets/оранжевые камни.png" id="2_gsn5g"]
+[ext_resource type="Texture2D" uid="uid://dkvj5rntij8hw" path="res://Village assets/серая плитка.png" id="3_2dsab"]
+[ext_resource type="Texture2D" uid="uid://cut8jwkegclb8" path="res://Village assets/тени.png" id="4_ynwvi"]
+[ext_resource type="Texture2D" uid="uid://boqeueaie0q62" path="res://Village assets/деревья задний план.png" id="5_hxrs2"]
+[ext_resource type="Texture2D" uid="uid://c72blqugymrf2" path="res://Village assets/белье на веревках.png" id="6_2wa7i"]
+[ext_resource type="Texture2D" uid="uid://w1yic7wa5tcw" path="res://Village assets/желтый домик.png" id="7_fnj52"]
+[ext_resource type="Texture2D" uid="uid://dn7gegmwhp34j" path="res://Village assets/мешени.png" id="8_v6xlk"]
+[ext_resource type="Texture2D" uid="uid://df4sf2188cw7h" path="res://Village assets/мечи.png" id="9_jc4vu"]
+[ext_resource type="Texture2D" uid="uid://7l0ldrrvrrt8" path="res://Village assets/флаг 2.png" id="10_mko64"]
+[ext_resource type="Texture2D" uid="uid://bo1ouivncniqo" path="res://Village assets/статуя.png" id="11_fcxfg"]
+[ext_resource type="Texture2D" uid="uid://du5a64t80n62f" path="res://Village assets/скамейки вправо.png" id="12_1dfoa"]
+[ext_resource type="Texture2D" uid="uid://qn12ao3tq3ti" path="res://Village assets/колонны.png" id="13_7feur"]
+[ext_resource type="Texture2D" uid="uid://bjcsnnrxhap5v" path="res://Village assets/трава перед желтым домом.png" id="14_5vkdi"]
+[ext_resource type="Texture2D" uid="uid://dtbg24fcc2fb7" path="res://Village assets/подсолнухи.png" id="15_iv6bg"]
+[ext_resource type="Texture2D" uid="uid://be3e7jv4imc1a" path="res://Village assets/кусты перед желтым домом.png" id="16_1vkdh"]
+[ext_resource type="Texture2D" uid="uid://cvkbeiiqkq3vb" path="res://Village assets/грядки.png" id="17_ssihg"]
+[ext_resource type="Texture2D" uid="uid://cp77mudis8ik6" path="res://Village assets/пугало желтый дом.png" id="18_tssuh"]
+[ext_resource type="Texture2D" uid="uid://hkxawgh40hrk" path="res://Village assets/бревно и топор.png" id="19_ysqbq"]
+[ext_resource type="Texture2D" uid="uid://bmdnps74yo0tj" path="res://Village assets/деревянный забор.png" id="20_7p3oe"]
+[ext_resource type="Texture2D" uid="uid://cob20dy005w5y" path="res://Village assets/колодец.png" id="21_knidm"]
+[ext_resource type="Texture2D" uid="uid://dbg6j7oqds258" path="res://Village assets/телега.png" id="22_w1mmu"]
+[ext_resource type="Texture2D" uid="uid://brhq80pmfmdin" path="res://Village assets/продуктовая лавочка.png" id="23_p5lc1"]
+[ext_resource type="Texture2D" uid="uid://dq1ggehjyowlg" path="res://Village assets/пугало мешени.png" id="24_1hb6n"]
+[ext_resource type="Texture2D" uid="uid://f7o7r7lns5tg" path="res://Village assets/сундук.png" id="25_lwr5o"]
+[ext_resource type="Texture2D" uid="uid://b4va7hkaktmyh" path="res://Village assets/кусты парк.png" id="26_eck4q"]
+[ext_resource type="Texture2D" uid="uid://cg6ir6fw4csvg" path="res://Village assets/красный домик.png" id="27_ul3xv"]
+[ext_resource type="Texture2D" uid="uid://cyr2u5scn5nmd" path="res://Village assets/зеленый домик.png" id="28_wvbd5"]
+[ext_resource type="Texture2D" uid="uid://wkxuc1lqanll" path="res://Village assets/деревья и кусты перед красным домом.png" id="29_e5ewp"]
+[ext_resource type="Texture2D" uid="uid://dhasenynxlxk4" path="res://Village assets/скамейки влево.png" id="30_8hvw8"]
+[ext_resource type="Texture2D" uid="uid://1sqp83fd2xpg" path="res://Village assets/кусты парк 2.png" id="31_url56"]
+[ext_resource type="Texture2D" uid="uid://dk1mrcrh5kj1r" path="res://Village assets/надгробия.png" id="32_hf647"]
+[ext_resource type="Texture2D" uid="uid://bw5ir45p0wn7b" path="res://Village assets/стены.png" id="33_crwei"]
+[ext_resource type="Texture2D" uid="uid://dq17s85s7bo7b" path="res://Village assets/деревья зеленый дом.png" id="34_pk4ac"]
+[ext_resource type="Texture2D" uid="uid://c721adsqg8jj6" path="res://Village assets/указатель.png" id="35_e53q5"]
+[ext_resource type="Texture2D" uid="uid://cic2eesiq773d" path="res://Village assets/дерево желтый дом.png" id="36_ylahc"]
+[ext_resource type="Texture2D" uid="uid://csnnmtmf44htj" path="res://Village assets/флаг 1.png" id="37_nww3p"]
+[ext_resource type="Texture2D" uid="uid://bkcfsaimankwf" path="res://Village assets/скамейки вперед.png" id="38_0c7xg"]
+[ext_resource type="Texture2D" uid="uid://dxr413h40ojmd" path="res://Village assets/кусты у стены.png" id="39_uw3c0"]
+[ext_resource type="Texture2D" uid="uid://ivtvob4xba78" path="res://Village assets/табличка объявлений.png" id="40_et1g4"]
+[ext_resource type="Texture2D" uid="uid://qmxnvotuurb0" path="res://Village assets/деревья первый план.png" id="41_gorip"]
+[ext_resource type="Texture2D" uid="uid://byq7whwuqxiy4" path="res://Village assets/пугало зеленый дом.png" id="42_gjitr"]
+[ext_resource type="Texture2D" uid="uid://jg6yykh2hsi2" path="res://Village assets/бочка.png" id="43_pbfn5"]
+
+[node name="VillageScene" type="Node2D"]
+position = Vector2(993, 532)
+
+[node name="Трава" type="Sprite2D" parent="."]
+position = Vector2(-2, -6)
+texture = ExtResource("1_fvd43")
+
+[node name="ОранжевыеКамни" type="Sprite2D" parent="."]
+position = Vector2(-2, -6)
+texture = ExtResource("2_gsn5g")
+
+[node name="СераяПлитка" type="Sprite2D" parent="."]
+position = Vector2(-299, -21)
+texture = ExtResource("3_2dsab")
+
+[node name="Тени" type="Sprite2D" parent="."]
+position = Vector2(-17, 29)
+texture = ExtResource("4_ynwvi")
+
+[node name="ДеревьяЗаднийПлан" type="Sprite2D" parent="."]
+position = Vector2(483, -252)
+texture = ExtResource("5_hxrs2")
+
+[node name="БельеНаВеревках" type="Sprite2D" parent="."]
+position = Vector2(586, -222)
+texture = ExtResource("6_2wa7i")
+
+[node name="ЖелтыйДомик" type="Sprite2D" parent="."]
+position = Vector2(440, -219)
+texture = ExtResource("7_fnj52")
+
+[node name="Мешени" type="Sprite2D" parent="."]
+position = Vector2(620, 76)
+texture = ExtResource("8_v6xlk")
+
+[node name="Мечи" type="Sprite2D" parent="."]
+position = Vector2(599, 128)
+texture = ExtResource("9_jc4vu")
+
+[node name="Флаг2" type="Sprite2D" parent="."]
+position = Vector2(498, 17)
+texture = ExtResource("10_mko64")
+
+[node name="Статуя" type="Sprite2D" parent="."]
+position = Vector2(-60, 197)
+texture = ExtResource("11_fcxfg")
+
+[node name="СкамейкиВправо" type="Sprite2D" parent="."]
+position = Vector2(-219, 224)
+texture = ExtResource("12_1dfoa")
+
+[node name="Колонны" type="Sprite2D" parent="."]
+position = Vector2(127, 199)
+texture = ExtResource("13_7feur")
+
+[node name="ТраваПередЖелтымДомом" type="Sprite2D" parent="."]
+position = Vector2(442, -118)
+texture = ExtResource("14_5vkdi")
+
+[node name="Подсолнухи" type="Sprite2D" parent="."]
+position = Vector2(434, -108)
+texture = ExtResource("15_iv6bg")
+
+[node name="КустыПередЖелтымДомом" type="Sprite2D" parent="."]
+position = Vector2(426, -82)
+texture = ExtResource("16_1vkdh")
+
+[node name="Грядки" type="Sprite2D" parent="."]
+position = Vector2(235, -248)
+texture = ExtResource("17_ssihg")
+
+[node name="ПугалоЖелтыйДом" type="Sprite2D" parent="."]
+position = Vector2(270, -195)
+texture = ExtResource("18_tssuh")
+
+[node name="БревноИТопор" type="Sprite2D" parent="."]
+position = Vector2(665, -178)
+texture = ExtResource("19_ysqbq")
+
+[node name="ДеревянныйЗабор" type="Sprite2D" parent="."]
+position = Vector2(430, -79)
+texture = ExtResource("20_7p3oe")
+
+[node name="Колодец" type="Sprite2D" parent="."]
+position = Vector2(-567, 254)
+texture = ExtResource("21_knidm")
+
+[node name="Телега" type="Sprite2D" parent="."]
+position = Vector2(-418, 242)
+texture = ExtResource("22_w1mmu")
+
+[node name="ПродуктоваяЛавочка" type="Sprite2D" parent="."]
+position = Vector2(-538, 126)
+texture = ExtResource("23_p5lc1")
+
+[node name="ПугалоМешени" type="Sprite2D" parent="."]
+position = Vector2(558, 193)
+texture = ExtResource("24_1hb6n")
+
+[node name="Сундук" type="Sprite2D" parent="."]
+position = Vector2(216, 175)
+texture = ExtResource("25_lwr5o")
+
+[node name="КустыПарк" type="Sprite2D" parent="."]
+position = Vector2(0, 196)
+texture = ExtResource("26_eck4q")
+
+[node name="КрасныйДомик" type="Sprite2D" parent="."]
+position = Vector2(-52, -255)
+texture = ExtResource("27_ul3xv")
+
+[node name="ЗеленыйДомик" type="Sprite2D" parent="."]
+position = Vector2(-443, -255)
+texture = ExtResource("28_wvbd5")
+
+[node name="ДеревьяИКустыПередКраснымДомом" type="Sprite2D" parent="."]
+position = Vector2(-4, -205)
+texture = ExtResource("29_e5ewp")
+
+[node name="СкамейкиВлево" type="Sprite2D" parent="."]
+position = Vector2(205, 229)
+texture = ExtResource("30_8hvw8")
+
+[node name="КустыПарк2" type="Sprite2D" parent="."]
+position = Vector2(-5, 71)
+texture = ExtResource("31_url56")
+
+[node name="Надгробия" type="Sprite2D" parent="."]
+position = Vector2(-58, 297)
+texture = ExtResource("32_hf647")
+
+[node name="Стены" type="Sprite2D" parent="."]
+position = Vector2(-2, -5)
+texture = ExtResource("33_crwei")
+
+[node name="ДеревьяЗеленыйДом" type="Sprite2D" parent="."]
+position = Vector2(-475, -215)
+texture = ExtResource("34_pk4ac")
+
+[node name="Указатель" type="Sprite2D" parent="."]
+position = Vector2(-600, -81)
+texture = ExtResource("35_e53q5")
+
+[node name="ДеревоЖелтыйДом" type="Sprite2D" parent="."]
+position = Vector2(151, -309)
+texture = ExtResource("36_ylahc")
+
+[node name="Флаг1" type="Sprite2D" parent="."]
+position = Vector2(-525, -108)
+texture = ExtResource("37_nww3p")
+
+[node name="СкамейкиВперед" type="Sprite2D" parent="."]
+position = Vector2(-279, 26)
+texture = ExtResource("38_0c7xg")
+
+[node name="КустыУСтены" type="Sprite2D" parent="."]
+position = Vector2(82, 36)
+texture = ExtResource("39_uw3c0")
+
+[node name="ТабличкаОбъявлений" type="Sprite2D" parent="."]
+position = Vector2(-465, 21)
+texture = ExtResource("40_et1g4")
+
+[node name="ДеревьяПервыйПлан" type="Sprite2D" parent="."]
+position = Vector2(-2, 157)
+texture = ExtResource("41_gorip")
+
+[node name="ПугалоЗеленыйДом" type="Sprite2D" parent="."]
+position = Vector2(-569, -316)
+texture = ExtResource("42_gjitr")
+
+[node name="Бочка" type="Sprite2D" parent="."]
+position = Vector2(-139, -78)
+texture = ExtResource("43_pbfn5")
