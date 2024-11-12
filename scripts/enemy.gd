@@ -35,6 +35,12 @@ func _physics_process(delta):
 		knockback_timer -= delta
 		move_and_slide()
 	elif is_aggro and target:
+		# Проверяем, не мертв ли игрок
+		if target.is_dead:
+			is_aggro = false
+			velocity = Vector2.ZERO
+			return
+			
 		# Обработка уворота
 		if current_dodge_cooldown > 0:
 			current_dodge_cooldown -= delta

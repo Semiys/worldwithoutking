@@ -11,6 +11,7 @@ var attack_power = base_attack_power # Текущая сила атаки с у�
 var defense = 1
 var experience = 0
 var level = 1
+var is_dead = false # Добавляем флаг смерти
 
 # Переменные для способностей
 var dodge_cooldown = 3.0
@@ -73,6 +74,9 @@ func _ready():
 	attack_area.connect("body_entered", Callable(self, "_on_AttackArea_body_entered"))
 
 func _physics_process(_delta: float) -> void:
+	if is_dead: # Если персонаж мертв, не обрабатываем движение и атаки
+		return
+		
 	# Обновление кулдаунов способностей
 	current_dodge_cooldown = max(0, current_dodge_cooldown - _delta)
 	current_aoe_cooldown = max(0, current_aoe_cooldown - _delta)
@@ -108,6 +112,9 @@ func _physics_process(_delta: float) -> void:
 	queue_redraw() # Перерисовываем визуализацию радиусов
 
 func _draw():
+	if is_dead: # Если персонаж мертв, не рисуем радиусы способностей
+		return
+		
 	# Рисуем радиусы способностей только когда соответствующие кнопки зажаты
 	if is_dodge_pressed and current_dodge_cooldown <= 0:
 		draw_circle(Vector2.ZERO, dodge_range * (1 + level * 0.1), Color(0, 1, 0, 0.1))
@@ -236,6 +243,9 @@ func _on_AttackArea_body_entered(body):
 			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
 
 func interact():
+	if is_dead: # Если персонаж мертв, не обрабатываем взаимодействие
+		return
+		
 	print("Игрок взаимодействует с предметом")
 	anim.play("interact")
 	
@@ -255,7 +265,7 @@ func interact():
 	await anim.animation_finished
 
 func take_damage(amount: int):
-	if is_invulnerable:
+	if is_dead or is_invulnerable: # Если персонаж мертв или неуязвим, не получаем урон
 		return
 		
 	var actual_damage = max(amount - defense, 0)
@@ -267,10 +277,18 @@ func take_damage(amount: int):
 		die()
 
 func die():
+	if is_dead: # Если персонаж уже мертв, не выполняем повторно
+		return
+		
+	is_dead = true # Устанавливаем флаг смерти
 	print("Игрок умер")
 	anim.play("die")
 	set_physics_process(false)
 	set_process_input(false)
+	
+	# Отключаем коллизии
+	set_collision_layer_value(1, false)
+	set_collision_mask_value(1, false)
 	
 	var death_screen = preload("res://scenes/deathscenes.tscn").instantiate()
 	get_tree().current_scene.add_child(death_screen)
@@ -284,6 +302,9 @@ func die():
 	get_tree().reload_current_scene()
 
 func gain_experience(amount: int):
+	if is_dead: # Если персонаж мертв, не получаем опыт
+		return
+		
 	experience += amount
 	print("Получено", amount, "опыта. Всего опыта:", experience)
 	check_level_up()
@@ -376,6 +397,9 @@ func set_up_input_map():
 		InputMap.action_add_event("move_down", event)
 
 func _input(event):
+	if is_dead: # Если персонаж мертв, не обрабатываем ввод
+		return
+		
 	if event.is_action_pressed("attack"):
 		attack()
 	elif event.is_action_pressed("interact"):

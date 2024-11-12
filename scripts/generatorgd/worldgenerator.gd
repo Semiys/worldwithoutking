@@ -14,9 +14,11 @@ extends Node2D # Наследуем от Node2D для работы с 2D гра
 
 # Настройки размещения поселений
 const VILLAGE_MIN_DISTANCE = 50 # Уменьшаем минимальное расстояние между деревнями
-const VILLAGE_SIZE = 80 # Уменьшаем размер деревни
+const VILLAGE_WIDTH = 55 # Ширина деревни
+const VILLAGE_HEIGHT = 44 # Высота деревни
 const VILLAGE_BORDER = 20 # Уменьшаем отступ от края карты
-const WATER_SAFE_DISTANCE = 5 # Уменьшаем безопасное расстояние от воды
+const WATER_SAFE_DISTANCE = 30 # Уменьшаем безопасное расстояние от воды
+const TREE_SAFE_DISTANCE = 30 # Безопасное расстояние от деревьев
 const MAX_GENERATION_ATTEMPTS = 5 # Максимальное количество попыток генерации мира
 const WATER_BORDER_WIDTH = 32 # Ширина водной границы в тайлах
 
@@ -157,8 +159,8 @@ func force_create_safe_zone() -> void:
 	var center_y = height / 2
 	
 	# Создаем безопасную зону для деревни
-	for x in range(center_x - VILLAGE_SIZE - WATER_SAFE_DISTANCE, center_x + VILLAGE_SIZE + WATER_SAFE_DISTANCE):
-		for y in range(center_y - VILLAGE_SIZE - WATER_SAFE_DISTANCE, center_y + VILLAGE_SIZE + WATER_SAFE_DISTANCE):
+	for x in range(center_x - VILLAGE_WIDTH - WATER_SAFE_DISTANCE, center_x + VILLAGE_WIDTH + WATER_SAFE_DISTANCE):
+		for y in range(center_y - VILLAGE_HEIGHT - WATER_SAFE_DISTANCE, center_y + VILLAGE_HEIGHT + WATER_SAFE_DISTANCE):
 			if x >= 0 and x < width and y >= 0 and y < height:
 				# Устанавливаем равнину в области деревни
 				cell_map[x][y] = Biome.PLAINS
@@ -339,25 +341,31 @@ func place_settlements():
 func find_suitable_locations() -> Array:
 	var locations = []
 	# Учитываем размер деревни и отступы от края
-	for x in range(VILLAGE_BORDER, width - VILLAGE_BORDER - VILLAGE_SIZE):
-		for y in range(VILLAGE_BORDER, height - VILLAGE_BORDER - VILLAGE_SIZE):
+	for x in range(VILLAGE_BORDER, width - VILLAGE_BORDER - VILLAGE_WIDTH):
+		for y in range(VILLAGE_BORDER, height - VILLAGE_BORDER - VILLAGE_HEIGHT):
 			if is_suitable_for_settlement(Vector2i(x,y)):
 				locations.append(Vector2i(x,y))
 	return locations
 
 func is_suitable_for_settlement(pos: Vector2i) -> bool:
 	# Проверяем область под деревню и безопасную зону вокруг
-	for x in range(pos.x - WATER_SAFE_DISTANCE, pos.x + VILLAGE_SIZE + WATER_SAFE_DISTANCE):
-		for y in range(pos.y - WATER_SAFE_DISTANCE, pos.y + VILLAGE_SIZE + WATER_SAFE_DISTANCE):
+	for x in range(pos.x - WATER_SAFE_DISTANCE, pos.x + VILLAGE_WIDTH + WATER_SAFE_DISTANCE):
+		for y in range(pos.y - WATER_SAFE_DISTANCE, pos.y + VILLAGE_HEIGHT + WATER_SAFE_DISTANCE):
 			if x < 0 or x >= width or y < 0 or y >= height:
 				return false
 			# Проверяем саму область деревни
-			if x >= pos.x and x < pos.x + VILLAGE_SIZE and y >= pos.y and y < pos.y + VILLAGE_SIZE:
+			if x >= pos.x and x < pos.x + VILLAGE_WIDTH and y >= pos.y and y < pos.y + VILLAGE_HEIGHT:
 				if cell_map[x][y] != Biome.PLAINS and cell_map[x][y] != Biome.FOREST: # Разрешаем строить в лесу
 					return false
 			# Проверяем наличие воды в безопасной зоне
 			elif cell_map[x][y] == Biome.OCEAN:
 				return false
+			
+			# Проверяем наличие деревьев в безопасной зоне
+			if $plants.get_cell_source_id(Vector2i(x,y)) == 1: # Проверяем, есть ли дерево
+				var tree_distance = Vector2i(x,y).distance_to(pos)
+				if tree_distance < TREE_SAFE_DISTANCE:
+					return false
 	
 	return true
 
@@ -419,6 +427,18 @@ func spawn_settlement(scene: PackedScene, pos: Vector2i, type: int) -> void:
 	if settlement_instance == null:
 		print("ОШИБКА: Не удалось создать экземпляр деревни!")
 		return
+		
+	# Очищаем тайлы под деревней и в безопасной зоне от деревьев
+	for x in range(pos.x - TREE_SAFE_DISTANCE, pos.x + VILLAGE_WIDTH + TREE_SAFE_DISTANCE):
+		for y in range(pos.y - TREE_SAFE_DISTANCE, pos.y + VILLAGE_HEIGHT + TREE_SAFE_DISTANCE):
+			if x >= 0 and x < width and y >= 0 and y < height:
+				if $plants.get_cell_source_id(Vector2i(x,y)) == 1: # Если есть дерево
+					$plants.erase_cell(Vector2i(x,y)) # Удаляем дерево
+				
+				if x >= pos.x and x < pos.x + VILLAGE_WIDTH and y >= pos.y and y < pos.y + VILLAGE_HEIGHT:
+					$terrain.erase_cell(Vector2i(x,y))
+					$grass.erase_cell(Vector2i(x,y))
+					$water.erase_cell(Vector2i(x,y))
 		
 	settlement_instance.position = Vector2(pos.x * 32, pos.y * 32)
 	# Добавляем игрока в группу для доступа врагам
