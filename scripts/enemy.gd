@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const SPEED = 40.0
+const DODGE_SPEED = 150.0  # Скорость уворота
 var health = 50
 var attack_power = 5
 var defense = 2
@@ -10,8 +11,15 @@ var min_distance = 20.0
 var knockback_strength = 5.0
 var knockback_duration = 0.2
 var knockback_timer = 0.0
-var attack_cooldown = 1.0  # Время между атаками
-var current_cooldown = 0.0  # Текущее время до следующей атаки
+var attack_cooldown = 1.0
+var current_cooldown = 0.0
+var is_dodging = false
+var dodge_cooldown = 2.0  # Перезарядка уворота
+var current_dodge_cooldown = 0.0
+var dodge_duration = 0.5  # Длительность уворота
+var current_dodge_duration = 0.0
+var dodge_direction = Vector2.ZERO
+var dodge_damage_reduction = 0.25  # Уменьшение урона при уклонении на 75%
 
 @onready var anim = $AnimatedSprite2D
 @onready var aggro_area = $AggroArea
@@ -27,34 +35,69 @@ func _physics_process(delta):
 		knockback_timer -= delta
 		move_and_slide()
 	elif is_aggro and target:
-		var direction = (target.global_position - global_position).normalized()
-		var distance = global_position.distance_to(target.global_position)
-		
-		if distance > min_distance:
-			velocity = direction * SPEED
-			anim.play("run")
-			if direction.x < 0:
-				$AnimatedSprite2D.flip_h = true
-			else:
-				$AnimatedSprite2D.flip_h = false
-		else:
+		# Проверяем, не мертв ли игрок
+		if target.is_dead:
+			is_aggro = false
 			velocity = Vector2.ZERO
-			anim.play("run")
-			var knockback_direction = (global_position - target.global_position).normalized()
-			velocity = knockback_direction * knockback_strength
-			knockback_timer = knockback_duration
-			# Изменено: теперь враг отталкивается от игрока при получении урона, а не при атаке
-			if current_cooldown <= 0:
-				attack()
-				current_cooldown = attack_cooldown
-		
-		# Уменьшаем время до следующей атаки
-		current_cooldown -= delta
+			return
+			
+		# Обработка уворота
+		if current_dodge_cooldown > 0:
+			current_dodge_cooldown -= delta
+			
+		if is_dodging:
+			current_dodge_duration -= delta
+			velocity = dodge_direction * DODGE_SPEED
+			if current_dodge_duration <= 0:
+				is_dodging = false
+		else:
+			var direction = (target.global_position - global_position).normalized()
+			var distance = global_position.distance_to(target.global_position)
+			
+			# Проверяем, нужно ли уворачиваться
+			if should_dodge() and current_dodge_cooldown <= 0:
+				start_dodge()
+			elif distance > min_distance:
+				velocity = direction * SPEED
+				anim.play("run")
+				if direction.x < 0:
+					$AnimatedSprite2D.flip_h = true
+				else:
+					$AnimatedSprite2D.flip_h = false
+			else:
+				velocity = Vector2.ZERO
+				anim.play("run")
+				if current_cooldown <= 0:
+					attack()
+					current_cooldown = attack_cooldown
+			
+			current_cooldown -= delta
 	else:
 		velocity = Vector2.ZERO
 		anim.play("run")
 	
 	move_and_slide()
+
+func should_dodge() -> bool:
+	if not target:
+		return false
+		
+	# Проверяем, атакует ли игрок и близко ли он
+	var distance = global_position.distance_to(target.global_position)
+	var is_player_attacking = target.get("is_attacking") if target.has_method("get") else false
+	
+	return distance < 40.0 and is_player_attacking
+
+func start_dodge():
+	is_dodging = true
+	current_dodge_duration = dodge_duration
+	current_dodge_cooldown = dodge_cooldown
+	
+	# Выбираем случайное направление для уворота
+	var to_player = (target.global_position - global_position).normalized()
+	var perpendicular = Vector2(-to_player.y, to_player.x)
+	dodge_direction = (perpendicular if randf() > 0.5 else -perpendicular) + to_player * 0.5
+	dodge_direction = dodge_direction.normalized()
 
 func _on_aggro_area_body_entered(body):
 	if body == target:
@@ -72,13 +115,16 @@ func attack():
 		target.take_damage(attack_power)
 
 func take_damage(amount: int):
-	var actual_damage = max(amount - defense, 0)
+	# Если враг уворачивается, значительно уменьшаем получаемый урон
+	var damage_multiplier = dodge_damage_reduction if is_dodging else 1.0
+	var actual_damage = max(int((amount - defense) * damage_multiplier), 0)
 	health -= actual_damage
 	print("Враг получил", actual_damage, "урона. Осталось здоровья:", health)
+	
 	if target:
 		var knockback_direction = (position - target.position).normalized()
-		velocity = knockback_direction * knockback_strength * 1  # Увеличиваем силу отталкивания
-		knockback_timer = knockback_duration * 1.5  # Увеличиваем время отталкивания
+		velocity = knockback_direction * knockback_strength * 1
+		knockback_timer = knockback_duration * 1.5
 	
 	if health <= 0:
 		die()

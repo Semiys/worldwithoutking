@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://74hichutmo4m"]
+[gd_scene load_steps=4 format=3 uid="uid://bkvk7p0a7c3rg"]
 
 [ext_resource type="Script" path="res://scripts/Slot.gd" id="1_vx6nk"]
-[ext_resource type="PackedScene" uid="uid://c37xmhai5ieys" path="res://scenes/Item.tscn" id="2_y8gfd"]
+[ext_resource type="PackedScene" uid="uid://bxhgile4xmqcf" path="res://scenes/Item.tscn" id="2_y8gfd"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jxd5o"]
 content_margin_left = 5.0
