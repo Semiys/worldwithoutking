@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=3 uid="uid://ccq3rg5eb7x7n"]
 
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_3pv8k"]
-[ext_resource type="Texture2D" uid="uid://81ryxlw3ukoi" path="res://assets/sprites/Run-Sheet.png" id="2_udpt5"]
+[ext_resource type="Texture2D" uid="uid://81ryxlw3ukoi" path="res://assets/Run-Sheet.png" id="2_udpt5"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ndcp2"]
 radius = 3.0

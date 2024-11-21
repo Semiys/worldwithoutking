@@ -1,6 +1,5 @@
-[gd_scene load_steps=44 format=3 uid="uid://c4mgas7b70pyd"]
+[gd_scene load_steps=43 format=3 uid="uid://c4mgas7b70pyd"]
 
-[ext_resource type="Texture2D" uid="uid://brw46jp6n5rw7" path="res://Village assets/Трава.png" id="1_fvd43"]
 [ext_resource type="Texture2D" uid="uid://cp3txysrfm28u" path="res://Village assets/оранжевые камни.png" id="2_gsn5g"]
 [ext_resource type="Texture2D" uid="uid://dkvj5rntij8hw" path="res://Village assets/серая плитка.png" id="3_2dsab"]
 [ext_resource type="Texture2D" uid="uid://cut8jwkegclb8" path="res://Village assets/тени.png" id="4_ynwvi"]
@@ -47,9 +46,8 @@
 [node name="VillageScene" type="Node2D"]
 position = Vector2(993, 532)
 
-[node name="Трава" type="Sprite2D" parent="."]
+[node name="Трава" type="TileMapLayer" parent="."]
 position = Vector2(-2, -6)
-texture = ExtResource("1_fvd43")
 
 [node name="ОранжевыеКамни" type="Sprite2D" parent="."]
 position = Vector2(-2, -6)
