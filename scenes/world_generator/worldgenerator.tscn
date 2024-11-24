@@ -66,13 +66,17 @@ noise_settlement_text = SubResource("NoiseTexture2D_8a3kk")
 village_scene = ExtResource("2_teto8")
 
 [node name="water" type="TileMapLayer" parent="."]
+z_index = -10
 tile_set = ExtResource("2_sxsnw")
 
 [node name="terrain" type="TileMapLayer" parent="."]
+z_index = -10
 tile_set = ExtResource("1_rcxrt")
 
 [node name="grass" type="TileMapLayer" parent="."]
+z_index = -10
 tile_set = ExtResource("1_rcxrt")
 
 [node name="plants" type="TileMapLayer" parent="."]
+z_index = -10
 tile_set = ExtResource("1_rcxrt")
