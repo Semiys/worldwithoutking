@@ -7,6 +7,8 @@ extends CanvasLayer
 @onready var health_label: Label = $HealthLabel
 @onready var experience_label: Label = $ExperienceLabel
 @onready var inventory = $Inventory
+@onready var quest_list = $QuestUI/QuestList
+@onready var quest_details = $QuestUI/QuestDetails
 
 func _ready():
 	if inventory:
@@ -17,6 +19,9 @@ func _ready():
 	get_tree().root.connect("size_changed", Callable(self, "_on_window_resize"))
 	# Инициализируем начальное положение UI
 	_on_window_resize()
+	QuestManager.connect("quest_updated", _on_quest_updated)
+	QuestManager.connect("quest_completed", _on_quest_completed)
+	update_quest_list()
 
 func _on_window_resize():
 	# Получаем размер окна
@@ -99,3 +104,38 @@ func _on_inventory_item_equipped(item_name, slot):
 			player.equip_weapon(item_resource)
 		elif slot == "armor":
 			player.equip_armor(item_resource)
+
+func update_quest_list():
+	quest_list.clear()
+	for quest in QuestManager.active_quests:
+		quest_list.add_item(quest.title)
+
+func _on_quest_updated(quest):
+	update_quest_list()
+	update_quest_details(quest)
+
+func _on_quest_completed(quest):
+	update_quest_list()
+	# Показываем уведомление о завершении квеста
+	show_completion_notification(quest)
+
+func update_quest_details(quest):
+	var details_text = """
+	{title}
+	
+	{description}
+	
+	Прогресс: {progress}
+	Награда: {reward} опыта
+	""".format({
+		"title": quest.title,
+		"description": quest.description,
+		"progress": quest.get_progress_text(),
+		"reward": quest.reward_exp
+	})
+	
+	quest_details.text = details_text
+
+func show_completion_notification(quest):
+	# Здесь можно добавить анимацию или всплывающее окно
+	print("Квест выполнен:", quest.title)

@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=4 uid="uid://crapkohyqjtml"]
+[gd_scene load_steps=6 format=4 uid="uid://crapkohyqjtml"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_oqycu"]
 [ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="2_3e36s"]
 [ext_resource type="PackedScene" uid="uid://kbqxu5y025wo" path="res://scenes/boss.tscn" id="3_iw255"]
+[ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="4_br2fj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qm2fe"]
 size = Vector2(2349, 1460)
@@ -87,3 +88,9 @@ position = Vector2(441, 186)
 
 [node name="Enemy4" parent="." instance=ExtResource("2_3e36s")]
 position = Vector2(526, 88)
+
+[node name="Enemy5" parent="." instance=ExtResource("2_3e36s")]
+position = Vector2(69, 265)
+
+[node name="NPC" parent="." instance=ExtResource("4_br2fj")]
+position = Vector2(584, 558)

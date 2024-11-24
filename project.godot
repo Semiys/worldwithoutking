@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 ItemDatabase="*res://scripts/ItemDatabase.gd"
+QuestManager="*res://scripts/quest_manager.gd"
 
 [display]
 

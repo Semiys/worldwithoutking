@@ -116,6 +116,7 @@ func take_damage(amount: int):
 
 func die():
 	print("Враг умер")
+	QuestManager.update_quest_progress("kill")
 	queue_free()
 	var player = get_tree().get_nodes_in_group("player")[0]
 	if player and player.has_method("gain_experience"):

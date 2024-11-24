@@ -1,0 +1,55 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8v6wj3c8qd0m"]
+
+[ext_resource type="Script" path="res://scripts/npc.gd" id="1_kpn4f"]
+[ext_resource type="Texture2D" uid="uid://81ryxlw3ukoi" path="res://assets/Run-Sheet.png" id="2_2k3pq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_uvw12"]
+radius = 50.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_x8m4p"]
+radius = 15.0
+
+[node name="NPC" type="CharacterBody2D" groups=["npcs"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_kpn4f")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_x8m4p")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_2k3pq")
+hframes = 6
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape2D_uvw12")
+
+[node name="DialogBox" type="Panel" parent="."]
+visible = false
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 100.0
+offset_bottom = -60.0
+
+[node name="DialogText" type="RichTextLabel" parent="DialogBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
+
+[node name="InteractionPrompt" type="Label" parent="."]
+visible = false
+offset_left = -50.0
+offset_top = -120.0
+offset_right = 50.0
+offset_bottom = -100.0
+text = "Нажмите E для разговора"
+horizontal_alignment = 1

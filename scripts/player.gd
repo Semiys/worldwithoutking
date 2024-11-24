@@ -72,6 +72,9 @@ func _ready():
 		print("Ошибка: узел Inventory не найден")
 	attack_collision.disabled = true
 	attack_area.connect("body_entered", Callable(self, "_on_AttackArea_body_entered"))
+	
+	# Подключаемся к сигналам квестов
+	QuestManager.connect("quest_completed", _on_quest_completed)
 
 func _physics_process(_delta: float) -> void:
 	if is_dead: # Если персонаж мертв, не обрабатываем движение и атаки
@@ -604,3 +607,11 @@ func use_item(item_name: String):
 		update_ui()
 	else:
 		print("Предмет не найден в базе данных: ", item_name)
+
+func _on_quest_completed(quest):
+	gain_experience(quest.reward_exp)
+	print("Получена награда за квест:", quest.reward_exp, "опыта")
+
+# Обновляем функцию die() врага, чтобы учитывать прогресс квестов
+func _on_enemy_died():
+	QuestManager.update_quest_progress("kill")
