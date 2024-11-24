@@ -1,0 +1,69 @@
+[gd_scene load_steps=11 format=3 uid="uid://kbqxu5y025wo"]
+
+[ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/boss.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://81ryxlw3ukoi" path="res://assets/Run-Sheet.png" id="3_qd1wm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_33yfv"]
+atlas = ExtResource("3_qd1wm")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ggdng"]
+atlas = ExtResource("3_qd1wm")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lxxti"]
+atlas = ExtResource("3_qd1wm")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1vrc0"]
+atlas = ExtResource("3_qd1wm")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vx57d"]
+atlas = ExtResource("3_qd1wm")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qoo5m"]
+atlas = ExtResource("3_qd1wm")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ied85"]
+resource_local_to_scene = true
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_33yfv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ggdng")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lxxti")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1vrc0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vx57d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qoo5m")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]
+
+[node name="Boss" instance=ExtResource("1_base")]
+script = ExtResource("2_script")
+
+[node name="CollisionShape2D" parent="." index="0"]
+scale = Vector2(2, 2)
+
+[node name="AnimatedSprite2D" parent="." index="1"]
+scale = Vector2(0.6, 0.6)
+sprite_frames = SubResource("SpriteFrames_ied85")
+
+[node name="AggroArea" parent="." index="2"]
+scale = Vector2(2, 2)

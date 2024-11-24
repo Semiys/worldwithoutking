@@ -4,7 +4,7 @@ const BASE_SPEED = 100.0
 const BASE_ATTACK_COOLDOWN = 0.5
 
 var speed = BASE_SPEED
-var health = 100
+var health = 10000
 var max_health = 100
 var base_attack_power = 10 # Базовая сила атаки
 var attack_power = base_attack_power # Текущая сила атаки с учетом всех бонусов

@@ -3,6 +3,7 @@ extends CharacterBody2D
 const SPEED = 40.0
 const DODGE_SPEED = 150.0  # Скорость уворота
 var health = 50
+var max_health = 50  # Добавляем max_health
 var attack_power = 5
 var defense = 2
 var target = null
@@ -41,42 +42,26 @@ func _physics_process(delta):
 			velocity = Vector2.ZERO
 			return
 			
-		# Обработка уворота
-		if current_dodge_cooldown > 0:
-			current_dodge_cooldown -= delta
-			
-		if is_dodging:
-			current_dodge_duration -= delta
-			velocity = dodge_direction * DODGE_SPEED
-			if current_dodge_duration <= 0:
-				is_dodging = false
-		else:
-			var direction = (target.global_position - global_position).normalized()
-			var distance = global_position.distance_to(target.global_position)
-			
-			# Проверяем, нужно ли уворачиваться
-			if should_dodge() and current_dodge_cooldown <= 0:
-				start_dodge()
-			elif distance > min_distance:
-				velocity = direction * SPEED
-				anim.play("run")
-				if direction.x < 0:
-					$AnimatedSprite2D.flip_h = true
-				else:
-					$AnimatedSprite2D.flip_h = false
+		# Обработка движения
+		var direction = (target.global_position - global_position).normalized()
+		var distance = global_position.distance_to(target.global_position)
+		
+		if distance > min_distance:
+			velocity = direction * SPEED
+			anim.play("run")
+			# Поворачиваем спрайт
+			if direction.x < 0:
+				$AnimatedSprite2D.flip_h = true
 			else:
-				velocity = Vector2.ZERO
-				anim.play("run")
-				if current_cooldown <= 0:
-					attack()
-					current_cooldown = attack_cooldown
-			
-			current_cooldown -= delta
-	else:
-		velocity = Vector2.ZERO
-		anim.play("run")
-	
-	move_and_slide()
+				$AnimatedSprite2D.flip_h = false
+		else:
+			velocity = Vector2.ZERO
+			if current_cooldown <= 0:
+				attack()
+				current_cooldown = attack_cooldown
+		
+		current_cooldown -= delta
+		move_and_slide()
 
 func should_dodge() -> bool:
 	if not target:
