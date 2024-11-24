@@ -14,8 +14,8 @@ extends Node2D # Наследуем от Node2D для работы с 2D гра
 
 # Настройки размещения поселений
 const VILLAGE_MIN_DISTANCE = 50 # Уменьшаем минимальное расстояние между деревнями
-const VILLAGE_WIDTH = 55 # Ширина деревни
-const VILLAGE_HEIGHT = 44 # Высота деревни
+const VILLAGE_WIDTH = 38 # Ширина деревни
+const VILLAGE_HEIGHT = 35 # Высота деревни
 const VILLAGE_BORDER = 20 # Уменьшаем отступ от края карты
 const WATER_SAFE_DISTANCE = 30 # Уменьшаем безопасное расстояние от воды
 const TREE_SAFE_DISTANCE = 30 # Безопасное расстояние от деревьев
