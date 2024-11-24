@@ -3,7 +3,7 @@
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_oqycu"]
 [ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="2_3e36s"]
 [ext_resource type="PackedScene" uid="uid://kbqxu5y025wo" path="res://scenes/boss.tscn" id="3_iw255"]
-[ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="4_br2fj"]
+[ext_resource type="PackedScene" uid="uid://b8v6wj3c8qd0m" path="res://scenes/npc.tscn" id="4_br2fj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qm2fe"]
 size = Vector2(1706.5, 1423)
