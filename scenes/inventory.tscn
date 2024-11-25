@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/inventory.gd" id="1_ku8x3"]
 [ext_resource type="Theme" uid="uid://ckpokp7o3nlve" path="res://assets/theme/inventoryTheme.tres" id="2_fwing"]
-[ext_resource type="PackedScene" uid="uid://74hichutmo4m" path="res://scenes/panel_inventory.tscn" id="2_prfe7"]
+[ext_resource type="PackedScene" uid="uid://bkvk7p0a7c3rg" path="res://scenes/panel_inventory.tscn" id="2_prfe7"]
 
 [sub_resource type="Theme" id="Theme_x5bvm"]
 

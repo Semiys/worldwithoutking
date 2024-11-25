@@ -9,3 +9,4 @@ type = "Armor"
 description = "Легкая броня, обеспечивающая базовую защиту"
 stackable = false
 max_stack_size = 1
+effect = {}
