@@ -117,6 +117,10 @@ func take_damage(amount: int):
 func die():
 	print("Враг умер")
 	QuestManager.update_quest_progress("kill")
+	
+	# Добавляем выпадение предметов
+	drop_loot()
+	
 	queue_free()
 	var player = get_tree().get_nodes_in_group("player")[0]
 	if player and player.has_method("gain_experience"):
@@ -125,3 +129,24 @@ func die():
 	anim.play("death")
 	self.collision_layer = 0
 	self.collision_mask = 0
+
+func drop_loot():
+	var dropped_item_scene = preload("res://scenes/dropped_item.tscn")
+	var item_database = get_node("/root/ItemDatabase")
+	
+	# Шанс выпадения предметов
+	if randf() < 0.3: # 30% шанс
+		var possible_items = ["Зелье здоровья"]
+		var item_name = possible_items[randi() % possible_items.size()]
+		var item_resource = item_database.get_item(item_name)
+		
+		if item_resource:
+			var dropped_item = dropped_item_scene.instantiate()
+			dropped_item.item_name = item_name
+			dropped_item.item_texture = item_resource.icon
+			
+			# Добавляем случайное смещение при выпадении
+			var offset = Vector2(randf_range(-10, 10), randf_range(-10, 10))
+			dropped_item.position = position + offset
+			
+			get_parent().add_child(dropped_item)

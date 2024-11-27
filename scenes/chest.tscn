@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://bvb771iu5k4sh"]
+
+[ext_resource type="Script" path="res://scripts/chest.gd" id="1_n4k2t"]
+[ext_resource type="Texture2D" uid="uid://d0v6h4rq5qbhr" path="res://assets/Chest_anim/Closed.png" id="2_xe2as"]
+[ext_resource type="Texture2D" uid="uid://bthr3gbw4gh2i" path="res://assets/Chest_anim/Open.png" id="3_ad812"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_a0qgl"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_xe2as")
+}],
+"loop": false,
+"name": &"closed",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_ad812")
+}],
+"loop": false,
+"name": &"opened",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y6p4k"]
+size = Vector2(72, 69)
+
+[node name="Chest" type="StaticBody2D"]
+collision_layer = 4
+script = ExtResource("1_n4k2t")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_a0qgl")
+animation = &"opened"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_y6p4k")
