@@ -1,12 +1,16 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://c1dfkvxxfcc7r"]
 
 [ext_resource type="Script" path="res://scripts/quest_ui.gd" id="1_1"]
 
 [node name="QuestUI" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("1_1")
 
 [node name="QuestList" type="ItemList" parent="."]
 custom_minimum_size = Vector2(200, 300)
+layout_mode = 0
 
 [node name="QuestDetails" type="RichTextLabel" parent="."]
-custom_minimum_size = Vector2(300, 300) 
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 0

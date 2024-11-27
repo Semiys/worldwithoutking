@@ -139,3 +139,10 @@ func update_quest_details(quest):
 func show_completion_notification(quest):
 	# Здесь можно добавить анимацию или всплывающее окно
 	print("Квест выполнен:", quest.title)
+
+func toggle_talents():
+	var talent_tree = $TalentTree
+	if talent_tree:
+		talent_tree.get_node("Control").toggle_visibility()
+	else:
+		print("Ошибка: окно талантов не найдено")

@@ -61,10 +61,10 @@ var current_attack_cooldown = 0
 var damage_number_scene = preload("res://scenes/damage_number.tscn")
 
 func _ready():
+	add_to_group("player")
 	set_up_input_map()
 	load_player_stats()
 	update_ui()
-	add_to_group("player")
 	if inventory:
 		inventory.add_item_to_first_slot("Меч")
 		inventory.add_item_to_second_slot("Зелье здоровья")
@@ -75,6 +75,12 @@ func _ready():
 	
 	# Подключаемся к сигналам квестов
 	QuestManager.connect("quest_completed", _on_quest_completed)
+	
+	if not InputMap.has_action("open_talents"):
+		InputMap.add_action("open_talents")
+		var event = InputEventKey.new()
+		event.keycode = KEY_T
+		InputMap.action_add_event("open_talents", event)
 
 func _physics_process(_delta: float) -> void:
 	if is_dead: # Если персонаж мертв, не обрабатываем движение и атаки
@@ -184,7 +190,7 @@ func activate_aura_damage():
 	if current_aura_cooldown <= 0:
 		current_aura_cooldown = aura_damage_cooldown
 		aura_damage_active = true
-		await get_tree().create_timer(3.0 + level * 0.2).timeout # Увеличение длительности с уровнем
+		await get_tree().create_timer(3.0 + level * 0.2).timeout # Увеличение длительности с ровнем
 		aura_damage_active = false
 
 func apply_aura_damage():
@@ -347,6 +353,14 @@ func level_up():
 	
 	anim.play("level_up")
 	update_ui()
+	
+	# Добавляем очко таланта каждый третий уровень
+	if level % 3 == 0:
+		var talent_tree = $player_ui/TalentTree/Control
+		if talent_tree:
+			talent_tree.add_talent_point()
+		else:
+			print("Ошибка: не найден узел Control в дереве талантов")
 
 func set_up_input_map():
 	if not InputMap.has_action("attack"):
@@ -398,6 +412,12 @@ func set_up_input_map():
 		var event = InputEventKey.new()
 		event.keycode = KEY_S
 		InputMap.action_add_event("move_down", event)
+		
+	if not InputMap.has_action("open_talents"):
+		InputMap.add_action("open_talents")
+		var event = InputEventKey.new()
+		event.keycode = KEY_T
+		InputMap.action_add_event("open_talents", event)
 
 func _input(event):
 	if is_dead: # Если персонаж мертв, не обрабатываем ввод
@@ -414,6 +434,12 @@ func _input(event):
 			player_ui.toggle_inventory()
 		else:
 			print("Ошибка: узел Player_UI не найден")
+	elif event.is_action_pressed("open_talents"):
+		var player_ui = $player_ui
+		if player_ui:
+			player_ui.toggle_talents()
+		else:
+			print("Ошибка: player_ui не найден")
 	# Обработка способностей и их визуализации
 	elif event.is_action_pressed("ability_1"):
 		is_dodge_pressed = true
@@ -557,7 +583,7 @@ func equip_weapon(weapon_item):
 		inventory.add_item(equipment["weapon"].item_name)
 	equipment["weapon"] = weapon_item
 	update_total_attack_power()
-	print("Экипирован меч. Бонус к атаке:", weapon_item.effect.get("attack", 0))
+	print("Экипирован меч. Бонус к таке:", weapon_item.effect.get("attack", 0))
 	print("Новая сила атаки:", attack_power)
 	update_ui()
 

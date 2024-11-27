@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bjosupa1ecdui"]
+[gd_scene load_steps=4 format=3 uid="uid://bjosupa1ecdui"]
 
 [ext_resource type="Script" path="res://scripts/player_UI.gd" id="1_kln6f"]
 [ext_resource type="PackedScene" path="res://scenes/inventory.tscn" id="2_h6lol"]
+[ext_resource type="PackedScene" path="res://scenes/talent_tree.tscn" id="3_talent"]
 
 [node name="player_ui" type="CanvasLayer"]
 script = ExtResource("1_kln6f")
@@ -79,3 +80,5 @@ offset_top = 120.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/line_separation = 5
+
+[node name="TalentTree" parent="." instance=ExtResource("3_talent")]
