@@ -9,17 +9,25 @@ extends Node2D # Наследуем от Node2D для работы с 2D гра
 
 # Сцена поселения и игрока
 @export var village_scene:PackedScene
+@export var village_middle_scene:PackedScene # Добавляем экспорт сцены средней деревни
 @onready var player = get_tree().get_root().get_node("Game/Player") # Получаем ссылку на игрока
 @onready var camera = get_tree().get_root().get_node("Game/Player/Camera2D") # Получаем ссылку на камеру
 
 # Настройки размещения поселений
-const VILLAGE_MIN_DISTANCE = 50 # Уменьшаем минимальное расстояние между деревнями
-const VILLAGE_WIDTH = 38 # Ширина деревни
-const VILLAGE_HEIGHT = 35 # Высота деревни
-const VILLAGE_BORDER = 20 # Уменьшаем отступ от края карты
-const WATER_SAFE_DISTANCE = 30 # Уменьшаем безопасное расстояние от воды
+const VILLAGE_MIN_DISTANCE = 50 # Расстояние между деревнями
+
+# Размеры маленькой деревни
+const SMALL_VILLAGE_WIDTH = 38 
+const SMALL_VILLAGE_HEIGHT = 35 
+
+# Размеры средней деревни
+const MIDDLE_VILLAGE_WIDTH = 50  # Увеличенная ширина для средней деревни
+const MIDDLE_VILLAGE_HEIGHT = 35 # Увеличенная высота для средней деревни
+
+const VILLAGE_BORDER = 20 # Отступ от края карты
+const WATER_SAFE_DISTANCE = 30 # Безопасное расстояние от воды
 const TREE_SAFE_DISTANCE = 30 # Безопасное расстояние от деревьев
-const MAX_GENERATION_ATTEMPTS = 5 # Максимальное количество попыток генерации мира
+const MAX_GENERATION_ATTEMPTS = 20 # Максимальное количество попыток генерации мира
 const WATER_BORDER_WIDTH = 32 # Ширина водной границы в тайлах
 
 enum Biome {OCEAN, BEACH, TUNDRA, FOREST, PLAINS, DESERT}
@@ -91,7 +99,7 @@ func _ready() -> void:
 		# Генерируем мир
 		generate_world_data()
 		generate_river_data()
-		generate_water_borders() # Добавляем водные границы
+		generate_water_borders()
 		place_settlements()
 		
 		# Настраиваем ограничения камеры
@@ -102,9 +110,19 @@ func _ready() -> void:
 			camera.limit_bottom = height * 32
 		
 		# Проверяем успешность генерации
-		if settlements.size() > 0:
+		var has_small_village = false
+		var has_middle_village = false
+		
+		# Проверяем наличие обоих типов деревень
+		for settlement in settlements:
+			if settlement.scene.scene_file_path == village_scene.resource_path:
+				has_small_village = true
+			elif settlement.scene.scene_file_path == village_middle_scene.resource_path:
+				has_middle_village = true
+		
+		if has_small_village and has_middle_village:
 			world_generated = true
-			print("Мир успешно сгенерирован с", settlements.size(), "деревней")
+			print("Мир успешно сгенерирован с маленькой и средней деревней")
 			
 			# Перемещаем игрока в первую безопасную деревню
 			var safe_settlement = find_safe_settlement()
@@ -116,30 +134,40 @@ func _ready() -> void:
 				else:
 					print("ВНИМАНИЕ: Игрок не найден в сцене!")
 		else:
-			print("Попытка генерации не удалась - нет деревень. Пробуем снова...")
+			print("Попытка генерации не удалась - нет обоих типов деревень. Пробуем снова...")
 			# Очищаем тайлмапы
 			$water.clear()
 			$terrain.clear()
 			$grass.clear()
 			$plants.clear()
 			
-			# Если превысили лимит попыток, создаем принудительно безопасную зону для деревни
+			# Если превысили лимит попыток, создаем принудительно безопасную зону для деревень
 			if attempts >= MAX_GENERATION_ATTEMPTS:
-				print("Превышен лимит попыток, создаем принудительно безопасную зону...")
+				print("Превышен лимит попыток, создаем принудительно безопасню зону...")
 				force_create_safe_zone()
 				place_settlements()
-				if settlements.size() > 0:
+				
+				# Проверяем наличие обоих типов деревень после принудительной генерации
+				has_small_village = false
+				has_middle_village = false
+				for settlement in settlements:
+					if settlement.scene.scene_file_path == village_scene.resource_path:
+						has_small_village = true
+					elif settlement.scene.scene_file_path == village_middle_scene.resource_path:
+						has_middle_village = true
+				
+				if has_small_village and has_middle_village:
 					world_generated = true
-					print("Мир успешно сгенерирован с принудительной деревней")
+					print("Мир успешно сгенерирован с принудительными деревнями")
 					if player:
 						player.position = Vector2(settlements[0].position.x * 32, settlements[0].position.y * 32)
 						player.add_to_group("player")
 				else:
 					# Сбрасываем счетчик попыток и пробуем заново
 					attempts = 0
-					print("Не удалось создать деревню даже в безопасной зоне. Начинаем новый цикл генерации...")
+					print("Не удалось создать обе деревни даже в безопасной зоне. Начинаем новый цикл генерации...")
 
-# Функция генерации водных границ
+# ункция генерации водных границ
 func generate_water_borders() -> void:
 	for x in width:
 		for y in height:
@@ -158,9 +186,9 @@ func force_create_safe_zone() -> void:
 	var center_x = width / 2
 	var center_y = height / 2
 	
-	# Создаем безопасную зону для деревни
-	for x in range(center_x - VILLAGE_WIDTH - WATER_SAFE_DISTANCE, center_x + VILLAGE_WIDTH + WATER_SAFE_DISTANCE):
-		for y in range(center_y - VILLAGE_HEIGHT - WATER_SAFE_DISTANCE, center_y + VILLAGE_HEIGHT + WATER_SAFE_DISTANCE):
+	# Используем размеры средней деревни, так как она больше
+	for x in range(center_x - MIDDLE_VILLAGE_WIDTH - WATER_SAFE_DISTANCE, center_x + MIDDLE_VILLAGE_WIDTH + WATER_SAFE_DISTANCE):
+		for y in range(center_y - MIDDLE_VILLAGE_HEIGHT - WATER_SAFE_DISTANCE, center_y + MIDDLE_VILLAGE_HEIGHT + WATER_SAFE_DISTANCE):
 			if x >= 0 and x < width and y >= 0 and y < height:
 				# Устанавливаем равнину в области деревни
 				cell_map[x][y] = Biome.PLAINS
@@ -193,14 +221,14 @@ func setup_noise() -> void:
 	# Настройка шума высот
 	noise = noise_height_text.noise
 	noise.seed = randi() # Случайное зерно
-	noise.frequency = 0.005 # Уменьшаем частоту для более плавного рельефа
+	noise.frequency = 0.005 # Уменьшаем частту для более плавного рельефа
 	
 	# Настройка шума деревьев
 	tree_noise = noise_tree_text.noise 
 	tree_noise.seed = randi()
 	tree_noise.frequency = 0.1
 	
-	# Настройка шума температуры
+	# Настройка шума тмпературы
 	temp_noise = noise_temp_text.noise
 	temp_noise.seed = randi()
 	temp_noise.frequency = 0.005
@@ -266,7 +294,7 @@ func generate_world_data() -> void:
 					Biome.DESERT:
 						$terrain.set_cell(Vector2i(x,y), 5, desert_atlas_arr.pick_random())
 	
-	print("Количество равнин на карте: ", plains_count)
+	print("оличество равнин на карте: ", plains_count)
 
 func generate_river_data() -> void:
 	var start_points = []
@@ -325,44 +353,66 @@ func find_lowest_neighbor(pos:Vector2i) -> Vector2i:
 	return lowest
 
 func place_settlements():
-	var suitable_locations = find_suitable_locations()
-	print("Найдено подходящих мест для деревень: ", suitable_locations.size())
+	# Размещаем маленькую деревню
+	var small_locations = find_suitable_locations(village_scene)
+	print("Найдено подходящих мест для маленькой деревни: ", small_locations.size())
+	var small_pos = find_best_location(small_locations, SettlementType.VILLAGE)
+	if small_pos != Vector2i.ZERO:
+		spawn_settlement(village_scene, small_pos, SettlementType.VILLAGE, SMALL_VILLAGE_WIDTH, SMALL_VILLAGE_HEIGHT)
+		print("Создана маленькая деревня в позиции: ", small_pos)
+	else:
+		print("Не удалось найти место для маленькой деревни")
 	
-	# Размещаем деревни (уменьшаем до 1)
-	var village_count = 1 # Ограничиваем количество деревень
-	for i in village_count:
-		var pos = find_best_location(suitable_locations, SettlementType.VILLAGE)
-		if pos != Vector2i.ZERO:
-			spawn_settlement(village_scene, pos, SettlementType.VILLAGE)
-			print("Создана деревня #", i+1, " в позиции: ", pos)
-		else:
-			print("Не удалось найти место для деревни #", i+1)
+	# Разме��аем среднюю деревню
+	var middle_locations = find_suitable_locations(village_middle_scene)
+	print("Найдено подходящих мест для средней деревни: ", middle_locations.size())
+	var middle_pos = find_best_location(middle_locations, SettlementType.VILLAGE)
+	if middle_pos != Vector2i.ZERO:
+		spawn_settlement(village_middle_scene, middle_pos, SettlementType.VILLAGE, MIDDLE_VILLAGE_WIDTH, MIDDLE_VILLAGE_HEIGHT)
+		print("Создана средняя деревня в позиции: ", middle_pos)
+	else:
+		print("Не удалось найти место для средней деревни")
 
-func find_suitable_locations() -> Array:
+func find_suitable_locations(scene: PackedScene) -> Array:
 	var locations = []
-	# Учитываем размер деревни и отступы от края
-	for x in range(VILLAGE_BORDER, width - VILLAGE_BORDER - VILLAGE_WIDTH):
-		for y in range(VILLAGE_BORDER, height - VILLAGE_BORDER - VILLAGE_HEIGHT):
-			if is_suitable_for_settlement(Vector2i(x,y)):
+	var village_width = SMALL_VILLAGE_WIDTH
+	var village_height = SMALL_VILLAGE_HEIGHT
+	
+	if scene == village_middle_scene:
+		village_width = MIDDLE_VILLAGE_WIDTH
+		village_height = MIDDLE_VILLAGE_HEIGHT
+	
+	# Учитываем размер конкретной деревни и отступы от края
+	for x in range(VILLAGE_BORDER, width - VILLAGE_BORDER - village_width):
+		for y in range(VILLAGE_BORDER, height - VILLAGE_BORDER - village_height):
+			if is_suitable_for_settlement(Vector2i(x,y), scene):
 				locations.append(Vector2i(x,y))
 	return locations
 
-func is_suitable_for_settlement(pos: Vector2i) -> bool:
+func is_suitable_for_settlement(pos: Vector2i, scene: PackedScene) -> bool:
+	# Определяем размеры деревни в зависимости от типа
+	var village_width = SMALL_VILLAGE_WIDTH
+	var village_height = SMALL_VILLAGE_HEIGHT
+	
+	if scene == village_middle_scene:
+		village_width = MIDDLE_VILLAGE_WIDTH
+		village_height = MIDDLE_VILLAGE_HEIGHT
+	
 	# Проверяем область под деревню и безопасную зону вокруг
-	for x in range(pos.x - WATER_SAFE_DISTANCE, pos.x + VILLAGE_WIDTH + WATER_SAFE_DISTANCE):
-		for y in range(pos.y - WATER_SAFE_DISTANCE, pos.y + VILLAGE_HEIGHT + WATER_SAFE_DISTANCE):
+	for x in range(pos.x - WATER_SAFE_DISTANCE, pos.x + village_width + WATER_SAFE_DISTANCE):
+		for y in range(pos.y - WATER_SAFE_DISTANCE, pos.y + village_height + WATER_SAFE_DISTANCE):
 			if x < 0 or x >= width or y < 0 or y >= height:
 				return false
 			# Проверяем саму область деревни
-			if x >= pos.x and x < pos.x + VILLAGE_WIDTH and y >= pos.y and y < pos.y + VILLAGE_HEIGHT:
-				if cell_map[x][y] != Biome.PLAINS and cell_map[x][y] != Biome.FOREST: # Разрешаем строить в лесу
+			if x >= pos.x and x < pos.x + village_width and y >= pos.y and y < pos.y + village_height:
+				if cell_map[x][y] != Biome.PLAINS and cell_map[x][y] != Biome.FOREST:
 					return false
 			# Проверяем наличие воды в безопасной зоне
 			elif cell_map[x][y] == Biome.OCEAN:
 				return false
 			
 			# Проверяем наличие деревьев в безопасной зоне
-			if $plants.get_cell_source_id(Vector2i(x,y)) == 1: # Проверяем, есть ли дерево
+			if $plants.get_cell_source_id(Vector2i(x,y)) == 1:
 				var tree_distance = Vector2i(x,y).distance_to(pos)
 				if tree_distance < TREE_SAFE_DISTANCE:
 					return false
@@ -398,7 +448,7 @@ func calculate_location_score(pos: Vector2i) -> float:
 	# Учитываем близость к воде (но не слишком близко)
 	var water_dist = find_distance_to_water(pos)
 	if water_dist < WATER_SAFE_DISTANCE:
-		score -= 1000 # Сильный штраф за близость к воде
+		score -= 1000 # Сильный штраф за блзость к воде
 	elif water_dist < 20:
 		score += (20 - water_dist)
 		
@@ -418,9 +468,9 @@ func find_distance_to_water(pos: Vector2i) -> int:
 				distance = min(distance, pos.distance_to(Vector2i(x,y)))
 	return distance
 
-func spawn_settlement(scene: PackedScene, pos: Vector2i, type: int) -> void:
+func spawn_settlement(scene: PackedScene, pos: Vector2i, type: int, village_width: int, village_height: int) -> void:
 	if scene == null:
-		print("ОШИБКА: village_scene не установлена!")
+		print("ОШИБКА: scene не установлена!")
 		return
 		
 	var settlement_instance = scene.instantiate()
@@ -429,19 +479,18 @@ func spawn_settlement(scene: PackedScene, pos: Vector2i, type: int) -> void:
 		return
 		
 	# Очищаем тайлы под деревней и в безопасной зоне от деревьев
-	for x in range(pos.x - TREE_SAFE_DISTANCE, pos.x + VILLAGE_WIDTH + TREE_SAFE_DISTANCE):
-		for y in range(pos.y - TREE_SAFE_DISTANCE, pos.y + VILLAGE_HEIGHT + TREE_SAFE_DISTANCE):
+	for x in range(pos.x - TREE_SAFE_DISTANCE, pos.x + village_width + TREE_SAFE_DISTANCE):
+		for y in range(pos.y - TREE_SAFE_DISTANCE, pos.y + village_height + TREE_SAFE_DISTANCE):
 			if x >= 0 and x < width and y >= 0 and y < height:
-				if $plants.get_cell_source_id(Vector2i(x,y)) == 1: # Если есть дерево
-					$plants.erase_cell(Vector2i(x,y)) # Удаляем дерево
+				if $plants.get_cell_source_id(Vector2i(x,y)) == 1:
+					$plants.erase_cell(Vector2i(x,y))
 				
-				if x >= pos.x and x < pos.x + VILLAGE_WIDTH and y >= pos.y and y < pos.y + VILLAGE_HEIGHT:
+				if x >= pos.x and x < pos.x + village_width and y >= pos.y and y < pos.y + village_height:
 					$terrain.erase_cell(Vector2i(x,y))
 					$grass.erase_cell(Vector2i(x,y))
 					$water.erase_cell(Vector2i(x,y))
 		
 	settlement_instance.position = Vector2(pos.x * 32, pos.y * 32)
-	# Добавляем игрока в группу для доступа врагам
 	if player:
 		player.add_to_group("player")
 	add_child(settlement_instance)

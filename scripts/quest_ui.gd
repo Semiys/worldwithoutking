@@ -20,7 +20,7 @@ func _on_quest_updated(quest):
 func _on_quest_completed(quest):
 	update_quest_list()
 	# Показываем уведомление о завершении квеста
-	show_completion_notification(quest)
+	# show_completion_notification(quest)
 
 func update_quest_details(quest):
 	var details_text = """

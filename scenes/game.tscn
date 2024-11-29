@@ -2,7 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://cnqfmmik5l8gl" path="res://scenes/player.tscn" id="4_17ljo"]
 [ext_resource type="PackedScene" uid="uid://bj84wjqc462sw" path="res://scenes/world_generator/worldgenerator.tscn" id="4_abyfj"]
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="player_scene"]
 
 [node name="Game" type="Node2D"]
 position = Vector2(0, 1)
