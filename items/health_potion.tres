@@ -1,12 +1,12 @@
 [gd_resource type="Resource" script_class="ItemResource" load_steps=3 format=3 uid="uid://dmgx6hki66svb"]
 
-[ext_resource type="Texture2D" uid="uid://b5ykbdcuq7uw7" path="res://assets/sprites/RF_Catacombs_v1.0 (1)/candleB_03.png" id="1_6t14a"]
+[ext_resource type="Texture2D" uid="uid://dt3qvskoki0bv" path="res://items/items_image/PotionsPack1.png" id="1_be5cr"]
 [ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_y6ro5"]
 
 [resource]
 script = ExtResource("1_y6ro5")
 item_name = "Зелье здоровья"
-icon = ExtResource("1_6t14a")
+icon = ExtResource("1_be5cr")
 type = "Consumable"
 description = "Восстанавливает 50 очков здоровья"
 stackable = true

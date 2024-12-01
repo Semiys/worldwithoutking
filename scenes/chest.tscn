@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://bvb771iu5k4sh"]
+[gd_scene load_steps=7 format=3 uid="uid://bvb771iu5k4sh"]
 
 [ext_resource type="Script" path="res://scripts/chest.gd" id="1_n4k2t"]
 [ext_resource type="Texture2D" uid="uid://d0v6h4rq5qbhr" path="res://assets/Chest_anim/Closed.png" id="2_xe2as"]
@@ -23,17 +23,28 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nsgv3"]
+size = Vector2(32, 17)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y6p4k"]
 size = Vector2(72, 69)
 
 [node name="Chest" type="StaticBody2D"]
-collision_layer = 4
+collision_mask = 0
 script = ExtResource("1_n4k2t")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_a0qgl")
 animation = &"opened"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 0.5)
+[node name="PhysicsCollision" type="CollisionShape2D" parent="."]
+position = Vector2(-1, -2.5)
+shape = SubResource("RectangleShape2D_nsgv3")
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 2
+
+[node name="InteractionShape" type="CollisionShape2D" parent="InteractionArea"]
+position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_y6p4k")

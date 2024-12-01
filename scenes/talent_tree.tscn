@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://pmqpjgdq3nbe"]
 
 [ext_resource type="Script" path="res://scripts/talent_tree.gd" id="1_t4l6g"]
 
@@ -80,5 +80,3 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 5
-columns = 1
-  

@@ -6,6 +6,7 @@ extends Node2D # Наследуем от Node2D для работы с 2D гра
 @export var noise_temp_text:NoiseTexture2D # Шум температуры - влияет на тип биома
 @export var noise_moisture_text:NoiseTexture2D # Шум влажности - влияет на тип биома
 @export var noise_settlement_text:NoiseTexture2D # Шум для поселений
+@export var grave_scene:PackedScene # Сцена надгробия
 
 # Сцена поселения и игрока
 @export var village_scene:PackedScene
@@ -14,7 +15,7 @@ extends Node2D # Наследуем от Node2D для работы с 2D гра
 @onready var camera = get_tree().get_root().get_node("Game/Player/Camera2D") # Получаем ссылку на камеру
 
 # Настройки размещения поселений
-const VILLAGE_MIN_DISTANCE = 50 # Расстояние между деревнями
+const VILLAGE_MIN_DISTANCE = 80 # Расстояние между деревнями
 
 # Размеры маленькой деревни
 const SMALL_VILLAGE_WIDTH = 38 
@@ -27,11 +28,18 @@ const MIDDLE_VILLAGE_HEIGHT = 35 # Увеличенная высота для с
 const VILLAGE_BORDER = 20 # Отступ от края карты
 const WATER_SAFE_DISTANCE = 30 # Безопасное расстояние от воды
 const TREE_SAFE_DISTANCE = 30 # Безопасное расстояние от деревьев
-const MAX_GENERATION_ATTEMPTS = 20 # Максимальное количество попыток генерации мира
+const MAX_GENERATION_ATTEMPTS = 20 # Максималное количество попыток генерации мира
 const WATER_BORDER_WIDTH = 32 # Ширина водной границы в тайлах
 
+# Размеры области надгробия
+const GRAVE_AREA_WIDTH = 5
+const GRAVE_AREA_HEIGHT = 5
+
+# В начале файла добавим константу для количества надгробий
+const GRAVES_PER_AREA = 50  # Количество надгробий на карту
+
 enum Biome {OCEAN, BEACH, TUNDRA, FOREST, PLAINS, DESERT}
-enum SettlementType {VILLAGE}
+enum SettlementType {VILLAGE, GRAVE}
 
 # Настройки шумов
 var noise:Noise # Шум для генерации высоты
@@ -158,7 +166,7 @@ func _ready() -> void:
 				
 				if has_small_village and has_middle_village:
 					world_generated = true
-					print("Мир успешно сгенерирован с принудительными деревнями")
+					print("Мир успешно сгенерирован с принудительными д��ревнями")
 					if player:
 						player.position = Vector2(settlements[0].position.x * 32, settlements[0].position.y * 32)
 						player.add_to_group("player")
@@ -363,7 +371,7 @@ func place_settlements():
 	else:
 		print("Не удалось найти место для маленькой деревни")
 	
-	# Разме��аем среднюю деревню
+	# Размещаем среднюю деревню
 	var middle_locations = find_suitable_locations(village_middle_scene)
 	print("Найдено подходящих мест для средней деревни: ", middle_locations.size())
 	var middle_pos = find_best_location(middle_locations, SettlementType.VILLAGE)
@@ -372,6 +380,23 @@ func place_settlements():
 		print("Создана средняя деревня в позиции: ", middle_pos)
 	else:
 		print("Не удалось найти место для средней деревни")
+	
+	# Размещаем надгробия
+	var graves_placed = 0
+	var grave_locations = find_suitable_locations_for_grave()
+	print("Найдено подходящих мест для надгробий: ", grave_locations.size())
+	
+	# Перемешиваем массив локаций для случайного размещения
+	grave_locations.shuffle()
+	
+	# Пытаемся разместить заданное количество надгробий
+	while graves_placed < GRAVES_PER_AREA and !grave_locations.is_empty():
+		var grave_pos = grave_locations.pop_back()
+		if spawn_grave(grave_scene, grave_pos):
+			graves_placed += 1
+			print("Создано надгробие ", graves_placed, " из ", GRAVES_PER_AREA, " в позиции: ", grave_pos)
+	
+	print("Всего размещено надгробий: ", graves_placed)
 
 func find_suitable_locations(scene: PackedScene) -> Array:
 	var locations = []
@@ -497,7 +522,78 @@ func spawn_settlement(scene: PackedScene, pos: Vector2i, type: int, village_widt
 	
 	var settlement = Settlement.new(type, pos, settlement_instance)
 	settlements.append(settlement)
-	print("Деревня успешно создана в позиции: ", pos)
+	print("Деревня успешно создана в пози��ии: ", pos)
+
+func find_suitable_locations_for_grave() -> Array:
+	var locations = []
+	
+	for x in range(VILLAGE_BORDER, width - VILLAGE_BORDER - GRAVE_AREA_WIDTH):
+		for y in range(VILLAGE_BORDER, height - VILLAGE_BORDER - GRAVE_AREA_HEIGHT):
+			if is_suitable_for_grave(Vector2i(x,y)):
+				locations.append(Vector2i(x,y))
+	return locations
+
+func is_suitable_for_grave(pos: Vector2i) -> bool:
+	# Безопасные расстояния для разных объектов
+	const VILLAGE_SAFE_DISTANCE = 50  # Большое расстояние от деревень
+	const WATER_SAFE_DISTANCE = 5    # Меньшее расстояние от воды
+	const TREE_SAFE_DISTANCE = 3      # Минимальное расстояние от деревьев
+	
+	# Проверяем расстояние до других поселений (деревень)
+	for settlement in settlements:
+		if settlement.type == SettlementType.VILLAGE:  # Проверяем только для деревень
+			if pos.distance_to(settlement.position) < VILLAGE_SAFE_DISTANCE:
+				return false
+	
+	# Проверяем область под надгробие и безопасную зону вокруг
+	for x in range(pos.x - WATER_SAFE_DISTANCE, pos.x + GRAVE_AREA_WIDTH + WATER_SAFE_DISTANCE):
+		for y in range(pos.y - WATER_SAFE_DISTANCE, pos.y + GRAVE_AREA_HEIGHT + WATER_SAFE_DISTANCE):
+			if x < 0 or x >= width or y < 0 or y >= height:
+				return false
+				
+			# Проверяем саму область надгробия
+			if x >= pos.x and x < pos.x + GRAVE_AREA_WIDTH and y >= pos.y and y < pos.y + GRAVE_AREA_HEIGHT:
+				# Разрешаем спавн на разных биомах, кроме океана
+				if cell_map[x][y] == Biome.OCEAN:
+					return false
+					
+			# Проверяем наличие воды в безопасной зоне
+			if cell_map[x][y] == Biome.OCEAN:
+				return false
+				
+			# Проверяем наличие деревьев в безопасной зоне
+			if $plants.get_cell_source_id(Vector2i(x,y)) == 1:
+				var tree_distance = Vector2i(x,y).distance_to(pos)
+				if tree_distance < TREE_SAFE_DISTANCE:
+					return false
+	
+	return true
+
+func spawn_grave(scene: PackedScene, pos: Vector2i) -> bool:
+	if scene == null:
+		print("ОШИБКА: scene надгробия не установлена!")
+		return false
+		
+	var grave_instance = scene.instantiate()
+	if grave_instance == null:
+		print("ОШИБКА: Не удалось создать экземпляр надгробия!")
+		return false
+		
+	# Очищаем тайлы под надгробием
+	for x in range(pos.x, pos.x + GRAVE_AREA_WIDTH):
+		for y in range(pos.y, pos.y + GRAVE_AREA_HEIGHT):
+			if x >= 0 and x < width and y >= 0 and y < height:
+				$plants.erase_cell(Vector2i(x,y))
+				$terrain.erase_cell(Vector2i(x,y))
+				# Устанавливаем тайл травы
+				$grass.set_cell(Vector2i(x,y), 0, grass_atlas_arr.pick_random())
+	
+	grave_instance.position = Vector2(pos.x * 32, pos.y * 32)
+	add_child(grave_instance)
+	
+	var settlement = Settlement.new(SettlementType.GRAVE, pos, grave_instance)
+	settlements.append(settlement)
+	return true
 
 func _process(_delta:float)->void:
 	pass

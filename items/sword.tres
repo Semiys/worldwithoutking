@@ -1,12 +1,12 @@
 [gd_resource type="Resource" script_class="ItemResource" load_steps=3 format=3 uid="uid://batpei4kk3cci"]
 
 [ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_0bo0t"]
-[ext_resource type="Texture2D" uid="uid://bb6abovaxo586" path="res://assets/sprites/RF_Catacombs_v1.0 (1)/torch_3.png" id="1_xrfkc"]
+[ext_resource type="Texture2D" uid="uid://ryy5cu36xfh3" path="res://items/items_image/full swords.png" id="1_nykbf"]
 
 [resource]
 script = ExtResource("1_0bo0t")
 item_name = "Меч"
-icon = ExtResource("1_xrfkc")
+icon = ExtResource("1_nykbf")
 type = "Weapon"
 description = "Острый меч для ближнего боя"
 stackable = false

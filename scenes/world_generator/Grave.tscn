@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=4 uid="uid://4pomo3d2x7xi"]
+
+[ext_resource type="Script" path="res://scripts/grave.gd" id="1_ll0ep"]
+[ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="2_3w5x3"]
+[ext_resource type="TileSet" uid="uid://f7u3hmbfs7bu" path="res://assets/TilesetGrove/TilesetGrove.tres" id="3_x416b"]
+
+[node name="Grave" type="Node2D"]
+z_index = 2
+script = ExtResource("1_ll0ep")
+enemy_scene = ExtResource("2_3w5x3")
+
+[node name="Ground" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAAAAAAAAQAFAAYAAAAAAAEAAQAAAAEAAAAAAAIAAQAAAAIAAAABAAAAAQAGAAYAAAABAAEAAQABAAEAAAABAAIAAQABAAcAAAACAAAAAQACAAAAAAACAAEAAQAFAAcAAAACAAIAAQACAAIAAAACAP//AQACAAcAAAADAP//AQADAAcAAAADAAAAAQAEAAQAAAADAAEAAQAEAAUAAAACAAMAAQABAAYAAAD//wIAAQAAAAUAAAD//wMAAQAAAAYAAAD/////AQAEAAMAAAAAAP//AQAFAAMAAAABAP//AQAEAAYAAAA=")
+tile_set = ExtResource("3_x416b")
+
+[node name="Decoration" type="TileMapLayer" parent="."]
+position = Vector2(0, 2)
+tile_map_data = PackedByteArray("AAAAAAAAAAAJAAQAAAAAAAEAAAAJAAUAAAAAAAIAAAAJAAYAAAACAP//AAAHAAcAAAACAAAAAAAHAAgAAAACAAEAAAAJAAcAAAACAAIAAAAJAAgAAAD///7/AAANAAYAAAD/////AAANAAcAAAA=")
+tile_set = ExtResource("3_x416b")

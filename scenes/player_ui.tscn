@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://bjosupa1ecdui"]
 
 [ext_resource type="Script" path="res://scripts/player_UI.gd" id="1_kln6f"]
-[ext_resource type="PackedScene" path="res://scenes/inventory.tscn" id="2_h6lol"]
-[ext_resource type="PackedScene" path="res://scenes/talent_tree.tscn" id="3_talent"]
+[ext_resource type="PackedScene" uid="uid://0fms14cj573w" path="res://scenes/inventory.tscn" id="2_h6lol"]
+[ext_resource type="PackedScene" uid="uid://pmqpjgdq3nbe" path="res://scenes/talent_tree.tscn" id="3_talent"]
 
 [node name="player_ui" type="CanvasLayer"]
 script = ExtResource("1_kln6f")
@@ -65,7 +65,7 @@ grow_horizontal = 0
 
 [node name="QuestList" type="ItemList" parent="QuestUI"]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 0.3
 grow_horizontal = 2
