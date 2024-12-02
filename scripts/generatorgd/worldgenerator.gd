@@ -15,7 +15,7 @@ extends Node2D # Наследуем от Node2D для работы с 2D гра
 @onready var camera = get_tree().get_root().get_node("Game/Player/Camera2D") # Получаем ссылку на камеру
 
 # Настройки размещения поселений
-const VILLAGE_MIN_DISTANCE = 80 # Расстояние между деревнями
+const VILLAGE_MIN_DISTANCE = 10 # Расстояние между деревнями
 
 # Размеры маленькой деревни
 const SMALL_VILLAGE_WIDTH = 38 

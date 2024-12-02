@@ -4,7 +4,7 @@ const BASE_SPEED = 100.0
 const BASE_ATTACK_COOLDOWN = 0.5
 
 var speed = BASE_SPEED
-var health = 10000
+var health = 100
 var max_health = 100
 var base_attack_power = 10 # Базовая сила атаки
 var attack_power = base_attack_power # Текущая сила атаки с учетом всех бонусов
@@ -351,11 +351,11 @@ func level_up():
 	print("Скорость:", speed)
 	print("Время перезарядки атаки:", attack_cooldown)
 	
-	anim.play("level_up")
+	#anim.play("level_up")
 	update_ui()
 	
 	# Добавляем очко таланта каждый третий уровень
-	if level % 3 == 0:
+	if level % 3 == 0:  
 		var talent_tree = $player_ui/TalentTree/Control
 		if talent_tree:
 			talent_tree.add_talent_point()
@@ -547,17 +547,28 @@ func load_player_stats():
 		print("Файл сохранения не найден, используем начальные значения")
 
 func load_data(data):
-	health = data["health"]
-	max_health = data["max_health"]
+	# Устанавливаем значения с проверками
+	max_health = data.get("max_health", 100)  # Сначала max_health
+	health = data.get("health", max_health)   # Затем health
+	
+	# Проверяем корректность здоровья
+	if health <= 0 or health > max_health:
+		health = max_health  # Сбрасываем на максимум если значение некорректное
+	
+	# Остальные параметры тоже с проверками
 	base_attack_power = data.get("base_attack_power", 10)
-	attack_power = data["attack_power"]
-	defense = data["defense"]
-	experience = data["experience"]
-	level = data["level"]
+	attack_power = data.get("attack_power", base_attack_power)
+	defense = data.get("defense", 1)
+	experience = data.get("experience", 0)
+	level = data.get("level", 1)
 	speed = data.get("speed", BASE_SPEED)
 	attack_cooldown = data.get("attack_cooldown", BASE_ATTACK_COOLDOWN)
-	position = Vector2(data["position"]["x"], data["position"]["y"])
+	position = Vector2(
+		data.get("position", {}).get("x", 0),
+		data.get("position", {}).get("y", 0)
+	)
 	
+	# Загрузка экипировки
 	if "equipment" in data:
 		if data["equipment"]["weapon"]:
 			equip_weapon(item_database.get_item(data["equipment"]["weapon"]))
@@ -566,8 +577,10 @@ func load_data(data):
 		if data["equipment"]["damage_item"]:
 			equip_damage_item(item_database.get_item(data["equipment"]["damage_item"]))
 	
+	# Загрузка инвентаря
 	if "inventory" in data:
 		inventory.load_inventory(data["inventory"])
+	
 	
 	update_ui()
 

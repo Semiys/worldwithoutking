@@ -1,8 +1,8 @@
 extends CanvasLayer
 
-@onready var health_bar: ProgressBar = $HealthBar
-@onready var experience_bar: ProgressBar = $ExperienceBar
-@onready var level_label: Label = $LevelLabel
+@onready var health_bar: TextureProgressBar = $HealthBar
+@onready var experience_bar: TextureProgressBar = $ExperienceBar
+@onready var level_label: Label = $LevelContainer/LevelLabel
 @onready var stats_label: Label = $StatsLabel
 @onready var health_label: Label = $HealthLabel
 @onready var experience_label: Label = $ExperienceLabel
@@ -15,9 +15,7 @@ func _ready():
 		inventory.visible = false
 	else:
 		print("Ошибка: узел Inventory не найден в Player_UI")
-	# Подписываемся на изменение размера окна
 	get_tree().root.connect("size_changed", Callable(self, "_on_window_resize"))
-	# Инициализируем начальное положение UI
 	_on_window_resize()
 	QuestManager.connect("quest_updated", _on_quest_updated)
 	QuestManager.connect("quest_completed", _on_quest_completed)
@@ -34,13 +32,18 @@ func _on_window_resize():
 	experience_bar.position = Vector2(20, window_size.y - 60)
 	experience_bar.size.x = window_size.x * 0.2
 	
-	level_label.position = Vector2(20, 20)
-	stats_label.position = Vector2(window_size.x - 200, 20)
+	# Размещаем статистику над хитбаром по центру
+	stats_label.position = Vector2(
+		health_bar.position.x + (health_bar.size.x * 0.5) - (stats_label.size.x * 0.5),  # Центрируем по горизонтали
+		health_bar.position.y - 25  # Поднимаем над хитбаром
+	)
+	
+	# Остальные лейблы
 	health_label.position = Vector2(health_bar.position.x + health_bar.size.x + 10, health_bar.position.y)
 	experience_label.position = Vector2(experience_bar.position.x + experience_bar.size.x + 10, experience_bar.position.y)
 	
+	# Существующий код для инвентаря
 	if inventory and inventory.visible:
-		# Центрируем инвентарь
 		inventory.position = Vector2(
 			(window_size.x - inventory.size.x) / 2,
 			(window_size.y - inventory.size.y) / 2
@@ -54,12 +57,12 @@ func update_ui(player_data: Dictionary):
 	animate_value(experience_bar, player_data.experience)
 	experience_bar.max_value = experience_needed
 	
-	level_label.text = "Уровень: " + str(player_data.level)
+	level_label.text = str(player_data.level)
 	stats_label.text = "Атака: " + str(player_data.attack_power) + " | Защита: " + str(player_data.defense)
 	health_label.text = str(player_data.health) + " / " + str(player_data.max_health)
 	experience_label.text = str(player_data.experience) + " / " + str(experience_needed)
 
-func animate_value(progress_bar: ProgressBar, target_value: float):
+func animate_value(progress_bar: TextureProgressBar, target_value: float):
 	var tween = create_tween()
 	tween.tween_property(progress_bar, "value", target_value, 0.5).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
 
