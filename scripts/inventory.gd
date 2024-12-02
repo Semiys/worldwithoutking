@@ -21,7 +21,7 @@ func _on_item_added(item):
 func _on_item_removed(item):
 	print("Предмет удален из слота: ", item.item_name)
 
-func add_item_to_first_slot(item_name: String):
+func add_item_to_first_slot(item_name: String, auto_equip: bool = false):
 	var item_resource = item_database.get_item(item_name)
 	if item_resource:
 		var first_slot = inventory_slots.get_child(0)
@@ -29,6 +29,8 @@ func add_item_to_first_slot(item_name: String):
 			var new_item = create_item_from_resource(item_resource)
 			first_slot.putIntoSlot(new_item)
 			print("Предмет добавлен в первый слот: ", item_name)
+			if auto_equip:
+				get_parent().get_parent().use_item(item_name)
 		else:
 			print("Первый слот занят или не найден")
 	else:
@@ -157,7 +159,7 @@ func delete_item(slot):
 	if slot.item:
 		var item_name = slot.item.item_name
 		slot.pickFromSlot()
-		print("Предмет удален: ", item_name)
+		print("Премет удален: ", item_name)
 
 func show_item_count(item_name: String):
 	var count = get_item_count(item_name)

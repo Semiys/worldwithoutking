@@ -32,7 +32,7 @@ var aura_damage_active = false
 # Переменные для визуализации радиусов
 var dodge_range = 100.0 # Уменьшен базовый радиус
 var aoe_radius = 50.0 # Уменьшен базовый радиус
-var line_width = 15.0 # Уменьшена базовая ширина
+var line_width = 15.0 # Уменьшена базоая ширина
 var line_length = 100.0 # Уменьшена базовая длина
 var aura_radius = 75.0 # Уменьшен базовый радиус
 
@@ -66,7 +66,7 @@ func _ready():
 	load_player_stats()
 	update_ui()
 	if inventory:
-		inventory.add_item_to_first_slot("Меч")
+		inventory.add_item_to_first_slot("Меч", false)
 		inventory.add_item_to_second_slot("Зелье здоровья")
 	else:
 		print("Ошибка: узел Inventory не найден")
@@ -330,8 +330,8 @@ func level_up():
 	max_health += 10 + level * 2
 	health = max_health
 	
-	# Увеличение базового урона (квадратичная формула)
-	base_attack_power = 10 + pow(level, 1.5)
+	# Увеличение базового урона (квадратичная формула с округлением)
+	base_attack_power = round(10 + pow(level, 1.5))
 	update_total_attack_power() # Обновляем общий урон
 	
 	# Увеличение защиты (логарифмическая формула)
@@ -356,9 +356,9 @@ func level_up():
 	
 	# Добавляем очко таланта каждый третий уровень
 	if level % 3 == 0:  
-		var talent_tree = $player_ui/TalentTree/Control
-		if talent_tree:
-			talent_tree.add_talent_point()
+		var talent_tree = $player_ui/TalentTree
+		if talent_tree and talent_tree.has_node("Control"):
+			talent_tree.get_node("Control").add_talent_point()
 		else:
 			print("Ошибка: не найден узел Control в дереве талантов")
 
@@ -590,6 +590,7 @@ func update_total_attack_power():
 		attack_power += equipment["weapon"].effect.get("attack", 0)
 	if equipment["damage_item"]:
 		attack_power += equipment["damage_item"].effect.get("attack", 0)
+	attack_power = round(attack_power) # Округляем итоговое значение атаки
 
 func equip_weapon(weapon_item):
 	if equipment["weapon"]:
