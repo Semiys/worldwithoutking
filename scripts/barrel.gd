@@ -41,12 +41,15 @@ func ignite():
 		# Сигнализируем о взрыве
 		emit_signal("barrel_exploded")
 		
+		# Обновляем прогресс квеста при каждом взрыве бочки
+		QuestManager.update_quest_progress("clear_camps", 1)
+		print("Бочка взорвана! Прогресс квеста обновлен")
+		
 		# Создаём эффект встряски камеры
 		var camera_player = get_tree().get_first_node_in_group("player")
 		if camera_player:
 			var camera = camera_player.get_node("Camera2D")
 			if camera:
-				# Используем встроенные свойства камеры для тряски
 				var shake_tween = create_tween()
 				shake_tween.tween_property(camera, "offset", Vector2(15, 15), 0.1)
 				shake_tween.tween_property(camera, "offset", Vector2(-15, -15), 0.1)
