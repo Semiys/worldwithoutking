@@ -343,7 +343,7 @@ func level_up():
 	# Увеличение скорости (линейная формула с замедлением роста)
 	speed = BASE_SPEED * (1 + (level * 0.1) / (1 + level * 0.05))
 	
-	# Уменьшение времени перезарядки атаки (экспоненциальная формула с ограничением)
+	# Уменьшение времени перезарядк�� атаки (экспоненциальная формула с ограничением)
 	attack_cooldown = max(BASE_ATTACK_COOLDOWN * pow(0.95, level - 1), 0.1)
 	
 	print("Уровень повышен! Текущий уровень:", level)
@@ -655,6 +655,7 @@ func _on_quest_completed(quest):
 	print("Получена награда за квест:", quest.reward_exp, "опыта")
 
 # Обновляем функцию die() врага, чтобы учитывать прогресс квестов
+
 func _on_enemy_died(enemy_type: String):
 	match enemy_type:
 		"dummy":
@@ -675,3 +676,25 @@ func _on_area_entered(area: Area2D):
 		QuestManager.update_quest_progress("find_artifacts", 1)
 	elif area.is_in_group("puzzle"):
 		QuestManager.update_quest_progress("solve_puzzles", 1)
+
+
+
+func shake(duration = 0.2, strength = 15, decay = 8):
+	var camera = $Camera2D
+	if not camera:
+		return
+		
+	var timer = 0.0
+	while timer < duration:
+		var offset = Vector2(
+			randf_range(-strength, strength),
+			randf_range(-strength, strength)
+		)
+		camera.offset = offset
+		
+		strength = strength * exp(-decay * timer)
+		
+		timer += get_process_delta_time()
+		await get_tree().process_frame
+	
+	camera.offset = Vector2.ZERO

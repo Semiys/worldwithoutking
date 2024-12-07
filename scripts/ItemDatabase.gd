@@ -3,8 +3,12 @@ extends Node
 var items = {
 	"Меч": preload("res://items/sword.tres"),
 	"Зелье здоровья": preload("res://items/health_potion.tres"),
-	"leather_armor": preload("res://items/leather_armor.tres")
+	"leather_armor": preload("res://items/leather_armor.tres"),
+	"Факел": preload("res://items/torch.tres")
 }
+
+func _ready():
+	pass
 
 func get_item(item_name: String) -> ItemResource:
 	if items.has(item_name):
@@ -21,6 +25,7 @@ func remove_item(item_name: String):
 
 func get_all_items() -> Dictionary:
 	return items
+
 func load_items_from_file(file_path: String):
 	var file = FileAccess.open(file_path, FileAccess.READ)
 	if file:

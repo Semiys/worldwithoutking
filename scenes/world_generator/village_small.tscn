@@ -5,10 +5,13 @@
 [ext_resource type="PackedScene" uid="uid://kbqxu5y025wo" path="res://scenes/boss.tscn" id="3_iw255"]
 [ext_resource type="PackedScene" uid="uid://b8v6wj3c8qd0m" path="res://scenes/npc.tscn" id="4_br2fj"]
 [ext_resource type="PackedScene" uid="uid://bvb771iu5k4sh" path="res://scenes/chest.tscn" id="5_5n6vd"]
+
 [ext_resource type="PackedScene" path="res://scenes/npcs/village_elder.tscn" id="6_go16a"]
 [ext_resource type="PackedScene" path="res://scenes/npcs/tutorial_master.tscn" id="7_a1fao"]
 [ext_resource type="PackedScene" path="res://scenes/npcs/dungeon_keeper.tscn" id="8_1v4c0"]
 [ext_resource type="PackedScene" uid="uid://target" path="res://scenes/target.tscn" id="9_u8nhh"]
+
+
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qm2fe"]
 size = Vector2(1706.5, 1423)
@@ -99,7 +102,7 @@ position = Vector2(526, 88)
 position = Vector2(69, 265)
 
 [node name="NPC" parent="." instance=ExtResource("4_br2fj")]
-position = Vector2(584, 558)
+position = Vector2(143, -97)
 
 [node name="Chest" parent="." instance=ExtResource("5_5n6vd")]
 position = Vector2(26, 17)

@@ -83,9 +83,13 @@ func slot_gui_input(event: InputEvent, slot: SlotClass):
 						remove_child(holding_item)
 					holding_item = null
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			if slot.item and slot.item.item_name == "Зелье здоровья":
-				use_health_potion(slot)
-				print("Попытка использовать зелье здоровья")
+			if slot.item:
+				if slot.item.item_name == "Зелье здоровья":
+					use_health_potion(slot)
+					print("Попытка использовать зелье здоровья")
+				elif slot.item.item_name == "Факел":
+					use_torch(slot)
+					print("Попытка использовать факел")
 		elif event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:
 			if slot.item:
 				delete_item(slot)
@@ -241,3 +245,25 @@ func use_item(slot):
 				print("Игрок не найден")
 		else:
 			print("Предмет не найден в базе данных: ", item_name)
+
+func use_torch(slot_index):
+	var barrel = find_nearest_barrel()
+	if barrel and barrel.can_be_ignited:
+		barrel.ignite()
+		remove_item("Факел", 1)
+
+func find_nearest_barrel():
+	var player = get_tree().get_first_node_in_group("player")
+	if not player:
+		return null
+		
+	var nearest_barrel = null
+	var min_distance = 100  # Максимальная дистанция использования
+	
+	for barrel in get_tree().get_nodes_in_group("barrels"):
+		var distance = player.global_position.distance_to(barrel.global_position)
+		if distance < min_distance:
+			min_distance = distance
+			nearest_barrel = barrel
+			
+	return nearest_barrel

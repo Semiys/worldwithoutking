@@ -40,7 +40,11 @@ func complete_quest(quest):
 		emit_signal("quest_completed", quest)
 		print("Квест выполнен:", quest.title)
 		
+
 		# Выдаём награду только один раз
+
+		# Выдаём награду
+
 		var player = get_tree().get_nodes_in_group("player")[0]
 		if player:
 			player.gain_experience(quest.reward_exp)

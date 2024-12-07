@@ -25,15 +25,14 @@ func _ready():
 	interaction_prompt.hide()
 
 func setup_quests():
-	# Пример создания квеста
-	var kill_quest = Quest.new(
-		"Зачистка территории",
-		"Убейте 5 врагов, чтобы обезопасить территорию",
-		"kill",
-		5,
-		100
+	var destroy_camps_quest = Quest.new(
+		"Уничтожение лагерей",
+		"Уничтожьте 4 вражеских лагеря, чтобы ослабить силы противника",
+		"destroy_camp",
+		4,
+		200
 	)
-	available_quests.append(kill_quest)
+	available_quests.append(destroy_camps_quest)
 
 func _input(event):
 	if event.is_action_pressed("interact") and player and not dialog_active:
@@ -70,7 +69,7 @@ func start_dialog():
 	if available_quests.size() > 0:
 		current_dialog = [
 			"Приветствую тебя, путник!",
-			"У меня есть важное задание для тебя.",
+			"У меня ес��ь важное задание для тебя.",
 			"Хочешь ли ты помочь мне?"
 		]
 	else:

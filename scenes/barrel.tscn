@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://irgjvmtayonn"]
+
+[ext_resource type="Script" path="res://scripts/barrel.gd" id="1_1"]
+[ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="2_jmiv7"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 42.2966
+
+[sub_resource type="ParticleProcessMaterial" id="2"]
+emission_shape = 1
+emission_sphere_radius = 8.0
+spread = 180.0
+gravity = Vector3(0, -98, 0)
+scale_min = 0.0
+scale_max = 0.0
+color = Color(1, 0.4, 0, 1)
+
+[node name="Barrel" type="StaticBody2D" groups=["barrels"]]
+script = ExtResource("1_1")
+
+[node name="InteractionArea" type="Area2D" parent="."]
+position = Vector2(25, 13)
+rotation = 3.14159
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+position = Vector2(1, 1)
+shape = SubResource("1")
+
+[node name="ExplosionParticles" type="GPUParticles2D" parent="."]
+position = Vector2(24, 11)
+rotation = 3.14159
+emitting = false
+amount = 100
+process_material = SubResource("2")
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.8
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray(0, 0, 0, 0, 255, 255, 8, 0, 5, 0, 4, 0, 0, 0, 0, 0, 0, 0, 8, 0, 5, 0, 5, 0, 0, 0)
+tile_set = ExtResource("2_jmiv7")
