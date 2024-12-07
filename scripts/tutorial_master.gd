@@ -1,5 +1,9 @@
 extends "res://scripts/npc.gd"
 
+func _ready():
+    npc_type = "tutorial_master"
+    super._ready()
+
 func setup_quests():
     var tutorial_quests = [
         Quest.new(

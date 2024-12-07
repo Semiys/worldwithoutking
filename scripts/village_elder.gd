@@ -1,5 +1,9 @@
 extends "res://scripts/npc.gd"
 
+func _ready():
+	npc_type = "village_elder"
+	super._ready()
+
 func setup_quests():
 	var main_quests = [
 		Quest.new(

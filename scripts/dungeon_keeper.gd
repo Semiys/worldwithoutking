@@ -1,5 +1,9 @@
 extends "res://scripts/npc.gd"
 
+func _ready():
+	npc_type = "dungeon_keeper"
+	super._ready()
+
 func setup_quests():
 	var dungeon_quests = [
 		Quest.new(

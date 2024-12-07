@@ -10,11 +10,38 @@ var dialog_index = 0
 var current_dialog = []
 var completed_quests = []
 var given_quests = []
+var npc_type = "base"
 
 @onready var dialog_box = $DialogBox
 @onready var dialog_text = $DialogBox/DialogText
 @onready var interaction_area = $InteractionArea
 @onready var interaction_prompt = $InteractionPrompt
+
+func can_take_quests() -> bool:
+	# Проверяем, есть ли уже активные квесты
+	if QuestManager.active_quests.size() > 0:
+		return false
+		
+	# Проверяем тип NPC и необходимые условия
+	match npc_type:
+		"village_elder":
+			# Проверяем, завершены ли все квесты tutorial_master
+			var tutorial_quests = ["kill_dummy", "kill_weak", "reach_village"]
+			for quest_type in tutorial_quests:
+				if not quest_type in completed_quests:
+					return false
+					
+		"dungeon_keeper":
+			# Проверяем, завершены ли все квесты tutorial_master и village_elder
+			var required_quests = [
+				"kill_dummy", "kill_weak", "reach_village",  # Tutorial quests
+				"clear_camps", "find_artifacts", "prepare_dungeon"  # Village Elder quests
+			]
+			for quest_type in required_quests:
+				if not quest_type in completed_quests:
+					return false
+	
+	return true
 
 func _ready():
 	add_to_group("npcs")
@@ -63,15 +90,24 @@ func start_dialog():
 				"Я вижу, ты выполнил моё задание!",
 				"Хочешь получить награду?"
 			]
+			show_dialog()
 			return
 	
-	# Если нет завершенных квестов, предлагаем новые
+	# Проверяем возможность взять новые квесты
 	if available_quests.size() > 0:
-		current_dialog = [
-			"Приветствую тебя, путник!",
-			"У меня ес��ь важное задание для тебя.",
-			"Хочешь ли ты помочь мне?"
-		]
+		if can_take_quests():
+			current_dialog = [
+				"Приветствую тебя, путник!",
+				"У меня есть важное задание для тебя.",
+				"Хочешь ли ты помочь мне?"
+			]
+		else:
+			if QuestManager.active_quests.size() > 0:
+				current_dialog = ["Сначала заверши текущее задание."]
+			elif npc_type == "village_elder":
+				current_dialog = ["Сначала заверши все задания наставника."]
+			elif npc_type == "dungeon_keeper":
+				current_dialog = ["Сначала заверши все задания наставника и старейшины."]
 	else:
 		current_dialog = ["У меня пока нет заданий для тебя."]
 	
@@ -98,7 +134,7 @@ func end_dialog():
 	interaction_prompt.show()
 
 func give_quest():
-	if available_quests.size() > 0:
+	if available_quests.size() > 0 and can_take_quests():
 		var quest = available_quests[0]
 		if not quest in given_quests:
 			available_quests.pop_front()
