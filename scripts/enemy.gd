@@ -61,6 +61,20 @@ func _physics_process(delta):
 				current_cooldown = attack_cooldown
 		
 		current_cooldown -= delta
+		
+		# Проверяем столкновение с игроком и добавляем отталкивание
+		for i in get_slide_collision_count():
+			var collision = get_slide_collision(i)
+			var collider = collision.get_collider()
+			if collider and collider.is_in_group("player"):
+				# Отталкиваем врага от игрока
+				var push_vector = (global_position - collider.global_position).normalized()
+				velocity = push_vector * SPEED * 2
+				move_and_slide()
+				# Также слегка отталкиваем игрока
+				collider.velocity = -push_vector * SPEED
+				break
+		
 		move_and_slide()
 
 func should_dodge() -> bool:
