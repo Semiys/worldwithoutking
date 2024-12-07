@@ -322,6 +322,7 @@ func gain_experience(amount: int):
 func check_level_up():
 	var experience_needed = level * 100
 	if experience >= experience_needed:
+		experience -= experience_needed  # Вычитаем опыт, необходимый для текущего уровня
 		level_up()
 
 func level_up():
@@ -350,12 +351,11 @@ func level_up():
 	print("Защита:", defense)
 	print("Скорость:", speed)
 	print("Время перезарядки атаки:", attack_cooldown)
-	
 	#anim.play("level_up")
 	update_ui()
 	
 	# Добавляем очко таланта каждый третий уровень
-	if level % 3 == 0:  
+	if int(level) % 3 == 0:  # Добавляем преобразование в целое число
 		var talent_tree = $player_ui/TalentTree
 		if talent_tree and talent_tree.has_node("Control"):
 			talent_tree.get_node("Control").add_talent_point()

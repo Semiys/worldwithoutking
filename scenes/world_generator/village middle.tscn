@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=4 uid="uid://k8g1kofmhrwn"]
+[gd_scene load_steps=3 format=4 uid="uid://k8g1kofmhrwn"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_km1to"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ypm68"]
+size = Vector2(2103.5, 1427)
 
 [node name="VillageMiddle" type="Node2D"]
 position = Vector2(239, 203)
@@ -124,3 +127,22 @@ tile_set = ExtResource("1_km1to")
 [node name="TileMapLayer30" type="TileMapLayer" parent="."]
 tile_map_data = PackedByteArray("AAAsABwACgAaAA4AAAAsAB0ACgAaAA8AAAAsAB4ACgAaABAAAAAtABsACgAbAA0AAAAtABwACgAbAA4AAAAtAB0ACgAbAA8AAAAtAB4ACgAbABAAAAAtAB8ACgAbABEAAAAuABsACgAcAA0AAAAuABwACgAcAA4AAAAuAB0ACgAcAA8AAAAuAB4ACgAcABAAAAAuAB8ACgAcABEAAAAuACAACgAcABIAAAAvABwACgAdAA4AAAAvAB0ACgAdAA8AAAAvAB4ACgAdABAAAAAvAB8ACgAdABEAAAAwABwACgAeAA4AAAAwAB0ACgAeAA8AAAAwAB4ACgAeABAAAAAxABcACgAaAA4AAAAxABgACgAaAA8AAAAxABkACgAaABAAAAAyABYACgAbAA0AAAAyABcACgAbAA4AAAAyABgACgAbAA8AAAAyABkACgAbABAAAAAyABoACgAbABEAAAAzABYACgAcAA0AAAAzABcACgAcAA4AAAAzABgACgAcAA8AAAAzABkACgAcABAAAAAzABoACgAcABEAAAAzABsACgAcABIAAAA0ABcACgAdAA4AAAA0ABgACgAdAA8AAAA0ABkACgAdABAAAAA0ABoACgAdABEAAAA1ABcACgAeAA4AAAA1ABgACgAeAA8AAAA1ABkACgAeABAAAAAdABsACgAaAA4AAAAdABwACgAaAA8AAAAdAB0ACgAaABAAAAAeABoACgAbAA0AAAAeABsACgAbAA4AAAAeABwACgAbAA8AAAAeAB0ACgAbABAAAAAeAB4ACgAbABEAAAAfABoACgAcAA0AAAAfABsACgAcAA4AAAAfABwACgAcAA8AAAAfAB0ACgAcABAAAAAfAB4ACgAcABEAAAAfAB8ACgAcABIAAAAgABsACgAdAA4AAAAgABwACgAdAA8AAAAgAB0ACgAdABAAAAAgAB4ACgAdABEAAAAhABsACgAeAA4AAAAhABwACgAeAA8AAAAhAB0ACgAeABAAAAAtABQACgAOABEAAAAtABUACgAOABIAAAAuABQACgAPABEAAAAuABUACgAPABIAAAAvABUACgAQABIAAAAxABIACgAOABEAAAAxABMACgAOABIAAAAyABIACgAPABEAAAAyABMACgAPABIAAAAzABMACgAQABIAAAAnAB0ACgALABIAAAAoAB0ACgAMABIAAAA=")
 tile_set = ExtResource("1_km1to")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(827.25, 516.5)
+shape = SubResource("RectangleShape2D_ypm68")
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(513, -169)
+
+[node name="Marker2D2" type="Marker2D" parent="."]
+position = Vector2(-218, 579)
+
+[node name="Marker2D3" type="Marker2D" parent="."]
+position = Vector2(1417, 555)
+
+[node name="Marker2D4" type="Marker2D" parent="."]
+position = Vector2(687, 1160)

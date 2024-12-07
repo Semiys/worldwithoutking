@@ -26,21 +26,28 @@ func _on_window_resize():
 	var window_size = get_viewport().get_visible_rect().size
 	
 	# Настраиваем позиции элементов UI относительно размера окна
-	health_bar.position = Vector2(20, window_size.y - 100)
-	health_bar.size.x = window_size.x * 0.2
+	health_bar.position = Vector2(20, window_size.y - 120)
+	health_bar.size.x = window_size.x * 0.25
 	
 	experience_bar.position = Vector2(20, window_size.y - 60)
-	experience_bar.size.x = window_size.x * 0.2
+	experience_bar.size.x = window_size.x * 0.25
 	
-	# Размещаем статистику над хитбаром по центру
+	# Размещаем статистику справа от хитбара с учетом масштаба
 	stats_label.position = Vector2(
-		health_bar.position.x + (health_bar.size.x * 0.5) - (stats_label.size.x * 0.5),  # Центрируем по горизонтали
-		health_bar.position.y - 25  # Поднимаем над хитбаром
+		health_bar.position.x + (health_bar.size.x * 1.5) + 50,
+		health_bar.position.y
 	)
 	
-	# Остальные лейблы
-	health_label.position = Vector2(health_bar.position.x + health_bar.size.x + 10, health_bar.position.y)
-	experience_label.position = Vector2(experience_bar.position.x + experience_bar.size.x + 10, experience_bar.position.y)
+	# Остальные лейблы справа от соответствующих баров
+	health_label.position = Vector2(
+		health_bar.position.x + (health_bar.size.x * 1.5) + 50,
+		health_bar.position.y + 30
+	)
+	
+	experience_label.position = Vector2(
+		experience_bar.position.x + (experience_bar.size.x * 1.5) + 50,
+		experience_bar.position.y + 20
+	)
 	
 	# Существующий код для инвентаря
 	if inventory and inventory.visible:

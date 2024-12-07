@@ -17,7 +17,7 @@ region = Rect2(2, 42, 89, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_b1hw8"]
 atlas = ExtResource("2_rmg67")
 region = Rect2(16, 2, 73, 7)
-margin = Rect2(0, -0.5, 2, 7)
+margin = Rect2(0, -0.5, 1, 7)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_level"]
 bg_color = Color(0.4, 0.2, 0.6, 1)
@@ -37,6 +37,7 @@ offset_left = 25.0
 offset_top = 1.0
 offset_right = 264.0
 offset_bottom = 33.0
+scale = Vector2(1.5, 1.5)
 nine_patch_stretch = true
 stretch_margin_left = 15
 stretch_margin_right = 15
@@ -50,6 +51,7 @@ offset_left = 27.0
 offset_top = 67.0
 offset_right = 261.0
 offset_bottom = 102.0
+scale = Vector2(1.5, 1.5)
 nine_patch_stretch = true
 stretch_margin_left = 15
 stretch_margin_right = 15
@@ -57,19 +59,20 @@ texture_under = SubResource("AtlasTexture_jqow2")
 texture_over = SubResource("AtlasTexture_qb2vc")
 texture_progress = SubResource("AtlasTexture_b1hw8")
 texture_progress_offset = Vector2(4, 3)
-tint_progress = Color(0.196975, 0.155568, 0.627277, 1)
+tint_progress = Color(0.398641, 0.397882, 0.917576, 1)
 
 [node name="LevelContainer" type="PanelContainer" parent="."]
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 60.0
-offset_bottom = 60.0
+offset_right = 90.0
+offset_bottom = 90.0
+scale = Vector2(1.5, 1.5)
 theme_override_styles/panel = SubResource("StyleBoxFlat_level")
 
 [node name="LevelLabel" type="Label" parent="LevelContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 36
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -78,7 +81,7 @@ vertical_alignment = 1
 offset_left = 270.0
 offset_bottom = 28.0
 theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 24
 text = "Атака: 10"
 
 [node name="HealthLabel" type="Label" parent="."]
@@ -86,12 +89,14 @@ offset_left = 28.0
 offset_top = 216.0
 offset_right = 270.0
 offset_bottom = 252.0
+theme_override_font_sizes/font_size = 24
 
 [node name="ExperienceLabel" type="Label" parent="."]
 offset_left = 958.0
 offset_top = 26.0
 offset_right = 1244.0
 offset_bottom = 72.0
+theme_override_font_sizes/font_size = 24
 
 [node name="Inventory" parent="." instance=ExtResource("2_h6lol")]
 anchors_preset = 13
