@@ -9,6 +9,7 @@ var player = null
 var dialog_index = 0
 var current_dialog = []
 var completed_quests = []
+var given_quests = []
 
 @onready var dialog_box = $DialogBox
 @onready var dialog_text = $DialogBox/DialogText
@@ -99,9 +100,12 @@ func end_dialog():
 
 func give_quest():
 	if available_quests.size() > 0:
-		var quest = available_quests.pop_front()
-		QuestManager.add_quest(quest)
-		print("Выдан квест:", quest.title)
+		var quest = available_quests[0]
+		if not quest in given_quests:
+			available_quests.pop_front()
+			given_quests.append(quest)
+			QuestManager.add_quest(quest)
+			print("Выдан квест:", quest.title)
 
 func show_interaction_prompt():
 	interaction_prompt.show()
@@ -114,5 +118,3 @@ func complete_current_quest():
 		completed_quests.append(current_quest)
 		QuestManager.complete_quest(current_quest)
 		current_quest = null
-		# Удаляем квест из активных
-		QuestManager.active_quests.erase(current_quest)

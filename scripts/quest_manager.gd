@@ -13,14 +13,25 @@ func add_quest(quest):
 	emit_signal("quest_updated", quest)
 	print("Добавлен новый квест:", quest.title)
 
-func update_quest_progress(quest_type: String, amount: int = 1):
+func update_quest_progress(quest_type: String, amount: int = 1, specific_target: String = ""):
 	for quest in active_quests:
 		if quest.type == quest_type:
-			quest.current_progress += amount
-			emit_signal("quest_updated", quest)
-			print("Обновлен прогресс квеста:", quest.title, "-", quest.current_progress, "/", quest.objective_count)
+			match quest.type:
+				"kill_dummy":
+					if specific_target == quest.type:
+						quest.current_progress += amount
+						print("Обновлен прогресс квеста манекенов:", quest.current_progress, "/", quest.objective_count)
+				"kill_weak", "clear_first_hall", "kill_boss":
+					if specific_target == quest.type:
+						quest.current_progress += amount
+				"clear_camps", "find_artifacts", "solve_puzzles":
+					quest.current_progress += amount
+				"reach_village", "prepare_dungeon":
+					if specific_target == quest.type:
+						quest.current_progress = quest.objective_count
 			
-			if quest.is_completed():
+			emit_signal("quest_updated", quest)
+			if quest.check_completed():
 				complete_quest(quest)
 
 func complete_quest(quest):
@@ -29,13 +40,10 @@ func complete_quest(quest):
 		emit_signal("quest_completed", quest)
 		print("Квест выполнен:", quest.title)
 		
-		# Выдаём награду только при сдаче квеста NPC
+		# Выдаём награду только один раз
 		var player = get_tree().get_nodes_in_group("player")[0]
 		if player:
 			player.gain_experience(quest.reward_exp)
 			print("Награда получена:", quest.reward_exp, "опыта")
 	
-	# Выдаём награду
-	var player = get_tree().get_nodes_in_group("player")[0]
-	if player:
-		player.gain_experience(quest.reward_exp) 
+	# Удаляем дублирующийся код выдачи награды

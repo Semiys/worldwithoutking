@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://village_elder"]
+
+[ext_resource type="PackedScene" uid="uid://b8v6wj3c8qd0m" path="res://scenes/npc.tscn" id="1_1"]
+[ext_resource type="Script" path="res://scripts/village_elder.gd" id="2_1"]
+
+[node name="VillageElder" instance=ExtResource("1_1")]
+script = ExtResource("2_1")
+
+[node name="Sprite2D" parent="." index="1"]
+modulate = Color(0.8, 0.6, 0.2, 1.0)  # Золотистый оттенок
+
+# Остальные ноды такие же как у TutorialMaster 

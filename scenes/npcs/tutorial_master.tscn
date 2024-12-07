@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://tutorial_master"]
+
+[ext_resource type="PackedScene" uid="uid://b8v6wj3c8qd0m" path="res://scenes/npc.tscn" id="1_1"]
+[ext_resource type="Script" path="res://scripts/tutorial_master.gd" id="2_1"]
+
+[node name="TutorialMaster" instance=ExtResource("1_1")]
+script = ExtResource("2_1")
+
+[node name="Sprite2D" parent="." index="1"]
+modulate = Color(0.0, 0.7, 1.0, 1.0)  # Синий оттенок 

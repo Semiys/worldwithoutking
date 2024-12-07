@@ -116,7 +116,10 @@ func take_damage(amount: int):
 
 func die():
 	print("Враг умер")
+	# Обновляем прогресс для обычного квеста на убийство
 	QuestManager.update_quest_progress("kill")
+	# Добавляем прогресс для квеста "Первая охота"
+	QuestManager.update_quest_progress("kill_weak", 1, "kill_weak")
 	
 	# Добавляем выпадение предметов
 	drop_loot()

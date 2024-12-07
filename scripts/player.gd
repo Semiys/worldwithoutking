@@ -69,7 +69,7 @@ func _ready():
 		inventory.add_item_to_first_slot("Меч", false)
 		inventory.add_item_to_second_slot("Зелье здоровья")
 	else:
-		print("Ошибка: узел Inventory не найден")
+		print("Ошибка: узе Inventory не найден")
 	attack_collision.disabled = true
 	attack_area.connect("body_entered", Callable(self, "_on_AttackArea_body_entered"))
 	
@@ -218,23 +218,20 @@ func attack():
 		print("Игрок атакует! Сила атаки:", attack_power)
 		anim.play("attack")
 		attack_collision.disabled = false
-		# Регистрация урона происходит на определенных кадрах анимации
-		var damage_frames = [3, 7, 12]  # Кадры, на которых будет наноситься урон
-		# Регистрация урона происходит на определенном кадре анимации
+		attack_area.monitoring = true  # Включаем мониторинг области атаки
+		
+		var damage_frames = [3, 7, 12]
 		
 		while anim.animation == "attack":
-			
 			await anim.frame_changed
 			if anim.frame in damage_frames:
 				_check_for_hit()
 			if anim.frame == anim.sprite_frames.get_frame_count("attack") - 1:
 				break
-			
-				
 		
 		attack_collision.disabled = true
+		attack_area.monitoring = false  # Выключаем мониторинг области атаки
 		is_attacking = false
-		
 		anim.play("Idle")
 
 func _check_for_hit():
@@ -244,6 +241,11 @@ func _check_for_hit():
 			body.take_damage(attack_power)
 			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
 			print("Урон нанесен врагу на кадре", anim.frame)
+		elif body.is_in_group("target") and body.has_method("take_damage"):
+			print("Попадание по мишени")  # Отладочный вывод
+			body.take_damage(attack_power)
+			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
+			print("Урон нанесен мишени на кадре", anim.frame)
 
 func _on_AttackArea_body_entered(body):
 	if body.is_in_group("enemies") and can_deal_damage:
@@ -289,7 +291,7 @@ func die():
 	if is_dead: # Если персонаж уже мертв, не выполняем повторно
 		return
 		
-	is_dead = true # Устанавливаем флаг смерти
+	is_dead = true # Устанавливаем флаг мертви
 	print("Игрок умер")
 	anim.play("die")
 	set_physics_process(false)
@@ -311,7 +313,7 @@ func die():
 	get_tree().reload_current_scene()
 
 func gain_experience(amount: int):
-	if is_dead: # Если персонаж мертв, не получаем опыт
+	if is_dead: # Если персонаж метв, не получаем опыт
 		return
 		
 	experience += amount
@@ -532,7 +534,7 @@ func load_player_stats():
 	if file:
 		var json_string = file.get_as_text()
 		if json_string.is_empty():
-			print("Файл сохранения пуст, используем начальные значения")
+			print("Файл сохранения уст, используем начальные значения")
 			return
 		var json = JSON.new()
 		var parse_result = json.parse(json_string)
@@ -653,5 +655,23 @@ func _on_quest_completed(quest):
 	print("Получена награда за квест:", quest.reward_exp, "опыта")
 
 # Обновляем функцию die() врага, чтобы учитывать прогресс квестов
-func _on_enemy_died():
-	QuestManager.update_quest_progress("kill")
+func _on_enemy_died(enemy_type: String):
+	match enemy_type:
+		"dummy":
+			QuestManager.update_quest_progress("kill_dummy", 1, "kill_dummy")
+		"weak_enemy":
+			QuestManager.update_quest_progress("kill_weak", 1, "kill_weak")
+		"dungeon_monster":
+			QuestManager.update_quest_progress("clear_first_hall", 1, "clear_first_hall")
+		"boss":
+			QuestManager.update_quest_progress("kill_boss", 1, "kill_boss")
+
+func _on_area_entered(area: Area2D):
+	if area.is_in_group("village"):
+		QuestManager.update_quest_progress("reach_village", 1, "reach_village")
+	elif area.is_in_group("camp"):
+		QuestManager.update_quest_progress("clear_camps", 1)
+	elif area.is_in_group("artifact"):
+		QuestManager.update_quest_progress("find_artifacts", 1)
+	elif area.is_in_group("puzzle"):
+		QuestManager.update_quest_progress("solve_puzzles", 1)
