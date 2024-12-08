@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=4 uid="uid://target"]
+
+[ext_resource type="Script" path="res://scripts/target.gd" id="1_1"]
+[ext_resource type="Texture2D" uid="uid://bmyjpjbl1u0s6" path="res://assets/TX Village Props.png" id="2_068iy"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 27.0185
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hit"]
+radius = 28.0713
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_i4h3s"]
+texture = ExtResource("2_068iy")
+texture_region_size = Vector2i(32, 32)
+24:9/0 = 0
+25:9/0 = 0
+25:8/0 = 0
+24:8/0 = 0
+25:7/0 = 0
+24:7/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_11b5g"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_i4h3s")
+
+[node name="Target" type="StaticBody2D" groups=["target"]]
+script = ExtResource("1_1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
+
+[node name="HitBox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+shape = SubResource("CircleShape2D_hit")
+
+[node name="DestroyParticles" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 20
+one_shot = true
+explosiveness = 0.8
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAD///7/AAAYAAcAAAD/////AAAYAAgAAAD//wAAAAAYAAkAAAAAAP7/AAAZAAcAAAAAAP//AAAZAAgAAAAAAAAAAAAZAAkAAAA=")
+tile_set = SubResource("TileSet_11b5g")
+
+[connection signal="area_entered" from="HitBox" to="." method="_on_area_entered"]

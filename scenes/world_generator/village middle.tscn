@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=4 uid="uid://k8g1kofmhrwn"]
+[gd_scene load_steps=4 format=4 uid="uid://k8g1kofmhrwn"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_km1to"]
+[ext_resource type="PackedScene" uid="uid://3s86i8vddgxx" path="res://scenes/world_generator/enemy_camp.tscn" id="2_fpfkd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ypm68"]
 size = Vector2(2103.5, 1427)
@@ -146,3 +147,15 @@ position = Vector2(1417, 555)
 
 [node name="Marker2D4" type="Marker2D" parent="."]
 position = Vector2(687, 1160)
+
+[node name="EnemyCamp" parent="." instance=ExtResource("2_fpfkd")]
+position = Vector2(446, -414)
+
+[node name="EnemyCamp2" parent="." instance=ExtResource("2_fpfkd")]
+position = Vector2(1921, 518)
+
+[node name="EnemyCamp3" parent="." instance=ExtResource("2_fpfkd")]
+position = Vector2(599, 1281)
+
+[node name="EnemyCamp4" parent="." instance=ExtResource("2_fpfkd")]
+position = Vector2(-545, 514)

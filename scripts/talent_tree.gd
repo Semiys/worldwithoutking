@@ -37,13 +37,6 @@ var talents = {
 		"cost": 1,
 		"effect": func(player): player.crit_chance += 5
 	},
-	"crit_damage": {
-		"name": "Урон крита",
-		"level": 0,
-		"max_level": 5,
-		"cost": 1,
-		"effect": func(player): player.crit_damage += 10
-	},
 	"dodge_chance": {
 		"name": "Уклонение",
 		"level": 0,
@@ -51,40 +44,12 @@ var talents = {
 		"cost": 1,
 		"effect": func(player): player.dodge_chance += 3
 	},
-	"life_steal": {
-		"name": "Вампиризм",
-		"level": 0,
-		"max_level": 5,
-		"cost": 1,
-		"effect": func(player): player.life_steal += 2
-	},
 	"cooldown_reduction": {
 		"name": "Сокращение перезарядки",
 		"level": 0,
 		"max_level": 5,
 		"cost": 1,
 		"effect": func(player): player.cooldown_reduction += 4
-	},
-	"mana_regen": {
-		"name": "Восст. маны",
-		"level": 0,
-		"max_level": 5,
-		"cost": 1,
-		"effect": func(player): player.mana_regen += 1
-	},
-	"armor_penetration": {
-		"name": "Пробивание брони",
-		"level": 0,
-		"max_level": 5,
-		"cost": 1,
-		"effect": func(player): player.armor_penetration += 3
-	},
-	"magic_resistance": {
-		"name": "Маг. сопротивление",
-		"level": 0,
-		"max_level": 5,
-		"cost": 1,
-		"effect": func(player): player.magic_resistance += 3
 	}
 }
 
@@ -181,7 +146,7 @@ func update_talent_button(talent_id):
 	var talent = talents[talent_id]
 	var container = talent_grid.get_child(get_talent_button_index(talent_id))
 	
-	# Находим VBoxContainer с метками внутри MarginContainer
+	# Находи�� VBoxContainer с метками внутри MarginContainer
 	var margin_container = container.get_child(0)  # Первый ребенок - MarginContainer
 	var info_container = margin_container.get_child(0)  # Первый ребенок MarginContainer - VBoxContainer
 	var level_label = info_container.get_child(1)  # Второй ребенок VBoxContainer - метка уровня

@@ -298,6 +298,44 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_8avo5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_igdpa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cpnpn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3hmjh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fe8ps")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iob5b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4tv4y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0p8jb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gkp0c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rutcp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s1ory")
+}],
+"loop": false,
+"name": &"attack1",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_sdvmg")
 }, {
 "duration": 1.0,
@@ -415,7 +453,7 @@ script = ExtResource("1_4s4wn")
 position = Vector2(0.0937511, 1)
 scale = Vector2(0.99625, 1)
 sprite_frames = SubResource("SpriteFrames_o28wr")
-animation = &"die"
+animation = &"attack1"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

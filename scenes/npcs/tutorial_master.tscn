@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3 uid="uid://b63fkpm6ik52s"]
+
+[ext_resource type="PackedScene" uid="uid://b8v6wj3c8qd0m" path="res://scenes/npc.tscn" id="1_1"]
+[ext_resource type="Script" path="res://scripts/tutorial_master.gd" id="2_1"]
+[ext_resource type="Texture2D" uid="uid://be2b0jy714q2x" path="res://Male1.png" id="3_8yuq6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wwbxh"]
+atlas = ExtResource("3_8yuq6")
+region = Rect2(0, 48, 28, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2dgp1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wwbxh")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="TutorialMaster" instance=ExtResource("1_1")]
+script = ExtResource("2_1")
+
+[node name="Sprite2D" parent="." index="1"]
+visible = false
+modulate = Color(0, 0.7, 1, 1)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." index="5"]
+sprite_frames = SubResource("SpriteFrames_2dgp1")

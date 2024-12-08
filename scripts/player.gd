@@ -32,7 +32,7 @@ var aura_damage_active = false
 # Переменные для визуализации радиусов
 var dodge_range = 100.0 # Уменьшен базовый радиус
 var aoe_radius = 50.0 # Уменьшен базовый радиус
-var line_width = 15.0 # Уменьшена базоая ширина
+var line_width = 15.0 # Уменьшена базоая ши��ина
 var line_length = 100.0 # Уменьшена базовая длина
 var aura_radius = 75.0 # Уменьшен базовый радиус
 
@@ -69,7 +69,7 @@ func _ready():
 		inventory.add_item_to_first_slot("Меч", false)
 		inventory.add_item_to_second_slot("Зелье здоровья")
 	else:
-		print("Ошибка: узел Inventory не найден")
+		print("Ошибка: узе Inventory не найден")
 	attack_collision.disabled = true
 	attack_area.connect("body_entered", Callable(self, "_on_AttackArea_body_entered"))
 	
@@ -81,6 +81,13 @@ func _ready():
 		var event = InputEventKey.new()
 		event.keycode = KEY_T
 		InputMap.action_add_event("open_talents", event)
+	
+	# Добавляем регистрацию клавиши V для серийной атаки
+	if not InputMap.has_action("serial_attack"):
+		InputMap.add_action("serial_attack")
+		var event = InputEventKey.new()
+		event.keycode = KEY_V
+		InputMap.action_add_event("serial_attack", event)
 
 func _physics_process(_delta: float) -> void:
 	if is_dead: # Если персонаж мертв, не обрабатываем движение и атаки
@@ -211,32 +218,6 @@ func spawn_damage_number(damage: int, pos: Vector2):
 	var anim_player = damage_number.get_node("AnimationPlayer")
 	anim_player.play("showDamage")
 
-func attack():
-	if not is_attacking and current_attack_cooldown <= 0:
-		is_attacking = true
-		current_attack_cooldown = attack_cooldown
-		print("Игрок атакует! Сила атаки:", attack_power)
-		anim.play("attack")
-		attack_collision.disabled = false
-		# Регистрация урона происходит на определенных кадрах анимации
-		var damage_frames = [3, 7, 12]  # Кадры, на которых будет наноситься урон
-		# Регистрация урона происходит на определенном кадре анимации
-		
-		while anim.animation == "attack":
-			
-			await anim.frame_changed
-			if anim.frame in damage_frames:
-				_check_for_hit()
-			if anim.frame == anim.sprite_frames.get_frame_count("attack") - 1:
-				break
-			
-				
-		
-		attack_collision.disabled = true
-		is_attacking = false
-		
-		anim.play("Idle")
-
 func _check_for_hit():
 	var bodies = attack_area.get_overlapping_bodies()
 	for body in bodies:
@@ -244,6 +225,11 @@ func _check_for_hit():
 			body.take_damage(attack_power)
 			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
 			print("Урон нанесен врагу на кадре", anim.frame)
+		elif body.is_in_group("target") and body.has_method("take_damage"):
+			print("Попадание по мишени")  # Отладочный вывод
+			body.take_damage(attack_power)
+			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
+			print("Урон нанесен мишени на кадре", anim.frame)
 
 func _on_AttackArea_body_entered(body):
 	if body.is_in_group("enemies") and can_deal_damage:
@@ -289,7 +275,7 @@ func die():
 	if is_dead: # Если персонаж уже мертв, не выполняем повторно
 		return
 		
-	is_dead = true # Устанавливаем флаг смерти
+	is_dead = true # Устанавливаем флаг мертви
 	print("Игрок умер")
 	anim.play("die")
 	set_physics_process(false)
@@ -311,7 +297,7 @@ func die():
 	get_tree().reload_current_scene()
 
 func gain_experience(amount: int):
-	if is_dead: # Если персонаж мертв, не получаем опыт
+	if is_dead: # Если персонаж метв, не получаем опыт
 		return
 		
 	experience += amount
@@ -350,7 +336,7 @@ func level_up():
 	print("Урон:", attack_power)
 	print("Защита:", defense)
 	print("Скорость:", speed)
-	print("Время перезарядки атаки:", attack_cooldown)
+	print("Вре��я перезарядки атаки:", attack_cooldown)
 	#anim.play("level_up")
 	update_ui()
 	
@@ -424,7 +410,9 @@ func _input(event):
 		return
 		
 	if event.is_action_pressed("attack"):
-		attack()
+		single_attack()
+	elif event.is_action_pressed("serial_attack"):
+		serial_attack()
 	elif event.is_action_pressed("interact"):
 		interact()
 	elif event.is_action_pressed("open_inventory"):
@@ -532,7 +520,7 @@ func load_player_stats():
 	if file:
 		var json_string = file.get_as_text()
 		if json_string.is_empty():
-			print("Файл сохранения пуст, используем начальные значения")
+			print("Файл сохранения уст, используем начальные значения")
 			return
 		var json = JSON.new()
 		var parse_result = json.parse(json_string)
@@ -581,7 +569,6 @@ func load_data(data):
 	if "inventory" in data:
 		inventory.load_inventory(data["inventory"])
 	
-	
 	update_ui()
 
 func update_total_attack_power():
@@ -618,8 +605,12 @@ func equip_armor(armor_item):
 	update_ui()
 
 func heal(amount):
-	health = min(health + amount, max_health)
+	var healing_bonus = 1.0
+	if equipment["damage_item"] and equipment["damage_item"].effect.get("healing_bonus"):
+		healing_bonus += equipment["damage_item"].effect.get("healing_bonus") / 100.0
 	
+	var final_healing = amount * healing_bonus
+	health = min(health + final_healing, max_health)
 	update_ui()
 
 func boost_attack(amount):
@@ -653,5 +644,106 @@ func _on_quest_completed(quest):
 	print("Получена награда за квест:", quest.reward_exp, "опыта")
 
 # Обновляем функцию die() врага, чтобы учитывать прогресс квестов
-func _on_enemy_died():
-	QuestManager.update_quest_progress("kill")
+
+func _on_enemy_died(enemy_type: String):
+	match enemy_type:
+		"dummy":
+			QuestManager.update_quest_progress("kill_dummy", 1, "kill_dummy")
+		"weak_enemy":
+			QuestManager.update_quest_progress("kill_weak", 1, "kill_weak")
+		"dungeon_monster":
+			QuestManager.update_quest_progress("clear_first_hall", 1, "clear_first_hall")
+		"boss":
+			QuestManager.update_quest_progress("kill_boss", 1, "kill_boss")
+
+func _on_area_entered(area: Area2D):
+	if area.is_in_group("village"):
+		QuestManager.update_quest_progress("reach_village", 1, "reach_village")
+	elif area.is_in_group("camp"):
+		QuestManager.update_quest_progress("clear_camps", 1)
+	elif area.is_in_group("artifact"):
+		QuestManager.update_quest_progress("find_artifacts", 1)
+	elif area.is_in_group("puzzle"):
+		QuestManager.update_quest_progress("solve_puzzles", 1)
+
+
+
+func shake(duration = 0.2, strength = 15, decay = 8):
+	var camera = $Camera2D
+	if not camera:
+		return
+		
+	var timer = 0.0
+	while timer < duration:
+		var offset = Vector2(
+			randf_range(-strength, strength),
+			randf_range(-strength, strength)
+		)
+		camera.offset = offset
+		
+		strength = strength * exp(-decay * timer)
+		
+		timer += get_process_delta_time()
+		await get_tree().process_frame
+	
+	camera.offset = Vector2.ZERO
+
+# Новая функция для одиночной атаки
+func single_attack():
+	if not is_attacking and current_attack_cooldown <= 0:
+		is_attacking = true
+		current_attack_cooldown = attack_cooldown
+		print("Игрок выполняет одиночную атаку! Сила атаки:", attack_power)
+		anim.play("attack1")
+		attack_collision.disabled = false
+		attack_area.monitoring = true
+		
+		# Ждем определенный кадр для нанесения урона
+		while anim.animation == "attack1":
+			await anim.frame_changed
+			if anim.frame == 5:  # Урон наносится на 5-м кадре
+				_check_single_hit()
+			if anim.frame == anim.sprite_frames.get_frame_count("attack1") - 1:
+				break
+		
+		attack_collision.disabled = true
+		attack_area.monitoring = false
+		is_attacking = false
+		anim.play("Idle")
+
+# Переименовываем существующую функцию attack() в serial_attack()
+func serial_attack():
+	if not is_attacking and current_attack_cooldown <= 0:
+		is_attacking = true
+		current_attack_cooldown = attack_cooldown
+		print("Игрок выполняет серийную атаку! Сила атаки:", attack_power)
+		anim.play("attack")
+		attack_collision.disabled = false
+		attack_area.monitoring = true
+		
+		var damage_frames = [3, 7, 12]
+		
+		while anim.animation == "attack":
+			await anim.frame_changed
+			if anim.frame in damage_frames:
+				_check_for_hit()
+			if anim.frame == anim.sprite_frames.get_frame_count("attack") - 1:
+				break
+		
+		attack_collision.disabled = true
+		attack_area.monitoring = false
+		is_attacking = false
+		anim.play("Idle")
+
+# Новая функция проверки попадания для одиночной атаки
+func _check_single_hit():
+	var bodies = attack_area.get_overlapping_bodies()
+	for body in bodies:
+		if body.is_in_group("enemies") and body.has_method("take_damage"):
+			body.take_damage(attack_power * 1) # Увеличенный урон для одиночной атаки
+			spawn_damage_number(attack_power * 1, body.global_position + Vector2(0, -50))
+			print("Урон нанесен врагу одиночной атакой")
+		elif body.is_in_group("target") and body.has_method("take_damage"):
+			body.take_damage(attack_power * 1)
+			spawn_damage_number(attack_power * 1, body.global_position + Vector2(0, -50))
+			print("Урон нанесен мишени одиночной атакой")

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemResource" load_steps=3 format=3 uid="uid://dldlje5v6kpp2"]
+
+[ext_resource type="Texture2D" uid="uid://c0bqpw6lcihos" path="res://assets/sprites/RF_Catacombs_v1.0 (1)/candleA_01.png" id="1_pd7g1"]
+[ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+item_name = "Факел"
+icon = ExtResource("1_pd7g1")
+type = "Tool"
+description = "Используйте для поджога бочек"
+stackable = true
+max_stack_size = 5
+effect = {}

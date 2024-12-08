@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemResource" load_steps=4 format=3 uid="uid://cekgwgghw60se"]
+
+[ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_sword"]
+[ext_resource type="Texture2D" uid="uid://6xp52mc4dhwq" path="res://items/fullswordpack.png" id="1_wjpo0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_viyba"]
+atlas = ExtResource("1_wjpo0")
+region = Rect2(0.297, 15.407, 16, 16)
+
+[resource]
+script = ExtResource("1_sword")
+item_name = "Железный меч"
+icon = SubResource("AtlasTexture_viyba")
+type = "Weapon"
+description = "Прочный железный меч"
+stackable = false
+max_stack_size = 1
+effect = {
+"attack": 15
+}

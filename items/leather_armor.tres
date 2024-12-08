@@ -1,12 +1,16 @@
-[gd_resource type="Resource" script_class="ItemResource" load_steps=2 format=3 uid="uid://bxsms3invmx03"]
+[gd_resource type="Resource" script_class="ItemResource" load_steps=3 format=3 uid="uid://bxsms3invmx03"]
 
+[ext_resource type="Texture2D" uid="uid://bqfgv633nbj54" path="res://items/items_image/Abyssal_mask/Abyssal Mask5.png" id="1_fwnro"]
 [ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_yiqnb"]
 
 [resource]
 script = ExtResource("1_yiqnb")
 item_name = "Кожаная броня"
+icon = ExtResource("1_fwnro")
 type = "Armor"
 description = "Легкая броня, обеспечивающая базовую защиту"
 stackable = false
 max_stack_size = 1
-effect = {}
+effect = {
+"defense": 5
+}
