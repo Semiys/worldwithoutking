@@ -1,12 +1,30 @@
-[gd_scene load_steps=2 format=3 uid="uid://dungeon_keeper"]
+[gd_scene load_steps=6 format=3 uid="uid://bwlktaysmgkvt"]
 
 [ext_resource type="PackedScene" uid="uid://b8v6wj3c8qd0m" path="res://scenes/npc.tscn" id="1_1"]
 [ext_resource type="Script" path="res://scripts/dungeon_keeper.gd" id="2_1"]
+[ext_resource type="Texture2D" uid="uid://be2b0jy714q2x" path="res://Male1.png" id="3_4w3ie"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fanj4"]
+atlas = ExtResource("3_4w3ie")
+region = Rect2(0, 336, 28, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hd8qp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fanj4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [node name="DungeonKeeper" instance=ExtResource("1_1")]
 script = ExtResource("2_1")
 
 [node name="Sprite2D" parent="." index="1"]
-modulate = Color(0.5, 0.0, 0.0, 1.0)  # Тёмно-красный оттенок
+visible = false
+modulate = Color(0.5, 0, 0, 1)
 
-# Остальные ноды такие же как у TutorialMaster 
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." index="5"]
+sprite_frames = SubResource("SpriteFrames_hd8qp")
