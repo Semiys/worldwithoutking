@@ -32,7 +32,7 @@ var aura_damage_active = false
 # Переменные для визуализации радиусов
 var dodge_range = 100.0 # Уменьшен базовый радиус
 var aoe_radius = 50.0 # Уменьшен базовый радиус
-var line_width = 15.0 # Уменьшена базоая ширина
+var line_width = 15.0 # Уменьшена базоая ши��ина
 var line_length = 100.0 # Уменьшена базовая длина
 var aura_radius = 75.0 # Уменьшен базовый радиус
 
@@ -605,8 +605,12 @@ func equip_armor(armor_item):
 	update_ui()
 
 func heal(amount):
-	health = min(health + amount, max_health)
+	var healing_bonus = 1.0
+	if equipment["damage_item"] and equipment["damage_item"].effect.get("healing_bonus"):
+		healing_bonus += equipment["damage_item"].effect.get("healing_bonus") / 100.0
 	
+	var final_healing = amount * healing_bonus
+	health = min(health + final_healing, max_health)
 	update_ui()
 
 func boost_attack(amount):
@@ -736,10 +740,10 @@ func _check_single_hit():
 	var bodies = attack_area.get_overlapping_bodies()
 	for body in bodies:
 		if body.is_in_group("enemies") and body.has_method("take_damage"):
-			body.take_damage(attack_power * 1.5) # Увеличенный урон для одиночной атаки
-			spawn_damage_number(attack_power * 1.5, body.global_position + Vector2(0, -50))
+			body.take_damage(attack_power * 1) # Увеличенный урон для одиночной атаки
+			spawn_damage_number(attack_power * 1, body.global_position + Vector2(0, -50))
 			print("Урон нанесен врагу одиночной атакой")
 		elif body.is_in_group("target") and body.has_method("take_damage"):
-			body.take_damage(attack_power * 1.5)
-			spawn_damage_number(attack_power * 1.5, body.global_position + Vector2(0, -50))
+			body.take_damage(attack_power * 1)
+			spawn_damage_number(attack_power * 1, body.global_position + Vector2(0, -50))
 			print("Урон нанесен мишени одиночной атакой")

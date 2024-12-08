@@ -169,7 +169,6 @@ func die():
 	anim.play("death")
 	self.collision_layer = 0
 	self.collision_mask = 0
-
 func drop_loot():
 	var dropped_item_scene = preload("res://scenes/dropped_item.tscn")
 	var item_database = get_node("/root/ItemDatabase")

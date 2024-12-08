@@ -1,12 +1,16 @@
-[gd_resource type="Resource" script_class="ItemResource" load_steps=3 format=3 uid="uid://batpei4kk3cci"]
+[gd_resource type="Resource" script_class="ItemResource" load_steps=4 format=3 uid="uid://batpei4kk3cci"]
 
 [ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_0bo0t"]
-[ext_resource type="Texture2D" uid="uid://ryy5cu36xfh3" path="res://items/items_image/full swords.png" id="1_nykbf"]
+[ext_resource type="Texture2D" uid="uid://6xp52mc4dhwq" path="res://items/fullswordpack.png" id="1_fmekf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qa70t"]
+atlas = ExtResource("1_fmekf")
+region = Rect2(0.444, -0.222, 16, 16)
 
 [resource]
 script = ExtResource("1_0bo0t")
 item_name = "Меч"
-icon = ExtResource("1_nykbf")
+icon = SubResource("AtlasTexture_qa70t")
 type = "Weapon"
 description = "Острый меч для ближнего боя"
 stackable = false

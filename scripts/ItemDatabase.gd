@@ -3,8 +3,10 @@ extends Node
 var items = {
 	"Меч": preload("res://items/sword.tres"),
 	"Зелье здоровья": preload("res://items/health_potion.tres"),
-	"leather_armor": preload("res://items/leather_armor.tres"),
-	"Факел": preload("res://items/torch.tres")
+	"Кожаная броня": preload("res://items/leather_armor.tres"),
+	"Факел": preload("res://items/torch.tres"),
+	"Железный меч": preload("res://items/iron_sword.tres"),
+	"Кольцо исцеления": preload("res://items/healing_ring.tres")
 }
 
 func _ready():

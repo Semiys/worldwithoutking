@@ -1,12 +1,20 @@
-[gd_resource type="Resource" script_class="ItemResource" load_steps=2 format=3 uid="uid://bxsms3invmx03"]
+[gd_resource type="Resource" script_class="ItemResource" load_steps=4 format=3 uid="uid://bxsms3invmx03"]
 
+[ext_resource type="Texture2D" uid="uid://6xp52mc4dhwq" path="res://items/fullswordpack.png" id="1_vbs2w"]
 [ext_resource type="Script" path="res://scripts/ItemResource.gd" id="1_yiqnb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4e82j"]
+atlas = ExtResource("1_vbs2w")
+region = Rect2(63, 36, 16, 16)
 
 [resource]
 script = ExtResource("1_yiqnb")
 item_name = "Кожаная броня"
+icon = SubResource("AtlasTexture_4e82j")
 type = "Armor"
 description = "Легкая броня, обеспечивающая базовую защиту"
 stackable = false
 max_stack_size = 1
-effect = {}
+effect = {
+"defense": 5
+}
