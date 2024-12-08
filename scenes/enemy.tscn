@@ -7,8 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://r4oai418d1yc" path="res://assets/sprites/Enemy/Skeleton_01_Yellow_Walk.png" id="5_8kpt0"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ndcp2"]
-radius = 7.0
-height = 26.0
+radius = 4.0
+height = 18.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lw6uo"]
 atlas = ExtResource("2_c1yna")
@@ -190,7 +190,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"attack",
-"speed": 10.0
+"speed": 6.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -299,8 +299,7 @@ shape = SubResource("CapsuleShape2D_ndcp2")
 position = Vector2(0.999999, -4)
 scale = Vector2(0.516927, 0.601563)
 sprite_frames = SubResource("SpriteFrames_dxdeg")
-animation = &"hurt"
-frame_progress = 0.472977
+animation = &"attack"
 
 [node name="AggroArea" type="Area2D" parent="."]
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=4 uid="uid://crapkohyqjtml"]
+[gd_scene load_steps=12 format=4 uid="uid://crapkohyqjtml"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_oqycu"]
 [ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="2_3e36s"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://b63fkpm6ik52s" path="res://scenes/npcs/tutorial_master.tscn" id="7_a1fao"]
 [ext_resource type="PackedScene" uid="uid://bwlktaysmgkvt" path="res://scenes/npcs/dungeon_keeper.tscn" id="8_1v4c0"]
 [ext_resource type="PackedScene" uid="uid://target" path="res://scenes/target.tscn" id="9_u8nhh"]
+[ext_resource type="PackedScene" uid="uid://da1sobpipbdcg" path="res://scenes/enemy2.tscn" id="10_l7hsv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qm2fe"]
 size = Vector2(1706.5, 1423)
@@ -130,3 +131,12 @@ position = Vector2(1125, 657)
 
 [node name="Target5" parent="." instance=ExtResource("9_u8nhh")]
 position = Vector2(1142, 596)
+
+[node name="Enemy6" parent="." instance=ExtResource("10_l7hsv")]
+position = Vector2(224, 593)
+
+[node name="Enemy7" parent="." instance=ExtResource("10_l7hsv")]
+position = Vector2(394, 594)
+
+[node name="Enemy8" parent="." instance=ExtResource("10_l7hsv")]
+position = Vector2(536, 598)

@@ -5,6 +5,7 @@ const DODGE_SPEED = 150.0
 const BASE_HEALTH = 50  # Базовое здоровье
 const BASE_ATTACK = 5   # Базовая атака
 const BASE_DEFENSE = 2  # Базовая защита
+const ATTACK_COOLDOWN = 0.3  # Уменьшаем с 1.0 до 0.5 для более частых атак
 
 var health = BASE_HEALTH
 var max_health = BASE_HEALTH
@@ -34,6 +35,9 @@ func _ready():
 	target = get_tree().get_nodes_in_group("player")[0]
 	aggro_area.connect("body_entered", _on_aggro_area_body_entered)
 	aggro_area.connect("body_exited", _on_aggro_area_body_exited)
+	
+	# Устанавливаем начальное значение кулдауна
+	current_cooldown = ATTACK_COOLDOWN
 	
 	# Масштабируем характеристики в зависимости от уровня игрока
 	scale_stats_to_player_level()
@@ -72,13 +76,15 @@ func _physics_process(delta):
 		
 		if distance > min_distance:
 			velocity = direction * SPEED
-			anim.play("run")
-			# По��орачиваем спрайт в зависимости от направления движения
-			anim.flip_h = direction.x < 0
+			# Выбираем правильную анимацию бега в зависимости от направления
+			if direction.x < 0:
+				anim.play("run_left")
+			else:
+				anim.play("run_right")
 		else:
 			velocity = Vector2.ZERO
 			if current_cooldown <= 0:
-				attack()
+				attack(direction.x < 0)  # Передаем направление атаки
 				current_cooldown = attack_cooldown
 		
 		current_cooldown -= delta
@@ -119,17 +125,18 @@ func _on_aggro_area_body_exited(body):
 		is_aggro = false
 		print("Враг потерял игрока из виду.")
 
-func attack():
+func attack(attack_left: bool = false):
 	print("Враг атакует! Сила атаки:", attack_power)
 	
-	# Ускоряем анимацию атаки
-	anim.speed_scale = 2.0
-	anim.play("attack")
+	# Увеличиваем скорость анимации атаки еще больше
+	anim.speed_scale = 3.0  # Увеличиваем с 2.0 до 3.0
+	if attack_left:
+		anim.play("attack_left")
+	else:
+		anim.play("attack_right")
 	
-	# Ждем середины анимации для нанесения урона
-	# При speed = 10 fps и speed_scale = 2.0, один кадр = 0.05 секунды
-	# У нас 10 кадров, значит до 5-го кадра нужно ждать 0.1 секунды
-	await get_tree().create_timer(0.1).timeout
+	# Корректируем время до нанесения урона с учетом новой скорости
+	await get_tree().create_timer(0.07).timeout
 	
 	# Наносим урон
 	if target and target.has_method("take_damage"):
@@ -172,10 +179,12 @@ func take_damage(amount: int):
 		anim.speed_scale = 1.0
 		
 		# Если все еще есть цель, возвращаемся к анимации движения
-		if target and is_aggro:
+		if target:
 			var direction = (target.global_position - global_position).normalized()
-			anim.play("run")
-			anim.flip_h = direction.x < 0
+			if direction.x < 0:
+				anim.play("run_left")
+			else:
+				anim.play("run_right")
 
 func die():
 	print("Враг умер")
@@ -201,7 +210,7 @@ func die():
 		player.gain_experience(10)
 		print("Награда получена: +10 опыта")
 	
-	# Добавляем выпадение предметов
+	# Д��бавляем выпадение предметов
 	drop_loot()
 	
 	# Важно: устанавливаем loop = false для анимации смерти
@@ -215,7 +224,7 @@ func drop_loot():
 	var dropped_item_scene = preload("res://scenes/dropped_item.tscn")
 	var item_database = get_node("/root/ItemDatabase")
 	
-	# Шанс выпадения предметов
+	# Шанс ыпадения предметов
 	if randf() < 0.3: # 30% шанс
 		var possible_items = ["Зелье здоровья"]
 		var item_name = possible_items[randi() % possible_items.size()]
