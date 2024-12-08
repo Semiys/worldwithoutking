@@ -26,8 +26,8 @@ const MIDDLE_VILLAGE_WIDTH = 50  # Увеличенная ширина для с
 const MIDDLE_VILLAGE_HEIGHT = 35 # Увеличенная высота для средней деревни
 
 const VILLAGE_BORDER = 20 # Отступ от края карты
-const WATER_SAFE_DISTANCE = 30 # Безопасное расстояние от воды
-const TREE_SAFE_DISTANCE = 30 # Безопасное расстояние от деревьев
+const WATER_SAFE_DISTANCE = 80 # Безопасное расстояние от воды
+const TREE_SAFE_DISTANCE = 80 # Безопасное расстояние от деревьев
 const MAX_GENERATION_ATTEMPTS = 20 # Максималное количество попыток генерации мира
 const WATER_BORDER_WIDTH = 32 # Ширина водной границы в тайлах
 

@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const BASE_SPEED = 1000.0
+const BASE_SPEED = 100.0
 const BASE_ATTACK_COOLDOWN = 0.5
 
 var speed = BASE_SPEED
@@ -81,6 +81,13 @@ func _ready():
 		var event = InputEventKey.new()
 		event.keycode = KEY_T
 		InputMap.action_add_event("open_talents", event)
+	
+	# Добавляем регистрацию клавиши V для серийной атаки
+	if not InputMap.has_action("serial_attack"):
+		InputMap.add_action("serial_attack")
+		var event = InputEventKey.new()
+		event.keycode = KEY_V
+		InputMap.action_add_event("serial_attack", event)
 
 func _physics_process(_delta: float) -> void:
 	if is_dead: # Если персонаж мертв, не обрабатываем движение и атаки
@@ -211,29 +218,6 @@ func spawn_damage_number(damage: int, pos: Vector2):
 	var anim_player = damage_number.get_node("AnimationPlayer")
 	anim_player.play("showDamage")
 
-func attack():
-	if not is_attacking and current_attack_cooldown <= 0:
-		is_attacking = true
-		current_attack_cooldown = attack_cooldown
-		print("Игрок атакует! Сила атаки:", attack_power)
-		anim.play("attack")
-		attack_collision.disabled = false
-		attack_area.monitoring = true  # Включаем мониторинг области атаки
-		
-		var damage_frames = [3, 7, 12]
-		
-		while anim.animation == "attack":
-			await anim.frame_changed
-			if anim.frame in damage_frames:
-				_check_for_hit()
-			if anim.frame == anim.sprite_frames.get_frame_count("attack") - 1:
-				break
-		
-		attack_collision.disabled = true
-		attack_area.monitoring = false  # Выключаем мониторинг области атаки
-		is_attacking = false
-		anim.play("Idle")
-
 func _check_for_hit():
 	var bodies = attack_area.get_overlapping_bodies()
 	for body in bodies:
@@ -343,7 +327,7 @@ func level_up():
 	# Увеличение скорости (линейная формула с замедлением роста)
 	speed = BASE_SPEED * (1 + (level * 0.1) / (1 + level * 0.05))
 	
-	# Уменьшение времени перезарядк�� атаки (экспоненциальная формула с ограничением)
+	# Уменьшение времени перезарядки атаки (экспоненциальная формула с ограничением)
 	attack_cooldown = max(BASE_ATTACK_COOLDOWN * pow(0.95, level - 1), 0.1)
 	
 	print("Уровень повышен! Текущий уровень:", level)
@@ -352,7 +336,7 @@ func level_up():
 	print("Урон:", attack_power)
 	print("Защита:", defense)
 	print("Скорость:", speed)
-	print("Время перезарядки атаки:", attack_cooldown)
+	print("Вре��я перезарядки атаки:", attack_cooldown)
 	#anim.play("level_up")
 	update_ui()
 	
@@ -426,7 +410,9 @@ func _input(event):
 		return
 		
 	if event.is_action_pressed("attack"):
-		attack()
+		single_attack()
+	elif event.is_action_pressed("serial_attack"):
+		serial_attack()
 	elif event.is_action_pressed("interact"):
 		interact()
 	elif event.is_action_pressed("open_inventory"):
@@ -583,7 +569,6 @@ func load_data(data):
 	if "inventory" in data:
 		inventory.load_inventory(data["inventory"])
 	
-	
 	update_ui()
 
 func update_total_attack_power():
@@ -698,3 +683,63 @@ func shake(duration = 0.2, strength = 15, decay = 8):
 		await get_tree().process_frame
 	
 	camera.offset = Vector2.ZERO
+
+# Новая функция для одиночной атаки
+func single_attack():
+	if not is_attacking and current_attack_cooldown <= 0:
+		is_attacking = true
+		current_attack_cooldown = attack_cooldown
+		print("Игрок выполняет одиночную атаку! Сила атаки:", attack_power)
+		anim.play("attack1")
+		attack_collision.disabled = false
+		attack_area.monitoring = true
+		
+		# Ждем определенный кадр для нанесения урона
+		while anim.animation == "attack1":
+			await anim.frame_changed
+			if anim.frame == 5:  # Урон наносится на 5-м кадре
+				_check_single_hit()
+			if anim.frame == anim.sprite_frames.get_frame_count("attack1") - 1:
+				break
+		
+		attack_collision.disabled = true
+		attack_area.monitoring = false
+		is_attacking = false
+		anim.play("Idle")
+
+# Переименовываем существующую функцию attack() в serial_attack()
+func serial_attack():
+	if not is_attacking and current_attack_cooldown <= 0:
+		is_attacking = true
+		current_attack_cooldown = attack_cooldown
+		print("Игрок выполняет серийную атаку! Сила атаки:", attack_power)
+		anim.play("attack")
+		attack_collision.disabled = false
+		attack_area.monitoring = true
+		
+		var damage_frames = [3, 7, 12]
+		
+		while anim.animation == "attack":
+			await anim.frame_changed
+			if anim.frame in damage_frames:
+				_check_for_hit()
+			if anim.frame == anim.sprite_frames.get_frame_count("attack") - 1:
+				break
+		
+		attack_collision.disabled = true
+		attack_area.monitoring = false
+		is_attacking = false
+		anim.play("Idle")
+
+# Новая функция проверки попадания для одиночной атаки
+func _check_single_hit():
+	var bodies = attack_area.get_overlapping_bodies()
+	for body in bodies:
+		if body.is_in_group("enemies") and body.has_method("take_damage"):
+			body.take_damage(attack_power * 1.5) # Увеличенный урон для одиночной атаки
+			spawn_damage_number(attack_power * 1.5, body.global_position + Vector2(0, -50))
+			print("Урон нанесен врагу одиночной атакой")
+		elif body.is_in_group("target") and body.has_method("take_damage"):
+			body.take_damage(attack_power * 1.5)
+			spawn_damage_number(attack_power * 1.5, body.global_position + Vector2(0, -50))
+			print("Урон нанесен мишени одиночной атакой")
