@@ -1,5 +1,8 @@
 extends "res://scripts/enemy.gd"
 
+# Константы для атаки
+const ATTACK_COOLDOWN = 0.5  # Время между атаками в секундах
+
 # Фазы босса
 enum BossPhase {PHASE_1, PHASE_2, PHASE_3}
 var current_phase = BossPhase.PHASE_1
@@ -117,7 +120,7 @@ func setup_rage_particles():
 	add_child(rage_particles)
 
 func setup_all_particles():
-	# Частицы для призыва ми��ьонов (фиолетовые)
+	# Частицы для призыва миньонов (фиолетовые)
 	minion_spawn_particles = CPUParticles2D.new()
 	minion_spawn_particles.amount = 30
 	minion_spawn_particles.lifetime = 0.5
@@ -144,49 +147,141 @@ func setup_all_particles():
 	add_child(flame_particles)
 
 func _physics_process(delta):
-	# Обработка уворота
-	if should_dodge() and current_dodge_cooldown <= 0:
-		start_dodge()
-	
-	if is_dodging:
-		velocity = dodge_direction * DODGE_SPEED
-		current_dodge_duration -= delta
-		if current_dodge_duration <= 0:
-			is_dodging = false
-	elif knockback_timer > 0:
+	if knockback_timer > 0:
 		knockback_timer -= delta
+		# Выбираем направление анимации получения урона
+		if target:
+			var direction = (target.global_position - global_position).normalized()
+			if direction.x < 0:
+				$AnimatedSprite2D2.play("hurt_left")
+			else:
+				$AnimatedSprite2D2.flip_h = true
+				$AnimatedSprite2D2.play("hurt_left")  # Используем ту же анимацию, но отраженную
+		move_and_slide()
 	elif is_aggro and target and not target.is_dead and not is_dashing:
-		# Обработка движения и атак
 		var direction = (target.global_position - global_position).normalized()
 		var distance = global_position.distance_to(target.global_position)
 		
 		if distance > min_distance:
 			velocity = direction * boss_speed
-			if anim:
-				anim.play("run")
-				anim.flip_h = direction.x < 0
-				
-			# Проверяем возможность рывка
-			if distance < 200 and current_dash_cooldown <= 0:
-				perform_dash()
+			$AnimatedSprite2D2.play("run")
+			# Отражаем спрайт в зависимости от направления движения
+			$AnimatedSprite2D2.flip_h = direction.x < 0
 		else:
 			velocity = Vector2.ZERO
 			if current_cooldown <= 0:
-				attack()
-				current_cooldown = attack_cooldown
+				perform_attack()
+				current_cooldown = ATTACK_COOLDOWN
+	else:
+		velocity = Vector2.ZERO
+		$AnimatedSprite2D2.play("idle")
 	
 	# Обновляем кулдауны
-	if current_dodge_cooldown > 0:
-		current_dodge_cooldown -= delta
-	if current_dash_cooldown > 0:
-		current_dash_cooldown -= delta
+	update_cooldowns(delta)
+	move_and_slide()
+
+func perform_attack():
+	print("Босс атакует! Сила атаки:", attack_power)
+	
+	# Ускоряем анимацию атаки
+	$AnimatedSprite2D2.speed_scale = 2.0
+	$AnimatedSprite2D2.play("attack")
+	
+	# Ждем подходящего момента для нанесения урона (примерно середина анимации)
+	# У нас 15 кадров в анимации атаки, ждем 7-8 кадр
+	await get_tree().create_timer(0.15).timeout
+	
+	# Наносим урон
+	if target and target.has_method("take_damage"):
+		target.take_damage(attack_power)
+	
+	# Ждем окончания анимации и возвращаем нормальную скорость
+	await $AnimatedSprite2D2.animation_finished
+	$AnimatedSprite2D2.speed_scale = 1.0
+
+func take_damage(amount: int):
+	if health <= 0:
+		return
+		
+	var actual_damage = max(amount - defense, 0)
+	if has_shield:
+		actual_damage = int(actual_damage * 0.5)
+	
+	health -= actual_damage
+	
+	# Прерываем текущую анимацию
+	$AnimatedSprite2D2.stop()
+	
+	# Выбираем направление анимации получения урона
+	if target:
+		var direction = (target.global_position - global_position).normalized()
+		$AnimatedSprite2D2.speed_scale = 2.0
+		if direction.x < 0:
+			$AnimatedSprite2D2.play("hurt_left")
+		else:
+			$AnimatedSprite2D2.flip_h = true
+			$AnimatedSprite2D2.play("hurt_left")
+	
+	print("Босс получил", actual_damage, "урона. Осталось здоровья:", health)
+	
+	# Отбрасывание и эффекты
+	if target:
+		var knockback_direction = (global_position - target.global_position).normalized()
+		velocity = knockback_direction * knockback_strength
+		knockback_timer = knockback_duration
+	
+	if health <= 0:
+		die()
+	else:
+		await $AnimatedSprite2D2.animation_finished
+		$AnimatedSprite2D2.speed_scale = 1.0
+
+func die():
+	print("Босс побежден!")
+	
+	# Отключаем коллизии
+	self.collision_layer = 0
+	self.collision_mask = 0
+	
+	# Останавливаем все текущие анимации и проигрываем смерть
+	$AnimatedSprite2D2.stop()
+	$AnimatedSprite2D2.speed_scale = 1.0
+	$AnimatedSprite2D2.play("death")
+	
+	# Отключаем физику и движение
+	velocity = Vector2.ZERO
+	set_physics_process(false)
+	
+	# Удаляем миньонов и выдаем награду
+	for minion in get_tree().get_nodes_in_group("minions"):
+		minion.queue_free()
+	
+	var player = get_tree().get_nodes_in_group("player")[0]
+	if player and player.has_method("gain_experience"):
+		player.gain_experience(100)
+		print("Награда получена: +100 опыта")
+	
+	# Ждем окончания анимации смерти
+	await $AnimatedSprite2D2.animation_finished
+	queue_free()
+
+func update_cooldowns(delta):
 	if current_cooldown > 0:
 		current_cooldown -= delta
-	
-	move_and_slide()
-	
-	# Проверка призыва миньонов
-	check_minion_spawn()
+	if current_dash_cooldown > 0:
+		current_dash_cooldown -= delta
+	if current_summon_cooldown > 0:
+		current_summon_cooldown -= delta
+	if current_aoe_cooldown > 0:
+		current_aoe_cooldown -= delta
+	if current_shield_cooldown > 0:
+		current_shield_cooldown -= delta
+	if current_teleport_cooldown > 0:
+		current_teleport_cooldown -= delta
+	if current_flame_trail_cooldown > 0:
+		current_flame_trail_cooldown -= delta
+	if current_rage_cooldown > 0:
+		current_rage_cooldown -= delta
 
 func check_phase():
 	var health_percent = float(health) / max_health
@@ -194,31 +289,6 @@ func check_phase():
 		enter_phase_3()
 	elif health_percent <= 0.66 and current_phase == BossPhase.PHASE_1:
 		enter_phase_2()
-
-func take_damage(amount: int):
-	if has_shield:
-		amount = int(amount * 0.5)  # Щит блокирует 50% урона
-	
-	# Вызываем родительский метод take_damage
-	super.take_damage(amount)
-	
-	# Активируем агро при получении урона
-	if not is_aggro and target:
-		is_aggro = true
-
-func die():
-	# Удаляем всех оставшихся миньонов
-	for minion in get_tree().get_nodes_in_group("enemies"):
-		if minion != self:
-			minion.queue_free()
-	
-	# Даём больше опыта игроку
-	var player = get_tree().get_nodes_in_group("player")[0]
-	if player and player.has_method("gain_experience"):
-		player.gain_experience(100)
-		print("Босс побеждён! Награда: +100 опыта")
-	
-	super.die()
 
 func perform_dash():
 	if not target:

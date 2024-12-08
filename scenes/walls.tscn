@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=4 uid="uid://jckupgxkhrp6"]
+[gd_scene load_steps=7 format=4 uid="uid://cpvnm2bf2c26r"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_osrx7"]
 [ext_resource type="PackedScene" uid="uid://kbqxu5y025wo" path="res://scenes/boss.tscn" id="2_vwxcq"]
