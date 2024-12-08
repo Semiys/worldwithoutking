@@ -1,7 +1,9 @@
 extends "res://scripts/enemy.gd"
 
 # Константы для атаки
-const ATTACK_COOLDOWN = 0.5  # Время между атаками в секундах
+const ATTACK_COOLDOWN = 2.0  # Увеличиваем время между атаками
+const ATTACK_DISTANCE = 100.0
+const ATTACK_DURATION = 1.2  # Увеличиваем длительность анимации атаки
 
 # Фазы босса
 enum BossPhase {PHASE_1, PHASE_2, PHASE_3}
@@ -55,19 +57,23 @@ var minion_spawn_particles: CPUParticles2D
 var aoe_particles: CPUParticles2D
 var flame_particles: CPUParticles2D
 
+var is_attacking = false
+var current_attack_cooldown = 0.0
+var facing_direction = Vector2.RIGHT
+
 func _ready():
 	# Инициализация базовых характеристик
 	max_health = 1200
 	health = max_health
 	attack_power = 15
 	defense = 5
-	min_distance = 30.0
+	min_distance = ATTACK_DISTANCE  # Обновляем дистанцию атаки
 	
 	# Увеличиваем размер босса и его области агро
 	scale = Vector2(2, 2)
 	$AggroArea/CollisionShape2D.scale = Vector2(3, 3)  # Увеличиваем радиус агро
 	
-	# Сразу находим и устанавливаем цель (игрока)
+	# Сразу находим и устанавливаем цель (иг��ока)
 	target = get_tree().get_nodes_in_group("player")[0]
 	is_aggro = true  # Сразу активируем агро
 	
@@ -83,6 +89,18 @@ func _ready():
 	
 	# Сразу проверяем призыв миньонов
 	check_minion_spawn()
+	
+	# Начинаем с анимации простоя
+	$AnimatedSprite2D2.animation = "idle"
+	$AnimatedSprite2D2.play()
+	
+	# Теперь спрайт изначально смотрит влево
+	$AnimatedSprite2D2.flip_h = true
+	
+	# Проверяем доступные анимации
+	print("Available animations: ", $AnimatedSprite2D2.sprite_frames.get_animation_names())
+	# Проверяем настройки анимации атаки
+	print("Attack animation frames: ", $AnimatedSprite2D2.sprite_frames.get_frame_count("attack"))
 
 func setup_particles():
 	effect_particles = CPUParticles2D.new()
@@ -149,55 +167,78 @@ func setup_all_particles():
 func _physics_process(delta):
 	if knockback_timer > 0:
 		knockback_timer -= delta
-		# Выбираем направление анимации получения урона
-		if target:
-			var direction = (target.global_position - global_position).normalized()
-			if direction.x < 0:
-				$AnimatedSprite2D2.play("hurt_left")
-			else:
-				$AnimatedSprite2D2.flip_h = true
-				$AnimatedSprite2D2.play("hurt_left")  # Используем ту же анимацию, но отраженную
 		move_and_slide()
-	elif is_aggro and target and not target.is_dead and not is_dashing:
-		var direction = (target.global_position - global_position).normalized()
-		var distance = global_position.distance_to(target.global_position)
+		return
 		
-		if distance > min_distance:
-			velocity = direction * boss_speed
-			$AnimatedSprite2D2.play("run")
-			# Отражаем спрайт в зависимости от направления движения
-			$AnimatedSprite2D2.flip_h = direction.x < 0
-		else:
-			velocity = Vector2.ZERO
-			if current_cooldown <= 0:
-				perform_attack()
-				current_cooldown = ATTACK_COOLDOWN
+	if not is_aggro or not target or target.is_dead:
+		velocity = Vector2.ZERO
+		play_animation("idle")
+		return
+
+	if current_attack_cooldown > 0:
+		current_attack_cooldown -= delta
+	
+	var direction = (target.global_position - global_position).normalized()
+	var distance = global_position.distance_to(target.global_position)
+	
+	if distance > min_distance and !is_attacking:
+		velocity = direction * boss_speed
+		
+		# Инвертируем логику направления
+		if direction.x > 0:  # Движение вправо
+			$AnimatedSprite2D2.flip_h = true  # Было false
+			play_animation("run")
+		else:  # Движение влево
+			$AnimatedSprite2D2.flip_h = false  # Было true
+			play_animation("run")
+			
+		facing_direction = direction
 	else:
 		velocity = Vector2.ZERO
-		$AnimatedSprite2D2.play("idle")
+		if current_attack_cooldown <= 0 and !is_attacking:
+			await perform_attack()
+		elif !is_attacking:
+			play_animation("idle")
 	
-	# Обновляем кулдауны
-	update_cooldowns(delta)
 	move_and_slide()
 
 func perform_attack():
-	print("Босс атакует! Сила атаки:", attack_power)
+	if not target or is_attacking:
+		return
+		
+	is_attacking = true
+	current_attack_cooldown = ATTACK_COOLDOWN
 	
-	# Ускоряем анимацию атаки
-	$AnimatedSprite2D2.speed_scale = 2.0
-	$AnimatedSprite2D2.play("attack")
+	# Инвертируем направление атаки
+	var direction = (target.global_position - global_position).normalized()
+	$AnimatedSprite2D2.flip_h = direction.x > 0  # Инвертировали условие
 	
-	# Ждем подходящего момента для нанесения урона (примерно середина анимации)
-	# У нас 15 кадров в анимации атаки, ждем 7-8 кадр
-	await get_tree().create_timer(0.15).timeout
+	play_animation("attack")
 	
-	# Наносим урон
-	if target and target.has_method("take_damage"):
+	await get_tree().create_timer(0.3).timeout
+	
+	if target and global_position.distance_to(target.global_position) <= ATTACK_DISTANCE + 50:
 		target.take_damage(attack_power)
 	
-	# Ждем окончания анимации и возвращаем нормальную скорость
-	await $AnimatedSprite2D2.animation_finished
-	$AnimatedSprite2D2.speed_scale = 1.0
+	await get_tree().create_timer(ATTACK_DURATION).timeout
+	
+	is_attacking = false
+	play_animation("idle")
+
+func play_animation(anim_name: String):
+	if $AnimatedSprite2D2.animation != anim_name or !$AnimatedSprite2D2.is_playing():
+		$AnimatedSprite2D2.play(anim_name)
+		if anim_name == "attack":
+			$AnimatedSprite2D2.speed_scale = 0.8
+		elif anim_name == "run":
+			$AnimatedSprite2D2.speed_scale = 1.0
+		else:
+			$AnimatedSprite2D2.speed_scale = 1.0
+
+func _on_animated_sprite_2d_2_animation_finished():
+	if $AnimatedSprite2D2.animation == "attack":
+		is_attacking = false
+		play_animation("idle")
 
 func take_damage(amount: int):
 	if health <= 0:
@@ -209,22 +250,10 @@ func take_damage(amount: int):
 	
 	health -= actual_damage
 	
-	# Прерываем текущую анимацию
-	$AnimatedSprite2D2.stop()
+	# Прерываем текущую анимацию и проигрываем получение урона
+	play_animation("hurt_left")
+	$AnimatedSprite2D2.flip_h = target and target.global_position.x < global_position.x
 	
-	# Выбираем направление анимации получения урона
-	if target:
-		var direction = (target.global_position - global_position).normalized()
-		$AnimatedSprite2D2.speed_scale = 2.0
-		if direction.x < 0:
-			$AnimatedSprite2D2.play("hurt_left")
-		else:
-			$AnimatedSprite2D2.flip_h = true
-			$AnimatedSprite2D2.play("hurt_left")
-	
-	print("Босс получил", actual_damage, "урона. Осталось здоровья:", health)
-	
-	# Отбрасывание и эффекты
 	if target:
 		var knockback_direction = (global_position - target.global_position).normalized()
 		velocity = knockback_direction * knockback_strength
@@ -233,24 +262,19 @@ func take_damage(amount: int):
 	if health <= 0:
 		die()
 	else:
-		await $AnimatedSprite2D2.animation_finished
-		$AnimatedSprite2D2.speed_scale = 1.0
+		await get_tree().create_timer(0.3).timeout  # Длительность анимации получения урона
+		play_animation("idle")
 
 func die():
 	print("Босс побежден!")
 	
-	# Отключаем коллизии
-	self.collision_layer = 0
-	self.collision_mask = 0
-	
-	# Останавливаем все текущие анимации и проигрываем смерть
-	$AnimatedSprite2D2.stop()
-	$AnimatedSprite2D2.speed_scale = 1.0
-	$AnimatedSprite2D2.play("death")
-	
-	# Отключаем физику и движение
-	velocity = Vector2.ZERO
+	# Отключаем коллизии и физику
+	collision_layer = 0
+	collision_mask = 0
 	set_physics_process(false)
+	
+	# Проигрываем анимацию смерти
+	play_animation("death")
 	
 	# Удаляем миньонов и выдаем награду
 	for minion in get_tree().get_nodes_in_group("minions"):
@@ -259,7 +283,6 @@ func die():
 	var player = get_tree().get_nodes_in_group("player")[0]
 	if player and player.has_method("gain_experience"):
 		player.gain_experience(100)
-		print("Награда получена: +100 опыта")
 	
 	# Ждем окончания анимации смерти
 	await $AnimatedSprite2D2.animation_finished
@@ -426,6 +449,7 @@ func create_flame_trail():
 		var shape = CircleShape2D.new()
 		shape.radius = 20
 		collision.shape = shape
+		
 		area.add_child(collision)
 		flame.add_child(area)
 		
