@@ -57,6 +57,7 @@ func scale_stats_to_player_level():
 func _physics_process(delta):
 	if knockback_timer > 0:
 		knockback_timer -= delta
+		anim.play("hurt")
 		move_and_slide()
 	elif is_aggro and target:
 		# Проверяем, не мертв ли игрок
@@ -72,11 +73,8 @@ func _physics_process(delta):
 		if distance > min_distance:
 			velocity = direction * SPEED
 			anim.play("run")
-			# Поворачиваем спрайт
-			if direction.x < 0:
-				$AnimatedSprite2D.flip_h = true
-			else:
-				$AnimatedSprite2D.flip_h = false
+			# Поворачиваем спрайт в зависимости от направления движения
+			anim.flip_h = direction.x < 0
 		else:
 			velocity = Vector2.ZERO
 			if current_cooldown <= 0:
@@ -133,14 +131,33 @@ func _on_aggro_area_body_exited(body):
 
 func attack():
 	print("Враг атакует! Сила атаки:", attack_power)
+	
+	# Ускоряем анимацию атаки
+	anim.speed_scale = 2.0
+	anim.play("attack")
+	
+	# Ждем середины анимации для нанесения урона
+	# Предполагая, что у нас 10 кадров анимации атаки, ждем 5-й кадр
+	await get_tree().create_timer(0.25).timeout  # Подождем четверть секунды
+	
+	# Наносим урон
 	if target and target.has_method("take_damage"):
 		target.take_damage(attack_power)
+	
+	# Ждем окончания анимации и возвращаем нормальную скорость
+	await anim.animation_finished
+	anim.speed_scale = 1.0
 
 func take_damage(amount: int):
 	# Если враг уворачивается, значительно уменьшаем получаемый урон
 	var damage_multiplier = dodge_damage_reduction if is_dodging else 1.0
 	var actual_damage = max(int((amount - defense) * damage_multiplier), 0)
 	health -= actual_damage
+	
+	# Проигрываем анимацию получения урона с увеличенной скоростью
+	anim.speed_scale = 2.0  # Увеличиваем скорость анимации
+	anim.play("hurt")
+	
 	print("Враг получил", actual_damage, "урона. Осталось здоровья:", health)
 	
 	if target:
@@ -150,25 +167,45 @@ func take_damage(amount: int):
 	
 	if health <= 0:
 		die()
+	else:
+		# Ждем окончания анимации получения урона и возвращаем нормальную скорость
+		await anim.animation_finished
+		anim.speed_scale = 1.0
 
 func die():
 	print("Враг умер")
-	# Обновляем прогресс для обычного квеста на убийство
+	# Отключаем коллизии сразу
+	self.collision_layer = 0
+	self.collision_mask = 0
+	
+	# Останавливаем все текущие анимации и проигрываем смерть
+	anim.stop()
+	anim.speed_scale = 1.0
+	anim.play("death")
+	
+	# Отключаем физику и движение
+	velocity = Vector2.ZERO
+	set_physics_process(false)
+	
+	# Обновляем квесты и выдаем награду
 	QuestManager.update_quest_progress("kill")
-	# Добавляем прогресс для квеста "Первая охота"
 	QuestManager.update_quest_progress("kill_weak", 1, "kill_weak")
 	
-	# Добавляем выпадение предметов
-	drop_loot()
-	
-	queue_free()
 	var player = get_tree().get_nodes_in_group("player")[0]
 	if player and player.has_method("gain_experience"):
 		player.gain_experience(10)
 		print("Награда получена: +10 опыта")
-	anim.play("death")
-	self.collision_layer = 0
-	self.collision_mask = 0
+	
+	# Добавляем выпадение предметов
+	drop_loot()
+	
+	# Важно: устанавливаем loop = false для анимации смерти
+	anim.sprite_frames.set_animation_loop("death", false)
+	
+	# Ждем завершения анимации смерти перед удалением
+	await anim.animation_finished
+	queue_free()
+
 func drop_loot():
 	var dropped_item_scene = preload("res://scenes/dropped_item.tscn")
 	var item_database = get_node("/root/ItemDatabase")
