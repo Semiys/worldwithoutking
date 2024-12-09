@@ -400,7 +400,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"death",
-"speed": 5.0
+"speed": 11.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -509,7 +509,6 @@ scale = Vector2(2, 2)
 position = Vector2(-2, -44)
 scale = Vector2(1, 1.1625)
 sprite_frames = SubResource("SpriteFrames_d8ugr")
-animation = &"run"
-frame_progress = 0.513647
+animation = &"death"
 
 [connection signal="animation_finished" from="AnimatedSprite2D2" to="." method="_on_animated_sprite_2d_2_animation_finished"]

@@ -63,7 +63,7 @@ var facing_direction = Vector2.RIGHT
 
 func _ready():
 	# Инициализация базовых характеристик
-	max_health = 1200
+	max_health = 1
 	health = max_health
 	attack_power = 15
 	defense = 5
@@ -73,7 +73,7 @@ func _ready():
 	scale = Vector2(2, 2)
 	$AggroArea/CollisionShape2D.scale = Vector2(3, 3)  # Увеличиваем радиус агро
 	
-	# Сразу находим и устанавливаем цель (иг��ока)
+	# Сразу находим и устанавливаем цель (игрока)
 	target = get_tree().get_nodes_in_group("player")[0]
 	is_aggro = true  # Сразу активируем агро
 	
@@ -101,6 +101,9 @@ func _ready():
 	print("Available animations: ", $AnimatedSprite2D2.sprite_frames.get_animation_names())
 	# Проверяем настройки анимации атаки
 	print("Attack animation frames: ", $AnimatedSprite2D2.sprite_frames.get_frame_count("attack"))
+	
+	# Отключаем зацикливание анимации смерти
+	$AnimatedSprite2D2.sprite_frames.set_animation_loop("death", false)
 
 func setup_particles():
 	effect_particles = CPUParticles2D.new()
@@ -185,7 +188,7 @@ func _physics_process(delta):
 		velocity = direction * boss_speed
 		
 		# Инвертируем логику направления
-		if direction.x > 0:  # Движение вправо
+		if direction.x > 0:  # Движение вправ
 			$AnimatedSprite2D2.flip_h = true  # Было false
 			play_animation("run")
 		else:  # Движение влево
@@ -226,10 +229,12 @@ func perform_attack():
 	play_animation("idle")
 
 func play_animation(anim_name: String):
-	if $AnimatedSprite2D2.animation != anim_name or !$AnimatedSprite2D2.is_playing():
+	if $AnimatedSprite2D2.animation != anim_name:
 		$AnimatedSprite2D2.play(anim_name)
 		if anim_name == "attack":
 			$AnimatedSprite2D2.speed_scale = 0.8
+		elif anim_name == "death":
+			$AnimatedSprite2D2.speed_scale = 1.0  # Нормальная скорость для анимации смерти
 		elif anim_name == "run":
 			$AnimatedSprite2D2.speed_scale = 1.0
 		else:
@@ -262,30 +267,34 @@ func take_damage(amount: int):
 	if health <= 0:
 		die()
 	else:
-		await get_tree().create_timer(0.3).timeout  # Длительность анимации получения урона
+		await get_tree().create_timer(0.3).timeout  # Длительность аним��ции получения урона
 		play_animation("idle")
 
 func die():
 	print("Босс побежден!")
 	
-	# Отключаем коллизии и физику
+	# Отключаем физику и коллизии
 	collision_layer = 0
 	collision_mask = 0
 	set_physics_process(false)
+	is_attacking = false
 	
-	# Проигрываем анимацию смерти
-	play_animation("death")
-	
-	# Удаляем миньонов и выдаем награду
+	# Удаляем миньонов
 	for minion in get_tree().get_nodes_in_group("minions"):
 		minion.queue_free()
 	
+	# Выдаем награду
 	var player = get_tree().get_nodes_in_group("player")[0]
 	if player and player.has_method("gain_experience"):
 		player.gain_experience(100)
 	
-	# Ждем окончания анимации смерти
-	await $AnimatedSprite2D2.animation_finished
+	# Проигрываем анимацию смерти
+	$AnimatedSprite2D2.sprite_frames.set_animation_loop("death", false)
+	$AnimatedSprite2D2.speed_scale = 1.0
+	$AnimatedSprite2D2.play("death")
+	
+	# Ждем некоторое время и удаляем босса
+	await get_tree().create_timer(1.5).timeout
 	queue_free()
 
 func update_cooldowns(delta):
@@ -495,7 +504,7 @@ func activate_rage():
 	attack_power *= 1.5
 	boss_speed *= 1.3
 	
-	# Включаем частицы ярости
+	# В��лючаем частицы ярости
 	$RageParticles.emitting = true
 	
 	# Призываем миньонов при входе в ярость
