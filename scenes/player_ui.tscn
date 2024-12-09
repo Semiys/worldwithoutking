@@ -137,3 +137,19 @@ grow_vertical = 2
 theme_override_constants/line_separation = 5
 
 [node name="TalentTree" parent="." instance=ExtResource("3_talent")]
+
+[node name="CoordinatesLabel" type="Label" parent="."]
+anchors_preset = 3  # Привязка к правому нижнему углу
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -40.0
+offset_right = -20.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 16
+text = "Позиция: (0, 0)"
+horizontal_alignment = 2

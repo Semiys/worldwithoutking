@@ -6,6 +6,7 @@ extends CanvasLayer
 @onready var stats_label: Label = $StatsLabel
 @onready var health_label: Label = $HealthLabel
 @onready var experience_label: Label = $ExperienceLabel
+@onready var coordinates_label: Label = $CoordinatesLabel
 @onready var inventory = $Inventory
 @onready var quest_list = $QuestUI/QuestList
 @onready var quest_details = $QuestUI/QuestDetails
@@ -20,6 +21,15 @@ func _ready():
 	QuestManager.connect("quest_updated", _on_quest_updated)
 	QuestManager.connect("quest_completed", _on_quest_completed)
 	update_quest_list()
+
+func _process(_delta):
+	# Обновляем координаты каждый кадр
+	if get_parent():
+		var pos = get_parent().position
+		var tile_size = 32  # Размер одного та��ла в пикселях
+		var tile_x = int(pos.x / tile_size)
+		var tile_y = int(pos.y / tile_size)
+		coordinates_label.text = "Текущая позиция: (%d, %d)" % [tile_x, tile_y]
 
 func _on_window_resize():
 	# Получаем размер окна
@@ -47,6 +57,12 @@ func _on_window_resize():
 	experience_label.position = Vector2(
 		experience_bar.position.x + (experience_bar.size.x * 1.5) + 50,
 		experience_bar.position.y + 20
+	)
+	
+	# Обновляем позицию метки координат
+	coordinates_label.position = Vector2(
+		window_size.x - coordinates_label.size.x - 20,
+		window_size.y - coordinates_label.size.y - 20
 	)
 	
 	# Существующий код для инвентаря

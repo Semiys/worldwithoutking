@@ -202,4 +202,4 @@ position = Vector2(1803, 564)
 position = Vector2(1809, 683)
 
 [node name="VillageElder" parent="." instance=ExtResource("4_a8shn")]
-position = Vector2(493, 512)
+position = Vector2(441, 692)

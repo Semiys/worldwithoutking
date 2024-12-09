@@ -97,7 +97,7 @@ position = Vector2(26, 17)
 position = Vector2(756, 464)
 
 [node name="TutorialMaster" parent="." instance=ExtResource("7_a1fao")]
-position = Vector2(918, 527)
+position = Vector2(1179, 482)
 
 [node name="Target" parent="." instance=ExtResource("9_u8nhh")]
 position = Vector2(1030, 587)
