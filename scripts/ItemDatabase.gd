@@ -6,7 +6,10 @@ var items = {
 	"Кожаная броня": preload("res://items/leather_armor.tres"),
 	"Факел": preload("res://items/torch.tres"),
 	"Железный меч": preload("res://items/iron_sword.tres"),
-	"Кольцо исцеления": preload("res://items/healing_ring.tres")
+	"Кольцо исцеления": preload("res://items/healing_ring.tres"),
+	"Артефакт силы": preload("res://items/artifact1.tres"),
+	"Артефакт защиты": preload("res://items/artifact2.tres"),
+	"Артефакт магии": preload("res://items/artifact3.tres")
 }
 
 func _ready():

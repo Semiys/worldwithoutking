@@ -15,6 +15,8 @@ func _ready():
 	call_deferred("add_item_to_first_slot", "Меч")
 	call_deferred("add_item_to_second_slot", "Зелье здоровья")
 	connect("visibility_changed", Callable(self, "_on_visibility_changed"))
+	QuestManager.connect("quest_started", Callable(self, "_on_quest_started"))
+
 func _on_item_added(item):
 	print("Предмет добавлен в слот: ", item.item_name)
 
@@ -42,7 +44,7 @@ func add_item_to_second_slot(item_name: String):
 		if second_slot and not second_slot.item:
 			var new_item = create_item_from_resource(item_resource)
 			second_slot.putIntoSlot(new_item)
-			print("Предмет добавлен во второй слот: ", item_name)
+			print("Предмет добавлен во втор��й слот: ", item_name)
 		else:
 			print("Второй слот занят или не найден")
 	else:
@@ -267,3 +269,26 @@ func find_nearest_barrel():
 			nearest_barrel = barrel
 			
 	return nearest_barrel
+
+func check_artifacts_quest():
+	# Проверяем, есть ли активный квест на поиск артефактов
+	for quest in QuestManager.active_quests:
+		if quest.type == "find_artifacts":
+			var artifacts_count = 0
+			
+			# Проверяем все слоты инвентаря
+			for slot in inventory_slots.get_children():
+				if slot.item:
+					var item_name = slot.item.item_name
+					if item_name in ["Артефакт силы", "Артефакт защиты", "Артефакт магии"]:
+						artifacts_count += 1
+			
+			# Обновляем прогресс квеста
+			if artifacts_count > 0:
+				QuestManager.set_quest_progress("find_artifacts", artifacts_count)
+			
+			break
+
+func _on_quest_started(quest_type: String):
+	if quest_type == "find_artifacts":
+		check_artifacts_quest()

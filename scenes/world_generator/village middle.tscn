@@ -1,9 +1,12 @@
-[gd_scene load_steps=6 format=4 uid="uid://k8g1kofmhrwn"]
+[gd_scene load_steps=9 format=4 uid="uid://k8g1kofmhrwn"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_km1to"]
 [ext_resource type="PackedScene" uid="uid://3s86i8vddgxx" path="res://scenes/world_generator/enemy_camp.tscn" id="2_fpfkd"]
 [ext_resource type="PackedScene" uid="uid://da1sobpipbdcg" path="res://scenes/enemy2.tscn" id="3_y7g4e"]
 [ext_resource type="PackedScene" uid="uid://37stpjeyhdma" path="res://scenes/npcs/village_elder.tscn" id="4_a8shn"]
+[ext_resource type="PackedScene" path="res://scenes/artifact_power.tscn" id="5_tg3nk"]
+[ext_resource type="PackedScene" path="res://scenes/artifact_magic.tscn" id="6_jngau"]
+[ext_resource type="PackedScene" path="res://scenes/artifact_defense.tscn" id="7_nrx70"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ypm68"]
 size = Vector2(2103.5, 1427)
@@ -203,3 +206,12 @@ position = Vector2(1809, 683)
 
 [node name="VillageElder" parent="." instance=ExtResource("4_a8shn")]
 position = Vector2(441, 692)
+
+[node name="ArtifactPower" parent="." instance=ExtResource("5_tg3nk")]
+position = Vector2(1411, 803)
+
+[node name="ArtifactMagic" parent="." instance=ExtResource("6_jngau")]
+position = Vector2(463, 899)
+
+[node name="ArtifactDefense" parent="." instance=ExtResource("7_nrx70")]
+position = Vector2(1245, 405)
