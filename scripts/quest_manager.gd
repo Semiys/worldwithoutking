@@ -29,7 +29,7 @@ func update_quest_progress(quest_type: String, amount: int = 1, specific_target:
 					print("Обновлен прогресс уничтожения лагерей:", quest.current_progress, "/", quest.objective_count)
 				"find_artifacts", "solve_puzzles":
 					quest.current_progress += amount
-				"reach_village", "prepare_dungeon":
+				"meet_elder":
 					if specific_target == quest.type:
 						quest.current_progress = quest.objective_count
 			
