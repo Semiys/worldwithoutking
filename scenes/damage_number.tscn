@@ -1,4 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dxnqsrxbujhuy"]
+[gd_scene load_steps=5 format=3 uid="uid://dxnqsrxbujhuy"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_nvtwj"]
+outline_size = 3
+outline_color = Color(0, 0, 0.00392157, 1)
 
 [sub_resource type="Animation" id="Animation_ktyn5"]
 length = 0.001
@@ -83,6 +87,7 @@ scale = Vector2(0.5, 0.5)
 offset_right = 40.0
 offset_bottom = 23.0
 text = "0"
+label_settings = SubResource("LabelSettings_nvtwj")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
