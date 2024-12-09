@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=4 uid="uid://cpvnm2bf2c26r"]
+[gd_scene load_steps=8 format=4 uid="uid://cpvnm2bf2c26r"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_osrx7"]
 [ext_resource type="PackedScene" uid="uid://kbqxu5y025wo" path="res://scenes/boss.tscn" id="2_vwxcq"]
-[ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="3_o3v8a"]
-[ext_resource type="PackedScene" uid="uid://b8v6wj3c8qd0m" path="res://scenes/npc.tscn" id="4_pyue4"]
+[ext_resource type="PackedScene" uid="uid://bwlktaysmgkvt" path="res://scenes/npcs/dungeon_keeper.tscn" id="4_3miod"]
 [ext_resource type="PackedScene" uid="uid://bvb771iu5k4sh" path="res://scenes/chest.tscn" id="5_1apyk"]
+[ext_resource type="PackedScene" uid="uid://da1sobpipbdcg" path="res://scenes/enemy2.tscn" id="5_rjd5b"]
+[ext_resource type="PackedScene" uid="uid://bwfckgvrs5u1s" path="res://scenes/checkers_master.tscn" id="6_e6ujq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6t5sy"]
 size = Vector2(4064.5, 4089)
@@ -126,30 +127,50 @@ position = Vector2(687, 1160)
 z_index = 1
 position = Vector2(2720, 1080)
 
-[node name="Enemy" parent="." instance=ExtResource("3_o3v8a")]
-z_index = 1
-position = Vector2(-55, 400)
-
-[node name="Enemy2" parent="." instance=ExtResource("3_o3v8a")]
-z_index = 1
-position = Vector2(-118, 550)
-
-[node name="Enemy3" parent="." instance=ExtResource("3_o3v8a")]
-z_index = 1
-position = Vector2(441, 186)
-
-[node name="Enemy4" parent="." instance=ExtResource("3_o3v8a")]
-z_index = 1
-position = Vector2(526, 88)
-
-[node name="Enemy5" parent="." instance=ExtResource("3_o3v8a")]
-position = Vector2(69, 265)
-
-[node name="NPC" parent="." instance=ExtResource("4_pyue4")]
-position = Vector2(285, 1039)
-
 [node name="Chest" parent="." instance=ExtResource("5_1apyk")]
 position = Vector2(491, 903)
 
 [node name="Chest2" parent="." instance=ExtResource("5_1apyk")]
 position = Vector2(756, 464)
+
+[node name="DungeonKeeper" parent="." instance=ExtResource("4_3miod")]
+position = Vector2(294, 1087)
+
+[node name="Enemy2" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(351, 214)
+
+[node name="Enemy3" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(348, 328)
+
+[node name="Enemy4" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(351, 442)
+
+[node name="Enemy5" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(247, 395)
+
+[node name="Enemy6" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(284, 338)
+
+[node name="Enemy7" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(308, 392)
+
+[node name="Enemy8" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(291, 271)
+
+[node name="Enemy9" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(264, 197)
+
+[node name="Enemy10" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(341, 1430)
+
+[node name="Enemy11" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(332, 1556)
+
+[node name="Enemy12" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(328, 1671)
+
+[node name="Enemy13" parent="." instance=ExtResource("5_rjd5b")]
+position = Vector2(335, 1792)
+
+[node name="CheckersMaster" parent="." instance=ExtResource("6_e6ujq")]
+position = Vector2(1796, 1337)

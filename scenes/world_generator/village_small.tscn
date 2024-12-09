@@ -1,16 +1,10 @@
-[gd_scene load_steps=13 format=4 uid="uid://crapkohyqjtml"]
+[gd_scene load_steps=7 format=4 uid="uid://crapkohyqjtml"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_oqycu"]
 [ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="2_3e36s"]
-[ext_resource type="PackedScene" uid="uid://kbqxu5y025wo" path="res://scenes/boss.tscn" id="3_iw255"]
-[ext_resource type="PackedScene" uid="uid://b8v6wj3c8qd0m" path="res://scenes/npc.tscn" id="4_br2fj"]
 [ext_resource type="PackedScene" uid="uid://bvb771iu5k4sh" path="res://scenes/chest.tscn" id="5_5n6vd"]
-[ext_resource type="PackedScene" uid="uid://37stpjeyhdma" path="res://scenes/npcs/village_elder.tscn" id="6_go16a"]
 [ext_resource type="PackedScene" uid="uid://b63fkpm6ik52s" path="res://scenes/npcs/tutorial_master.tscn" id="7_a1fao"]
-[ext_resource type="PackedScene" uid="uid://bwlktaysmgkvt" path="res://scenes/npcs/dungeon_keeper.tscn" id="8_1v4c0"]
 [ext_resource type="PackedScene" uid="uid://target" path="res://scenes/target.tscn" id="9_u8nhh"]
-[ext_resource type="PackedScene" uid="uid://da1sobpipbdcg" path="res://scenes/enemy2.tscn" id="10_l7hsv"]
-[ext_resource type="PackedScene" uid="uid://bwfckgvrs5u1s" path="res://scenes/checkers_master.tscn" id="11_uyiig"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qm2fe"]
 size = Vector2(1706.5, 1423)
@@ -77,31 +71,24 @@ position = Vector2(1417, 555)
 [node name="Marker2D4" type="Marker2D" parent="."]
 position = Vector2(687, 1160)
 
-[node name="Boss" parent="." instance=ExtResource("3_iw255")]
-z_index = 1
-position = Vector2(964, 157)
-
 [node name="Enemy" parent="." instance=ExtResource("2_3e36s")]
 z_index = 1
-position = Vector2(-55, 400)
+position = Vector2(216, 90)
 
 [node name="Enemy2" parent="." instance=ExtResource("2_3e36s")]
 z_index = 1
-position = Vector2(-118, 550)
+position = Vector2(240, 5)
 
 [node name="Enemy3" parent="." instance=ExtResource("2_3e36s")]
 z_index = 1
-position = Vector2(441, 186)
+position = Vector2(119, 118)
 
 [node name="Enemy4" parent="." instance=ExtResource("2_3e36s")]
 z_index = 1
-position = Vector2(526, 88)
+position = Vector2(27, 102)
 
 [node name="Enemy5" parent="." instance=ExtResource("2_3e36s")]
-position = Vector2(69, 265)
-
-[node name="NPC" parent="." instance=ExtResource("4_br2fj")]
-position = Vector2(143, -97)
+position = Vector2(104, 24)
 
 [node name="Chest" parent="." instance=ExtResource("5_5n6vd")]
 position = Vector2(26, 17)
@@ -109,14 +96,8 @@ position = Vector2(26, 17)
 [node name="Chest2" parent="." instance=ExtResource("5_5n6vd")]
 position = Vector2(756, 464)
 
-[node name="VillageElder" parent="." instance=ExtResource("6_go16a")]
-position = Vector2(-15, 702)
-
 [node name="TutorialMaster" parent="." instance=ExtResource("7_a1fao")]
-position = Vector2(52, 791)
-
-[node name="DungeonKeeper" parent="." instance=ExtResource("8_1v4c0")]
-position = Vector2(138, 870)
+position = Vector2(918, 527)
 
 [node name="Target" parent="." instance=ExtResource("9_u8nhh")]
 position = Vector2(1030, 587)
@@ -132,15 +113,3 @@ position = Vector2(1125, 657)
 
 [node name="Target5" parent="." instance=ExtResource("9_u8nhh")]
 position = Vector2(1142, 596)
-
-[node name="Enemy6" parent="." instance=ExtResource("10_l7hsv")]
-position = Vector2(224, 593)
-
-[node name="Enemy7" parent="." instance=ExtResource("10_l7hsv")]
-position = Vector2(394, 594)
-
-[node name="Enemy8" parent="." instance=ExtResource("10_l7hsv")]
-position = Vector2(536, 598)
-
-[node name="CheckersMaster" parent="." instance=ExtResource("11_uyiig")]
-position = Vector2(744, 551)

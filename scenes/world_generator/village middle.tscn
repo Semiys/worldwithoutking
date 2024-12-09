@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=4 uid="uid://k8g1kofmhrwn"]
+[gd_scene load_steps=6 format=4 uid="uid://k8g1kofmhrwn"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_km1to"]
 [ext_resource type="PackedScene" uid="uid://3s86i8vddgxx" path="res://scenes/world_generator/enemy_camp.tscn" id="2_fpfkd"]
+[ext_resource type="PackedScene" uid="uid://da1sobpipbdcg" path="res://scenes/enemy2.tscn" id="3_y7g4e"]
+[ext_resource type="PackedScene" uid="uid://37stpjeyhdma" path="res://scenes/npcs/village_elder.tscn" id="4_a8shn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ypm68"]
 size = Vector2(2103.5, 1427)
@@ -159,3 +161,45 @@ position = Vector2(599, 1281)
 
 [node name="EnemyCamp4" parent="." instance=ExtResource("2_fpfkd")]
 position = Vector2(-545, 514)
+
+[node name="Enemy2" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(496, -65)
+
+[node name="Enemy3" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(760, -49)
+
+[node name="Enemy4" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(922, -45)
+
+[node name="Enemy5" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(603, -6)
+
+[node name="Enemy6" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(658, -103)
+
+[node name="Enemy7" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(1225, 1041)
+
+[node name="Enemy8" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(1129, 1029)
+
+[node name="Enemy9" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(1321, 1074)
+
+[node name="Enemy10" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(1165, 1116)
+
+[node name="Enemy11" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(-151, 558)
+
+[node name="Enemy12" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(-151, 674)
+
+[node name="Enemy13" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(1803, 564)
+
+[node name="Enemy14" parent="." instance=ExtResource("3_y7g4e")]
+position = Vector2(1809, 683)
+
+[node name="VillageElder" parent="." instance=ExtResource("4_a8shn")]
+position = Vector2(493, 512)
