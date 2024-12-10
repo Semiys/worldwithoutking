@@ -47,7 +47,7 @@ func _on_register_button_pressed():
 	if auth_manager.register_user(username, password):
 		get_tree().change_scene_to_file("res://scenes/menu.tscn")
 	else:
-		error_label.text = "Ошибка регистрации. Возможно, пользователь уже существует"
+		error_label.text = "Ошибка регистрации. Нужно ввести больше 5 символов "
 		error_label.show()
 
 func _on_switch_mode_button_pressed():

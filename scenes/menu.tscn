@@ -56,14 +56,6 @@ theme_override_font_sizes/font_size = 32
 text = "ИГРАТЬ
 "
 
-[node name="Settings" type="Button" parent="CanvasLayer/ButtonContainer"]
-z_index = 2
-custom_minimum_size = Vector2(200, 50)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "НАСТРОЙКИ
-"
-
 [node name="Quit" type="Button" parent="CanvasLayer/ButtonContainer"]
 z_index = 2
 custom_minimum_size = Vector2(200, 50)

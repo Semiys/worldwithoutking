@@ -336,7 +336,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_a61d0")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack",
 "speed": 10.0
 }, {
@@ -400,7 +400,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"death",
-"speed": 11.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -421,7 +421,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4rwf7")
 }],
-"loop": true,
+"loop": false,
 "name": &"hurt_left",
 "speed": 5.0
 }, {
@@ -500,15 +500,18 @@ scale = Vector2(2, 2)
 visible = false
 scale = Vector2(0.6, 0.6)
 sprite_frames = SubResource("SpriteFrames_ied85")
-animation = &"run"
 
 [node name="AggroArea" parent="." index="2"]
 scale = Vector2(2, 2)
 
 [node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="." index="4"]
+z_index = 1
 position = Vector2(-2, -44)
 scale = Vector2(1, 1.1625)
 sprite_frames = SubResource("SpriteFrames_d8ugr")
 animation = &"death"
+autoplay = "idle"
+frame = 18
+frame_progress = 1.0
 
 [connection signal="animation_finished" from="AnimatedSprite2D2" to="." method="_on_animated_sprite_2d_2_animation_finished"]

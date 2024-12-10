@@ -222,7 +222,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_nqepc")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_left",
 "speed": 7.0
 }, {
@@ -251,7 +251,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_lu4mb")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_right",
 "speed": 7.0
 }, {
@@ -280,7 +280,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_x5win")
 }],
-"loop": true,
+"loop": false,
 "name": &"death",
 "speed": 10.0
 }, {
@@ -303,7 +303,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_v2s2u")
 }],
-"loop": true,
+"loop": false,
 "name": &"hurt",
 "speed": 5.0
 }, {
@@ -376,10 +376,11 @@ script = ExtResource("1_x6sff")
 shape = SubResource("CapsuleShape2D_ndcp2")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 1
 position = Vector2(0, 1)
 scale = Vector2(0.695964, 0.738281)
 sprite_frames = SubResource("SpriteFrames_dxdeg")
-animation = &"attack_right"
+animation = &"attack_left"
 
 [node name="AggroArea" type="Area2D" parent="."]
 
