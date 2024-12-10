@@ -3,7 +3,7 @@
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_osrx7"]
 [ext_resource type="PackedScene" uid="uid://kbqxu5y025wo" path="res://scenes/boss.tscn" id="2_vwxcq"]
 [ext_resource type="PackedScene" uid="uid://bwlktaysmgkvt" path="res://scenes/npcs/dungeon_keeper.tscn" id="4_3miod"]
-[ext_resource type="PackedScene" uid="uid://bvb771iu5k4sh" path="res://scenes/Chest.tscn" id="5_1apyk"]
+[ext_resource type="PackedScene" uid="uid://bvb771iu5k4sh" path="res://scenes/chest.tscn" id="5_1apyk"]
 [ext_resource type="PackedScene" uid="uid://da1sobpipbdcg" path="res://scenes/enemy2.tscn" id="5_rjd5b"]
 [ext_resource type="PackedScene" uid="uid://bwfckgvrs5u1s" path="res://scenes/checkers_master.tscn" id="6_e6ujq"]
 

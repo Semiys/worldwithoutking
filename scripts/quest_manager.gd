@@ -37,6 +37,10 @@ func update_quest_progress(quest_type: String, amount: int = 1, specific_target:
 				"meet_elder":
 					if specific_target == quest.type:
 						quest.current_progress = quest.objective_count
+				"prepare_dungeon":
+					if specific_target == quest.type:
+						quest.current_progress = quest.objective_count
+						print("Ключ от подземелья найден!")
 			
 			emit_signal("quest_updated", quest)
 			if quest.check_completed():
