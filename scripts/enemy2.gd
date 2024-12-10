@@ -52,11 +52,6 @@ func scale_stats_to_player_level():
 		health = max_health
 		attack_power = int(BASE_ATTACK * scaling_factor)
 		defense = int(BASE_DEFENSE * scaling_factor)
-		
-		print("Враг усилен до уровня игрока ", player_level)
-		print("Здоровье: ", max_health)
-		print("Атака: ", attack_power)
-		print("Защита: ", defense)
 
 func _physics_process(delta):
 	if knockback_timer > 0:
@@ -204,13 +199,14 @@ func die():
 	# Обновляем квесты и выдаем награду
 	QuestManager.update_quest_progress("kill")
 	QuestManager.update_quest_progress("kill_weak", 1, "kill_weak")
+	QuestManager.update_quest_progress("clear_first_hall", 1, "clear_first_hall")
 	
 	var player = get_tree().get_nodes_in_group("player")[0]
 	if player and player.has_method("gain_experience"):
 		player.gain_experience(10)
 		print("Награда получена: +10 опыта")
 	
-	# Д��бавляем выпадение предметов
+	# Добавляем выпадение предметов
 	drop_loot()
 	
 	# Важно: устанавливаем loop = false для анимации смерти

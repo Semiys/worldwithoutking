@@ -48,11 +48,6 @@ func scale_stats_to_player_level():
 		health = max_health
 		attack_power = int(BASE_ATTACK * scaling_factor)
 		defense = int(BASE_DEFENSE * scaling_factor)
-		
-		print("Враг усилен до уровня игрока ", player_level)
-		print("Здоровье: ", max_health)
-		print("Атака: ", attack_power)
-		print("Защита: ", defense)
 
 func _physics_process(delta):
 	if knockback_timer > 0:
@@ -73,7 +68,7 @@ func _physics_process(delta):
 		if distance > min_distance:
 			velocity = direction * SPEED
 			anim.play("run")
-			# По��орачиваем спрайт в зависимости от направления движения
+			# Поворачиваем спрайт в зависимости от направления движения
 			anim.flip_h = direction.x < 0
 		else:
 			velocity = Vector2.ZERO
@@ -195,6 +190,7 @@ func die():
 	# Обновляем квесты и выдаем награду
 	QuestManager.update_quest_progress("kill")
 	QuestManager.update_quest_progress("kill_weak", 1, "kill_weak")
+	QuestManager.update_quest_progress("clear_first_hall", 1, "clear_first_hall")
 	
 	var player = get_tree().get_nodes_in_group("player")[0]
 	if player and player.has_method("gain_experience"):
