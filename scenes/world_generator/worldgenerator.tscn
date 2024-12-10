@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bj84wjqc462sw"]
+[gd_scene load_steps=19 format=3 uid="uid://bj84wjqc462sw"]
 
 [ext_resource type="Script" path="res://scripts/generatorgd/worldgenerator.gd" id="1_0rrt7"]
 [ext_resource type="TileSet" uid="uid://j6y684hm2oij" path="res://scenes/world_generator/Tile_set_World/ground_and_plants.tres" id="1_rcxrt"]
@@ -6,6 +6,7 @@
 [ext_resource type="TileSet" uid="uid://5ha1dbq7uaco" path="res://scenes/world_generator/Tile_set_World/water.tres" id="2_sxsnw"]
 [ext_resource type="PackedScene" uid="uid://crapkohyqjtml" path="res://scenes/world_generator/village_small.tscn" id="2_teto8"]
 [ext_resource type="PackedScene" uid="uid://k8g1kofmhrwn" path="res://scenes/world_generator/village middle.tscn" id="3_2x0w2"]
+[ext_resource type="PackedScene" uid="uid://cpvnm2bf2c26r" path="res://scenes/walls.tscn" id="3_8p3fi"]
 
 [sub_resource type="Gradient" id="Gradient_o6w3r"]
 interpolation_mode = 1
@@ -66,6 +67,7 @@ noise_temp_text = SubResource("NoiseTexture2D_h1e1e")
 noise_moisture_text = SubResource("NoiseTexture2D_0u7uh")
 noise_settlement_text = SubResource("NoiseTexture2D_8a3kk")
 grave_scene = ExtResource("2_m75vw")
+walls_scene = ExtResource("3_8p3fi")
 village_scene = ExtResource("2_teto8")
 village_middle_scene = ExtResource("3_2x0w2")
 

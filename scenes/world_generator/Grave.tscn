@@ -6,6 +6,7 @@
 
 [node name="Grave" type="Node2D"]
 z_index = 2
+position = Vector2(35, 37)
 script = ExtResource("1_ll0ep")
 enemy_scene = ExtResource("2_3w5x3")
 
