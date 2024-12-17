@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=4 uid="uid://cpvnm2bf2c26r"]
+[gd_scene load_steps=11 format=4 uid="uid://cpvnm2bf2c26r"]
 
 [ext_resource type="TileSet" uid="uid://d1k63bpjea6hm" path="res://scenes/world_generator/Tile_set_World/Villagetileset.tres" id="1_osrx7"]
 [ext_resource type="PackedScene" uid="uid://kbqxu5y025wo" path="res://scenes/boss.tscn" id="2_vwxcq"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bwfckgvrs5u1s" path="res://scenes/checkers_master.tscn" id="6_e6ujq"]
 [ext_resource type="PackedScene" uid="uid://4pomo3d2x7xi" path="res://scenes/world_generator/Grave.tscn" id="7_70b7h"]
 [ext_resource type="PackedScene" uid="uid://ccq3rg5eb7x7n" path="res://scenes/enemy.tscn" id="8_ymo55"]
+[ext_resource type="PackedScene" uid="uid://dusvosysreluv" path="res://scenes/dungeon_door.tscn" id="9_6tgdk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6t5sy"]
 size = Vector2(4064.5, 4089)
@@ -320,3 +321,6 @@ position = Vector2(2317, 2958)
 
 [node name="Enemy56" parent="." instance=ExtResource("5_rjd5b")]
 position = Vector2(2416, 3097)
+
+[node name="DungeonDoor" parent="." instance=ExtResource("9_6tgdk")]
+position = Vector2(367, 947)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemResource" load_steps=3 format=3 uid="uid://c512ukfifmd3c"]
+
+[ext_resource type="Texture2D" uid="uid://dj8v65dshs71b" path="res://assets/artefact/Key 1 - BRONZE -.png" id="1_n3a50"]
+[ext_resource type="Script" path="res://scripts/ItemResource.gd" id="2_a5422"]
+
+[resource]
+script = ExtResource("2_a5422")
+item_name = "Ключ от подземелья"
+icon = ExtResource("1_n3a50")
+type = "Consumable"
+description = "Ключ от двери подземелья"
+stackable = true
+max_stack_size = 1
+effect = {}

@@ -9,11 +9,21 @@ var items = {
 	"Кольцо исцеления": preload("res://items/healing_ring.tres"),
 	"Артефакт силы": preload("res://items/artifact1.tres"),
 	"Артефакт защиты": preload("res://items/artifact2.tres"),
-	"Артефакт магии": preload("res://items/artifact3.tres")
+	"Артефакт магии": preload("res://items/artifact3.tres"),
+	"Ключ от подземелья": preload("res://items/dungeon_key.tres")
 }
+
+# Загружаем сцену ключа
+var dungeon_key_scene = preload("res://scenes/items/dungeon_key.tscn")
 
 func _ready():
 	pass
+
+# Функция для спавна ключа в указанной позиции
+func spawn_dungeon_key(position: Vector2) -> Node2D:
+	var key_instance = dungeon_key_scene.instantiate()
+	key_instance.position = position
+	return key_instance
 
 func get_item(item_name: String) -> ItemResource:
 	if items.has(item_name):

@@ -1,5 +1,7 @@
 extends Control
 
+signal item_used(item_name, global_mouse_pos)
+
 const SlotClass = preload("res://scripts/Slot.gd")
 const ItemClass = preload("res://scenes/Item.tscn")
 @onready var inventory_slots = $GridContainer
@@ -8,6 +10,7 @@ var holding_item = null
 
 func _ready():
 	print("Инвентарь инициализирован")
+	add_to_group("inventory")
 	for inv_slot in inventory_slots.get_children():
 		inv_slot.connect("gui_input", Callable(self, "slot_gui_input").bind(inv_slot))
 		inv_slot.connect("item_added", Callable(self, "_on_item_added"))
@@ -44,7 +47,7 @@ func add_item_to_second_slot(item_name: String):
 		if second_slot and not second_slot.item:
 			var new_item = create_item_from_resource(item_resource)
 			second_slot.putIntoSlot(new_item)
-			print("Предмет добавлен во втор��й слот: ", item_name)
+			print("Предмет добавлен во второй слот: ", item_name)
 		else:
 			print("Второй слот занят или не найден")
 	else:
@@ -86,12 +89,24 @@ func slot_gui_input(event: InputEvent, slot: SlotClass):
 					holding_item = null
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			if slot.item:
+				print("Правый клик по предмету: ", slot.item.item_name)
 				if slot.item.item_name == "Зелье здоровья":
 					use_health_potion(slot)
-					print("Попытка использовать зелье здоровья")
 				elif slot.item.item_name == "Факел":
 					use_torch(slot)
-					print("Попытка использовать факел")
+				elif slot.item.item_name == "Ключ от подземелья":
+					print("Пытаемся использовать ключ")
+					# Ищем ближайшую дверь
+					var doors = get_tree().get_nodes_in_group("dungeon_doors")
+					var used = false
+					for door in doors:
+						if door._on_item_used(slot.item.item_name, get_global_mouse_position()):
+							print("Ключ успешно использован, удаляем из инвентаря")
+							slot.pickFromSlot()
+							used = true
+							break
+					if not used:
+						print("Не удалось использовать ключ - подойдите ближе к двери")
 		elif event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:
 			if slot.item:
 				delete_item(slot)
@@ -171,7 +186,7 @@ func show_item_count(item_name: String):
 	var count = get_item_count(item_name)
 	print("Количество предметов '", item_name, "': ", count)
 
-# Добавьте эту функцию для обработки нажатия клавиши 'C'
+# Добавьте эту функцию для обрабо��ки нажатия клавиши 'C'
 func _unhandled_input(event):
 	if event.is_action_pressed("count_health_potions"):
 		show_item_count("Зелье здоровья")
@@ -235,7 +250,7 @@ func use_item(slot):
 	if slot.item:
 		var item_name = slot.item.item_name
 		var item_resource = item_database.get_item(item_name)
-		if item_resource:
+		if item_resource and item_name != "Ключ от подземелья":  # Добавляем проверку
 			var player = get_tree().get_first_node_in_group("player")
 			if player:
 				item_resource.use(player)
@@ -246,7 +261,7 @@ func use_item(slot):
 			else:
 				print("Игрок не найден")
 		else:
-			print("Предмет не найден в базе данных: ", item_name)
+			print("Предмет не найден в базе данных или это ключ: ", item_name)
 
 func use_torch(slot_index):
 	var barrel = find_nearest_barrel()
@@ -280,10 +295,10 @@ func check_artifacts_quest():
 			for slot in inventory_slots.get_children():
 				if slot.item:
 					var item_name = slot.item.item_name
-					if item_name in ["Артефакт силы", "Артефакт защиты", "Артефакт магии"]:
+					if item_name in ["Артефакт силы", "Артефакт защиты", "Артефакт маги��"]:
 						artifacts_count += 1
 			
-			# Обновляем прогресс квеста
+			# Обновляем прогрсс квеста
 			if artifacts_count > 0:
 				QuestManager.set_quest_progress("find_artifacts", artifacts_count)
 			

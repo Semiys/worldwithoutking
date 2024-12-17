@@ -1,19 +1,21 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://bcyw2xq0jm4ys"]
 
-[ext_resource type="Script" path="res://scripts/dungeon_key.gd" id="1_1"]
-[ext_resource type="Texture2D" uid="uid://your_key_uid" path="res://assets/artefact/Key 1 - BRONZE -.png" id="2_1"]
+[ext_resource type="Script" path="res://scripts/world_artifact.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dj8v65dshs71b" path="res://assets/artefact/Key 1 - BRONZE -.png" id="2_texture"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
-radius = 16.0
+radius = 20.0
 
 [node name="DungeonKey" type="Area2D"]
 collision_layer = 4
-script = ExtResource("1_1")
+script = ExtResource("1_script")
+artifact_name = "Ключ от подземелья"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_1")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_texture")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_1")
 
-[connection signal="body_entered" from="." to="." method="_on_body_entered"] 
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
