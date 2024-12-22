@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 ItemDatabase="*res://scripts/ItemDatabase.gd"
 QuestManager="*res://scripts/quest_manager.gd"
 AuthManager="*res://scripts/auth_manager.gd"
+Global="*res://scripts/global.gd"
 
 [display]
 

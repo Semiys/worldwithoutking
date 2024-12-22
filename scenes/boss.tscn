@@ -491,6 +491,7 @@ animations = [{
 }]
 
 [node name="Boss" instance=ExtResource("1_base")]
+y_sort_enabled = false
 script = ExtResource("2_script")
 
 [node name="CollisionShape2D" parent="." index="0"]
@@ -498,8 +499,11 @@ scale = Vector2(2, 2)
 
 [node name="AnimatedSprite2D" parent="." index="1"]
 visible = false
+z_index = 1
+y_sort_enabled = false
 scale = Vector2(0.6, 0.6)
 sprite_frames = SubResource("SpriteFrames_ied85")
+animation = &"run"
 
 [node name="AggroArea" parent="." index="2"]
 scale = Vector2(2, 2)

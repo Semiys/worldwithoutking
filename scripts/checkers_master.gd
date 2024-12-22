@@ -176,6 +176,7 @@ class CheckersGame:
 		var dx = end[1] - start[1]
 		var dy = end[0] - start[0]
 		
+
 		if abs(dx) > 1 or abs(dy) > 1:  # Если ход больше чем на одну клетку - это взятие
 			# Определяем направление движения
 			var dir_x = sign(dx)
@@ -200,6 +201,10 @@ class CheckersGame:
 		# Проверяем на превращение в дамку только для обычных шашек
 		if not was_king:
 			check_for_king(end, piece)
+
+		# Проверяем на превращение в дамк��
+		check_for_king(end, piece)
+
 
 	func make_ai_move():
 		var possible_moves = get_possible_moves(ai_color)
@@ -399,13 +404,6 @@ func _ready():
 	# Подключаем сигналы
 	interaction_area.body_entered.connect(_on_body_entered)
 	interaction_area.body_exited.connect(_on_body_exited)
-	
-	# Создаем спрайт
-	var sprite = ColorRect.new()
-	sprite.size = Vector2(32, 32)
-	sprite.position = Vector2(-16, -16)  # Центрируем спрайт
-	sprite.color = Color(0.7, 0.3, 0.3)  # Красноватый цвет
-	add_child(sprite)
 	
 	# Создаем подсказку
 	var prompt = Label.new()

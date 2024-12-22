@@ -49,7 +49,7 @@ const GRAVE_AREA_WIDTH = 5
 const GRAVE_AREA_HEIGHT = 5
 
 # В начале фала доавим константы для количества надгробий
-const GRAVES_PER_AREA = 125  # Увеличиваем количество надгробий
+const GRAVES_PER_AREA = 400  # Увеличиваем с 200 до 400
 
 enum Biome {OCEAN, BEACH, TUNDRA, FOREST, PLAINS, DESERT}
 enum SettlementType {VILLAGE, GRAVE, WALLS}
@@ -686,10 +686,10 @@ func place_graves() -> void:
 			
 		# Пытаемся разместить несколько надгробий в одном чанке
 		var graves_in_chunk = 0
-		var max_graves_per_chunk = 5  # Максимум надгробий в одном чанке
+		var max_graves_per_chunk = 12  # Увеличиваем максимум надгробий в чанке
 		var attempts = 0
 		
-		while graves_in_chunk < max_graves_per_chunk and graves_placed < GRAVES_PER_AREA and attempts < 10:
+		while graves_in_chunk < max_graves_per_chunk and graves_placed < GRAVES_PER_AREA and attempts < 20:
 			var x = chunk_pos.x + randi() % (chunk_size - GRAVE_AREA_WIDTH)
 			var y = chunk_pos.y + randi() % (chunk_size - GRAVE_AREA_HEIGHT)
 			var grave_pos = Vector2i(x, y)

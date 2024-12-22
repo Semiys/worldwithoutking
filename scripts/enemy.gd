@@ -4,7 +4,7 @@ const SPEED = 40.0
 const DODGE_SPEED = 150.0
 const BASE_HEALTH = 50  # Базовое здоровье
 const BASE_ATTACK = 5   # Базовая атака
-const BASE_DEFENSE = 2  # Базовая защита
+const BASE_DEFENSE = 5  # Базовая защита
 
 var health = BASE_HEALTH
 var max_health = BASE_HEALTH

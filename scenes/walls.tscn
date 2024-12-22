@@ -128,6 +128,7 @@ position = Vector2(687, 1160)
 
 [node name="Boss" parent="." instance=ExtResource("2_vwxcq")]
 z_index = 1
+y_sort_enabled = false
 position = Vector2(2720, 1080)
 
 [node name="Chest" parent="." instance=ExtResource("5_1apyk")]
@@ -230,15 +231,18 @@ position = Vector2(1063, 1842)
 position = Vector2(593, 1984)
 
 [node name="Enemy" parent="." instance=ExtResource("8_ymo55")]
+y_sort_enabled = false
 position = Vector2(690, 2061)
 
 [node name="Enemy27" parent="." instance=ExtResource("8_ymo55")]
+y_sort_enabled = false
 position = Vector2(752, 1954)
 
 [node name="Enemy28" parent="." instance=ExtResource("5_rjd5b")]
 position = Vector2(862, 1918)
 
 [node name="Enemy29" parent="." instance=ExtResource("8_ymo55")]
+y_sort_enabled = false
 position = Vector2(788, 1853)
 
 [node name="Enemy30" parent="." instance=ExtResource("5_rjd5b")]
@@ -266,15 +270,19 @@ position = Vector2(1147, 1385)
 position = Vector2(1105, 1387)
 
 [node name="Enemy38" parent="." instance=ExtResource("8_ymo55")]
+y_sort_enabled = false
 position = Vector2(885, 1168)
 
 [node name="Enemy39" parent="." instance=ExtResource("8_ymo55")]
+y_sort_enabled = false
 position = Vector2(945, 1139)
 
 [node name="Enemy40" parent="." instance=ExtResource("8_ymo55")]
+y_sort_enabled = false
 position = Vector2(1026, 1138)
 
 [node name="Enemy41" parent="." instance=ExtResource("8_ymo55")]
+y_sort_enabled = false
 position = Vector2(1112, 1141)
 
 [node name="Enemy42" parent="." instance=ExtResource("5_rjd5b")]

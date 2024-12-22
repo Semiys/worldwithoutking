@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const BASE_SPEED = 1000.0
+const BASE_SPEED = 100.0
 const BASE_ATTACK_COOLDOWN = 0.5
 
 var speed = BASE_SPEED
@@ -32,7 +32,7 @@ var aura_damage_active = false
 # Переменные для визуализации радиусов
 var dodge_range = 100.0 # Уменьшен базовый радиус
 var aoe_radius = 50.0 # Уменьшен базовый радиус
-var line_width = 15.0 # Уменьшена базоая ши��ина
+var line_width = 15.0 # Уменьшена базоая ширина
 var line_length = 100.0 # Уменьшена базовая длина
 var aura_radius = 75.0 # Уменьшен базовый радиус
 
@@ -60,11 +60,22 @@ var attack_cooldown = BASE_ATTACK_COOLDOWN
 var current_attack_cooldown = 0
 var damage_number_scene = preload("res://scenes/damage_number.tscn")
 
+# Добавляем новые базовые характеристики
+var crit_chance = 0.0      # Базовый шанс крита в процентах
+var dodge_chance = 0.0     # Базовый шанс уклонения в процентах
+var cooldown_reduction = 0.0 # Базовое сокращение перезарядки в процентах
+
 func _ready():
 	add_to_group("player")
 	set_up_input_map()
 	load_player_stats()
 	update_ui()
+	
+	# Инициализируем базовые значения для новых характеристик
+	crit_chance = 0.0
+	dodge_chance = 0.0
+	cooldown_reduction = 0.0
+	
 	if inventory:
 		inventory.add_item_to_first_slot("Меч", false)
 		inventory.add_item_to_second_slot("Зелье здоровья")
@@ -88,6 +99,8 @@ func _ready():
 		var event = InputEventKey.new()
 		event.keycode = KEY_V
 		InputMap.action_add_event("serial_attack", event)
+	
+	
 
 func _physics_process(_delta: float) -> void:
 	if is_dead: # Если персонаж мертв, не обрабатываем движение и атаки
@@ -206,13 +219,24 @@ func apply_aura_damage():
 		var distance = global_position.distance_to(enemy.global_position)
 		if distance <= aura_radius * (1 + level * 0.1):
 			enemy.take_damage(attack_power * (0.2 + level * 0.05)) # Увеличение урона с уровнем
-			spawn_damage_number(attack_power * (0.2 + level * 0.05), enemy.global_position + Vector2(0, -50))
+			spawn_damage_number(attack_power * (0.2 + level * 0.05), enemy.global_position + Vector2(0, -50), false)
 	await get_tree().create_timer(1.0).timeout
 
-func spawn_damage_number(damage: int, pos: Vector2):
+func spawn_damage_number(damage: int, pos: Vector2, is_special: bool = false):
 	var damage_number = damage_number_scene.instantiate()
 	var label = damage_number.get_node("Label")
-	label.text = str(damage)
+	
+	if is_special:
+		if damage == 0:
+			label.text = "DODGE!"
+			label.add_theme_color_override("font_color", Color(0, 1, 0)) # Зеленый для уклонения
+		else:
+			label.text = str(damage) + "!"
+			label.add_theme_color_override("font_color", Color(1, 0, 0)) # Красный для крита
+	else:
+		label.text = str(damage)
+		label.add_theme_color_override("font_color", Color(1, 1, 1)) # Белый для обычного урона
+	
 	damage_number.global_position = pos
 	get_tree().current_scene.add_child(damage_number)
 	var anim_player = damage_number.get_node("AnimationPlayer")
@@ -223,19 +247,19 @@ func _check_for_hit():
 	for body in bodies:
 		if body.is_in_group("enemies") and body.has_method("take_damage"):
 			body.take_damage(attack_power)
-			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
+			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50), false)
 			print("Урон нанесен врагу на кадре", anim.frame)
 		elif body.is_in_group("target") and body.has_method("take_damage"):
-			print("Попадание по мишени")  # Отладочный вывод
+			print("Попадание по мишени")
 			body.take_damage(attack_power)
-			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
+			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50), false)
 			print("Урон нанесен мишени на кадре", anim.frame)
 
 func _on_AttackArea_body_entered(body):
 	if body.is_in_group("enemies") and can_deal_damage:
 		if body.has_method("take_damage"):
 			body.take_damage(attack_power)
-			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50))
+			spawn_damage_number(attack_power, body.global_position + Vector2(0, -50), false)
 
 func interact():
 	if is_dead: # Если персонаж мертв, не обрабатываем взаимодействие
@@ -261,6 +285,12 @@ func interact():
 
 func take_damage(amount: int):
 	if is_dead or is_invulnerable: # Если персонаж мертв или неуязвим, не получаем урон
+		return
+		
+	# Проверяем шанс уклонения
+	if randf() * 100 <= dodge_chance:
+		print("Игрок уклонился от атаки!")
+		spawn_damage_number(0, global_position + Vector2(0, -50), true) # true для отображения "DODGE"
 		return
 		
 	var actual_damage = max(amount - defense, 0)
@@ -336,7 +366,7 @@ func level_up():
 	print("Урон:", attack_power)
 	print("Защита:", defense)
 	print("Скорость:", speed)
-	print("Вре��я перезарядки атаки:", attack_cooldown)
+	print("Время перезарядки атаки:", attack_cooldown)
 	#anim.play("level_up")
 	update_ui()
 	
@@ -485,6 +515,9 @@ func save_data():
 		"level": level,
 		"speed": speed,
 		"attack_cooldown": attack_cooldown,
+		"crit_chance": crit_chance,
+		"dodge_chance": dodge_chance,
+		"cooldown_reduction": cooldown_reduction,
 		"position": {
 			"x": position.x,
 			"y": position.y
@@ -556,7 +589,7 @@ func load_data(data):
 		data.get("position", {}).get("y", 0)
 	)
 	
-	# Загрузка экипировки
+	# Загрузка ��кипировки
 	if "equipment" in data:
 		if data["equipment"]["weapon"]:
 			equip_weapon(item_database.get_item(data["equipment"]["weapon"]))
@@ -570,6 +603,10 @@ func load_data(data):
 		inventory.load_inventory(data["inventory"])
 	
 	update_ui()
+	
+	crit_chance = data.get("crit_chance", 0.0)
+	dodge_chance = data.get("dodge_chance", 0.0)
+	cooldown_reduction = data.get("cooldown_reduction", 0.0)
 
 func update_total_attack_power():
 	attack_power = base_attack_power

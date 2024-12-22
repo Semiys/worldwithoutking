@@ -2,9 +2,9 @@ extends CharacterBody2D
 
 const SPEED = 40.0
 const DODGE_SPEED = 150.0
-const BASE_HEALTH = 50  # Базовое здоровье
-const BASE_ATTACK = 5   # Базовая атака
-const BASE_DEFENSE = 2  # Базовая защита
+const BASE_HEALTH = 60  # Делаем сильнее первого типа
+const BASE_ATTACK = 6   
+const BASE_DEFENSE = 5  
 const ATTACK_COOLDOWN = 0.3  # Уменьшаем с 1.0 до 0.5 для более частых атак
 
 var health = BASE_HEALTH

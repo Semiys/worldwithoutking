@@ -447,9 +447,12 @@ height = 28.0
 size = Vector2(22, 36)
 
 [node name="Player" type="CharacterBody2D"]
+z_index = 1
+y_sort_enabled = true
 script = ExtResource("1_4s4wn")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 1
 position = Vector2(0.0937511, 1)
 scale = Vector2(0.99625, 1)
 sprite_frames = SubResource("SpriteFrames_o28wr")

@@ -370,17 +370,17 @@ animations = [{
 radius = 64.0312
 
 [node name="Enemy2" type="CharacterBody2D"]
+y_sort_enabled = true
 script = ExtResource("1_x6sff")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_ndcp2")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-z_index = 1
 position = Vector2(0, 1)
 scale = Vector2(0.695964, 0.738281)
 sprite_frames = SubResource("SpriteFrames_dxdeg")
-animation = &"attack_left"
+animation = &"run_right"
 
 [node name="AggroArea" type="Area2D" parent="."]
 

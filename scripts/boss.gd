@@ -63,10 +63,10 @@ var facing_direction = Vector2.RIGHT
 
 func _ready():
 	# Инициализация базовых характеристик
-	max_health = 1
+	max_health = 1200
 	health = max_health
-	attack_power = 15
-	defense = 5
+	attack_power = 50
+	defense = 35
 	min_distance = ATTACK_DISTANCE  # Обновляем дистанцию атаки
 	
 	# Увеличиваем размер босса и его области агро
@@ -267,7 +267,7 @@ func take_damage(amount: int):
 	if health <= 0:
 		die()
 	else:
-		await get_tree().create_timer(0.3).timeout  # Длительность аним��ции получения урона
+		await get_tree().create_timer(0.3).timeout  # Длительность анимции получения урона
 		play_animation("idle")
 
 func die():
@@ -504,7 +504,7 @@ func activate_rage():
 	attack_power *= 1.5
 	boss_speed *= 1.3
 	
-	# В��лючаем частицы ярости
+	# Влючаем частицы ярости
 	$RageParticles.emitting = true
 	
 	# Призываем миньонов при входе в ярость
