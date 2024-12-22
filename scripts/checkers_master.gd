@@ -48,6 +48,7 @@ class CheckersGame:
 	func get_possible_moves(color):
 		var moves = []
 		var piece = 'b' if color == 'black' else 'w'
+		var opposite_piece = 'w' if color == 'black' else 'b'
 		var direction = 1 if color == 'black' else -1
 		
 		# Сначала проверяем ходы с захватом
@@ -65,8 +66,6 @@ class CheckersGame:
 						for dir in directions:
 							var curr_row = row
 							var curr_col = col
-							var found_enemy = false
-							var enemy_pos = []
 							
 							while true:
 								var next_row = curr_row + dir[0]
@@ -76,19 +75,21 @@ class CheckersGame:
 								if next_row < 0 or next_row >= 8 or next_col < 0 or next_col >= 8 or (next_row + next_col) % 2 == 0:
 									break
 								
+								# Если нашли вражескую фигуру
+								if board[next_row][next_col] == opposite_piece:
+									# Проверяем следующую клетку в том же направлении
+									var jump_row = next_row + dir[0]
+									var jump_col = next_col + dir[1]
+									
+									# Проверяем, можем ли приземлиться после взятия
+									if jump_row >= 0 and jump_row < 8 and jump_col >= 0 and jump_col < 8 and board[jump_row][jump_col] == ' ':
+										capture_moves.append([[row, col], [jump_row, jump_col]])
+									break
+								elif board[next_row][next_col] != ' ':
+									break
+								
 								curr_row = next_row
 								curr_col = next_col
-								
-								if board[curr_row][curr_col] == ' ':
-									if found_enemy:
-										capture_moves.append([[row, col], [curr_row, curr_col]])
-								else:
-									var curr_piece = board[curr_row][curr_col]
-									if curr_piece == piece or found_enemy:
-										break
-									else:
-										found_enemy = true
-										enemy_pos = [curr_row, curr_col]
 					else:
 						# Обычное взятие для простой шашки
 						for dy in [-2, 2]:
@@ -100,10 +101,8 @@ class CheckersGame:
 									var middle_row = row + dy/2
 									var middle_col = col + dx/2
 									
-									if board[new_row][new_col] == ' ':
-										var opposite_piece = 'w' if color == 'black' else 'b'
-										if board[middle_row][middle_col] == opposite_piece:
-											capture_moves.append([[row, col], [new_row, new_col]])
+									if board[new_row][new_col] == ' ' and board[middle_row][middle_col] == opposite_piece:
+										capture_moves.append([[row, col], [new_row, new_col]])
 		
 		# Если есть ходы с захватом, они обязательны
 		if capture_moves.size() > 0:
@@ -130,13 +129,13 @@ class CheckersGame:
 								if next_row < 0 or next_row >= 8 or next_col < 0 or next_col >= 8 or (next_row + next_col) % 2 == 0:
 									break
 								
-								curr_row = next_row
-								curr_col = next_col
-								
-								if board[curr_row][curr_col] == ' ':
-									moves.append([[row, col], [curr_row, curr_col]])
+								if board[next_row][next_col] == ' ':
+									moves.append([[row, col], [next_row, next_col]])
 								else:
 									break
+								
+								curr_row = next_row
+								curr_col = next_col
 					else:
 						# Обычные ходы для простой шашки
 						for dx in [-1, 1]:
@@ -154,26 +153,53 @@ class CheckersGame:
 		var end = move[1]
 		
 		var piece = board[start[0]][start[1]]
-		var was_king = is_king(start)
+		var was_king = false
 		
+		# Проверяем, является ли фигура дамкой
+		for king in kings:
+			if king[0] == start[0] and king[1] == start[1]:
+				was_king = true
+				kings.erase(king)
+				break
+		
+		# Убираем фигуру с начальной позиции
 		board[start[0]][start[1]] = ' '
-		if was_king and start in kings:
-			kings.erase(start)
 		
+		# Ставим фигуру на конечную позицию
 		board[end[0]][end[1]] = piece
 		
+		# Если была дамкой, добавляем новую позицию в список дамок
 		if was_king:
 			kings.append(end)
 		
-		if abs(start[0] - end[0]) == 2:
-			var middle_row = (start[0] + end[0]) / 2
-			var middle_col = (start[1] + end[1]) / 2
-			if [middle_row, middle_col] in kings:
-				kings.erase([middle_row, middle_col])
-			board[middle_row][middle_col] = ' '
+		# Проверяем было ли взятие
+		var dx = end[1] - start[1]
+		var dy = end[0] - start[0]
 		
-		# Проверяем на превращение в дамку
-		check_for_king(end, piece)
+		if abs(dx) > 1 or abs(dy) > 1:  # Если ход больше чем на одну клетку - это взятие
+			# Определяем направление движения
+			var dir_x = sign(dx)
+			var dir_y = sign(dy)
+			var curr_row = start[0]
+			var curr_col = start[1]
+			
+			# Ищем вражескую фигуру на пути
+			while curr_row != end[0] and curr_col != end[1]:
+				curr_row += dir_y
+				curr_col += dir_x
+				
+				if board[curr_row][curr_col] != ' ':
+					# Нашли фигуру - удаляем её
+					for king in kings:
+						if king[0] == curr_row and king[1] == curr_col:
+							kings.erase(king)
+							break
+					board[curr_row][curr_col] = ' '
+					break
+		
+		# Проверяем на превращение в дамку только для обычных шашек
+		if not was_king:
+			check_for_king(end, piece)
 
 	func make_ai_move():
 		var possible_moves = get_possible_moves(ai_color)
@@ -327,6 +353,27 @@ class CheckersGame:
 		
 		return false
 
+	func check_victory(color: String) -> bool:
+		var opponent_color = 'black' if color == 'white' else 'white'
+		var opponent_piece = 'b' if color == 'white' else 'w'
+		
+		# Проверяем наличие фигур противника
+		var has_pieces = false
+		for row in range(8):
+			for col in range(8):
+				if board[row][col] == opponent_piece:
+					has_pieces = true
+					break
+			if has_pieces:
+				break
+		
+		# Проверяем наличие ходов у противника
+		if has_pieces:
+			var opponent_moves = get_possible_moves(opponent_color)
+			return opponent_moves.size() == 0
+			
+		return true  # Нет фигур - победа
+
 var current_game = null
 var game_ui = null
 var interaction_area: Area2D
@@ -422,42 +469,65 @@ func _on_player_move(start_pos, end_pos):
 		current_game.make_move([start_pos, end_pos])
 		update_game_display()
 		
-		# Проверяем, есть ли еще ходы с взятием для той же шашки
-		var more_captures = false
-		var possible_moves = current_game.get_possible_moves(current_game.player_color)
-		for move in possible_moves:
-			if move[0] == end_pos and move.size() > 2:
-				more_captures = true
-				break
+		# Проверяем победу белых (игрока)
+		if current_game.check_victory('white'):
+			show_victory_message("Белые победили!")
+			return
 		
-		if not more_captures:
-			# Даём небольшую паузу для анимации
-			await get_tree().create_timer(0.5).timeout
-			
-			# Ход ИИ
-			var ai_moves = current_game.get_possible_moves(current_game.ai_color)
-			
-			if ai_moves.size() > 0:
-				var success = current_game.make_ai_move()
-				if success:
-					update_game_display()
-					await get_tree().create_timer(0.5).timeout
-					
-					var player_moves = current_game.get_possible_moves(current_game.player_color)
-					if player_moves.size() == 0:
-						show_victory_message("ИИ победил!")
-						await get_tree().create_timer(1.0).timeout
-						end_game()
-			else:
-				show_victory_message("Вы победили!")
-				await get_tree().create_timer(1.0).timeout
-				end_game()
+		# Ход ИИ
+		var ai_moves = current_game.get_possible_moves(current_game.ai_color)
+		
+		if ai_moves.size() > 0:
+			var success = current_game.make_ai_move()
+			if success:
+				update_game_display()
+				
+				# Проверяем победу черных (ИИ)
+				if current_game.check_victory('black'):
+					show_victory_message("Черные победили!")
+					return
 
 func show_victory_message(message: String):
-	var victory_label = Label.new()
-	victory_label.text = message
-	victory_label.position = Vector2(-100, -60)
-	add_child(victory_label)
-	
-	await get_tree().create_timer(2.0).timeout
-	victory_label.queue_free()
+	if is_instance_valid(game_ui):
+		# Создаем затемнение
+		var dim = ColorRect.new()
+		dim.color = Color(0, 0, 0, 0.5)
+		dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+		
+		# Создаем панель сообщения
+		var panel = Panel.new()
+		panel.set_anchors_preset(Control.PRESET_CENTER)
+		panel.custom_minimum_size = Vector2(300, 150)
+		
+		# Создаем контейнер для содержимого
+		var vbox = VBoxContainer.new()
+		vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		
+		# Создаем текст сообщения
+		var label = Label.new()
+		label.text = message
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.add_theme_font_size_override("font_size", 24)
+		
+		# Создаем кнопку закрытия
+		var button = Button.new()
+		button.text = "Закрыть"
+		button.custom_minimum_size = Vector2(100, 40)
+		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		
+		# Добавляем элементы в контейнер
+		vbox.add_child(label)
+		vbox.add_child(button)
+		panel.add_child(vbox)
+		
+		# Добавляем все на экран
+		game_ui.add_child(dim)
+		game_ui.add_child(panel)
+		
+		# Подключаем сигнал кнопки
+		button.pressed.connect(func():
+			dim.queue_free()
+			panel.queue_free()
+			end_game()
+		)

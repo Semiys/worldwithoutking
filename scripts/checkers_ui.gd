@@ -6,6 +6,7 @@ var selected_piece = null
 var board_buttons = []
 var current_board = []
 var current_game = null
+var rules_window = null
 
 class Move:
 	var x1: int
@@ -30,9 +31,14 @@ func setup(game):
 
 func _ready():
 	layer = 100
+	
+	# Возвращаем исходный размер панели
+	var panel = $CenterContainer/Panel
+	panel.custom_minimum_size = Vector2(400, 450)
+	
 	create_board()
-	create_rules_panel()
-	await get_tree().create_timer(0.1).timeout  # Даем время на создание UI
+	create_rules_button()
+	await get_tree().create_timer(0.1).timeout
 	if has_node("CenterContainer/Panel/VBoxContainer/CloseButton"):
 		$CenterContainer/Panel/VBoxContainer/CloseButton.grab_focus()
 	get_tree().paused = true
@@ -273,13 +279,42 @@ func _on_close_button_pressed():
 	print("Кнопка закрытия нажата")  # Отладка
 	queue_free()
 
-func create_rules_panel():
-	var rules_panel = Panel.new()
-	rules_panel.custom_minimum_size = Vector2(200, 450)
-	rules_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+func create_rules_button():
+	var hbox = HBoxContainer.new()
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	
+	var rules_button = Button.new()
+	rules_button.text = "Правила"
+	rules_button.custom_minimum_size = Vector2(100, 40)
+	rules_button.pressed.connect(_on_rules_button_pressed)
+	
+	var close_button = $CenterContainer/Panel/VBoxContainer/CloseButton
+	var parent = close_button.get_parent()
+	parent.remove_child(close_button)
+	
+	hbox.add_child(rules_button)
+	hbox.add_child(close_button)
+	
+	$CenterContainer/Panel/VBoxContainer.add_child(hbox)
+
+func _on_rules_button_pressed():
+	if rules_window != null:
+		rules_window.queue_free()
+		rules_window = null
+		return
+		
+	rules_window = Window.new()
+	rules_window.title = "Правила игры"
+	rules_window.initial_position = Window.WINDOW_INITIAL_POSITION_CENTER_SCREEN_WITH_MOUSE_FOCUS
+	rules_window.size = Vector2(400, 500)
+	
+	var scroll = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(400, 500)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	
 	var rules_text = RichTextLabel.new()
 	rules_text.bbcode_enabled = true
+	rules_text.custom_minimum_size = Vector2(380, 500)
 	rules_text.text = """[center][b]Правила игры[/b][/center]
 
 1. [b]Ходы:[/b]
@@ -288,57 +323,29 @@ func create_rules_panel():
 
 2. [b]Взятие:[/b]
 - Взятие обязательно
-- Простая шашка бьёт вперёд и назад
+- Простая шашка бьёт вперед и назад
 - Дамка бьёт на любое расстояние
-- При возможности взятия нескольких фигур надо бить максимальное количество
+- За один ход можно взять только одну шашку
 
 3. [b]Дамка:[/b]
 - Шашка становится дамкой, достигнув последней горизонтали
 - Дамка обозначается короной (♔/♕)
 - Дамка может ходить на любое количество полей по диагонали
-- При взятии дамка может остановиться на любом поле за взятой шашкой
+- При взятии дамка может остановиться на любом свободном поле за взятой шашкой
 
-4. [b]Цель игры:[/b]
-Уничтожить или заблокировать все шашки противника"""
+4. [b]Победа:[/b]
+- Побеждает игрок, который съел все шашки противника
+- Побеждает игрок, если у противника не осталось возможных ходов"""
 	
-	rules_text.custom_minimum_size = Vector2(180, 400)
-	rules_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.add_child(rules_text)
+	rules_window.add_child(scroll)
 	
-	var margin = MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 10)
-	margin.add_theme_constant_override("margin_right", 10)
-	margin.add_theme_constant_override("margin_top", 10)
-	margin.add_theme_constant_override("margin_bottom", 10)
+	rules_window.close_requested.connect(func(): 
+		rules_window.queue_free()
+		rules_window = null
+	)
 	
-	margin.add_child(rules_text)
-	rules_panel.add_child(margin)
-	
-	# Изменяем структуру UI для размещения правил
-	var hbox = HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 10)
-	
-	# Перемещаем существующую панель в hbox
-	var existing_panel = $CenterContainer/Panel
-	existing_panel.get_parent().remove_child(existing_panel)
-	hbox.add_child(existing_panel)
-	
-	# Добавляем правила
-	hbox.add_child(rules_panel)
-	
-	$CenterContainer.add_child(hbox)
-	
-	# Создаем кнопку закрытия, если её нет
-	if not existing_panel.has_node("VBoxContainer/CloseButton"):
-		var close_button = Button.new()
-		close_button.text = "Закрыть"
-		close_button.custom_minimum_size = Vector2(100, 0)
-		close_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		close_button.pressed.connect(_on_close_button_pressed)
-		close_button.name = "CloseButton"
-		
-		var vbox = existing_panel.get_node("VBoxContainer")
-		if vbox:
-			vbox.add_child(close_button)
+	add_child(rules_window)
 
 func is_king(pos: Array) -> bool:
 	if not (0 <= pos[0] < 8 and 0 <= pos[1] < 8):
