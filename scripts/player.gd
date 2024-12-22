@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const BASE_SPEED = 100.0
+const BASE_SPEED = 1000.0
 const BASE_ATTACK_COOLDOWN = 0.5
 
 var speed = BASE_SPEED

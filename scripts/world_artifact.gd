@@ -44,6 +44,11 @@ func _on_body_entered(body):
 		var inventory = body.get_node("player_ui/Inventory")
 		if inventory.add_item(artifact_name):
 			print("Артефакт добавлен в инвентарь: ", artifact_name)
+			
+			# Добавляем проверку на подбор ключа
+			if artifact_name == "Ключ от подземелья":
+				QuestManager.update_quest_progress("prepare_dungeon", 1, "prepare_dungeon")
+				
 			# Анимация подбора
 			var tween = create_tween()
 			tween.tween_property(self, "scale", Vector2.ZERO, 0.2)

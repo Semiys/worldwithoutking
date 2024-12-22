@@ -58,32 +58,51 @@ class CheckersGame:
 			for col in range(8):
 				if board[row][col] == piece:
 					var is_king = is_king([row, col])
-					# Для дамок проверяем все направления
-					var directions = [-2, 2] if not is_king else range(-7, 8)
 					
-					for dy in directions:
-						for dx in directions:
-							if abs(dx) < 2 or abs(dy) < 2:
-								continue
+					if is_king:
+						# Проверяем все диагональные направления для дамки
+						var directions = [[-1,-1], [-1,1], [1,-1], [1,1]]
+						for dir in directions:
+							var curr_row = row
+							var curr_col = col
+							var found_enemy = false
+							var enemy_pos = []
 							
-							var new_row = row + dy
-							var new_col = col + dx
-							
-							if new_row >= 0 and new_row < 8 and new_col >= 0 and new_col < 8:
-								var middle_row = row + dy/2
-								var middle_col = col + dx/2
+							while true:
+								var next_row = curr_row + dir[0]
+								var next_col = curr_col + dir[1]
 								
-								if board[new_row][new_col] == ' ':
-									var opposite_piece = 'w' if color == 'black' else 'b'
-									if board[middle_row][middle_col] == opposite_piece:
-										# Проверяем возможность множественного захвата
-										var multi_captures = get_additional_captures([new_row, new_col], color, is_king)
-										if multi_captures.size() > 0:
-											for capture in multi_captures:
-												var full_capture = [[row, col]]
-												full_capture.append_array(capture)
-												capture_moves.append(full_capture)
-										else:
+								# Проверяем границы доски и черные клетки
+								if next_row < 0 or next_row >= 8 or next_col < 0 or next_col >= 8 or (next_row + next_col) % 2 == 0:
+									break
+								
+								curr_row = next_row
+								curr_col = next_col
+								
+								if board[curr_row][curr_col] == ' ':
+									if found_enemy:
+										capture_moves.append([[row, col], [curr_row, curr_col]])
+								else:
+									var curr_piece = board[curr_row][curr_col]
+									if curr_piece == piece or found_enemy:
+										break
+									else:
+										found_enemy = true
+										enemy_pos = [curr_row, curr_col]
+					else:
+						# Обычное взятие для простой шашки
+						for dy in [-2, 2]:
+							for dx in [-2, 2]:
+								var new_row = row + dy
+								var new_col = col + dx
+								
+								if new_row >= 0 and new_row < 8 and new_col >= 0 and new_col < 8 and (new_row + new_col) % 2 == 1:
+									var middle_row = row + dy/2
+									var middle_col = col + dx/2
+									
+									if board[new_row][new_col] == ' ':
+										var opposite_piece = 'w' if color == 'black' else 'b'
+										if board[middle_row][middle_col] == opposite_piece:
 											capture_moves.append([[row, col], [new_row, new_col]])
 		
 		# Если есть ходы с захватом, они обязательны
@@ -95,115 +114,66 @@ class CheckersGame:
 			for col in range(8):
 				if board[row][col] == piece:
 					var is_king = is_king([row, col])
-					# Для обычных шашек - только вперед, для дамок - в любом направлении
-					var directions = [-1, 1] if is_king else [direction]
-					var dx_range = [-1, 1]
 					
-					for dy in directions:
-						for dx in dx_range:
-							var new_row = row + dy
+					if is_king:
+						# Ходы дамки по диагоналям на любое расстояние
+						var directions = [[-1,-1], [-1,1], [1,-1], [1,1]]
+						for dir in directions:
+							var curr_row = row
+							var curr_col = col
+							
+							while true:
+								var next_row = curr_row + dir[0]
+								var next_col = curr_col + dir[1]
+								
+								# Проверяем границы доски и черные клетки
+								if next_row < 0 or next_row >= 8 or next_col < 0 or next_col >= 8 or (next_row + next_col) % 2 == 0:
+									break
+								
+								curr_row = next_row
+								curr_col = next_col
+								
+								if board[curr_row][curr_col] == ' ':
+									moves.append([[row, col], [curr_row, curr_col]])
+								else:
+									break
+					else:
+						# Обычные ходы для простой шашки
+						for dx in [-1, 1]:
+							var new_row = row + direction
 							var new_col = col + dx
 							
-							if new_row >= 0 and new_row < 8 and new_col >= 0 and new_col < 8:
+							if new_row >= 0 and new_row < 8 and new_col >= 0 and new_col < 8 and (new_row + new_col) % 2 == 1:
 								if board[new_row][new_col] == ' ':
 									moves.append([[row, col], [new_row, new_col]])
 		
 		return moves
 
-	# Функция для проверки дополнительных захватов (множественный захват)
-	func get_additional_captures(start_pos: Array, color: String, is_king: bool) -> Array:
-		var additional_moves = []
-		var piece = 'b' if color == 'black' else 'w'
-		
-		# Временно помещаем шашку на новую позицию
-		var original_piece = board[start_pos[0]][start_pos[1]]
-		board[start_pos[0]][start_pos[1]] = piece
-		
-		# Проверяем возможные захваты с новой позиции
-		for dy in [-2, 2]:
-			for dx in [-2, 2]:
-				var new_row = start_pos[0] + dy
-				var new_col = start_pos[1] + dx
-				
-				if new_row >= 0 and new_row < 8 and new_col >= 0 and new_col < 8:
-					var middle_row = start_pos[0] + dy/2
-					var middle_col = start_pos[1] + dx/2
-					
-					if board[new_row][new_col] == ' ':
-						var opposite_piece = 'w' if color == 'black' else 'b'
-						if board[middle_row][middle_col] == opposite_piece:
-							var next_captures = get_additional_captures([new_row, new_col], color, is_king)
-							if next_captures.size() > 0:
-								for capture in next_captures:
-									var full_capture = [start_pos]
-									full_capture.append_array(capture)
-									additional_moves.append(full_capture)
-							else:
-								additional_moves.append([start_pos, [new_row, new_col]])
-		
-		# Возвращаем шашку на место
-		board[start_pos[0]][start_pos[1]] = original_piece
-		
-		return additional_moves
-
 	func make_move(move):
-		# Если это множественный захват
-		if move.size() > 2:
-			for i in range(move.size() - 1):
-				var start = move[i]
-				var end = move[i + 1]
-				
-				var piece = board[start[0]][start[1]]
-				var was_king = is_king(start)
-				
-				# Очищаем начальную позицию и убираем из списка дамок
-				board[start[0]][start[1]] = ' '
-				if was_king and start in kings:
-					kings.erase(start)
-				
-				# Устанавливаем шашку на новую позицию
-				board[end[0]][end[1]] = piece
-				
-				# Если шашка была дамкой, добавляем новую позицию в список дамок
-				if was_king:
-					kings.append(end)
-				
-				# Удаляем захваченную шашку
-				var middle_row = (start[0] + end[0]) / 2
-				var middle_col = (start[1] + end[1]) / 2
-				
-				# Если бьем дамку, удаляем её из списка
-				if [middle_row, middle_col] in kings:
-					kings.erase([middle_row, middle_col])
-				board[middle_row][middle_col] = ' '
-				
-				# Проверяем на превращение в дамку
-				check_for_king(end, piece)
-		else:
-			var start = move[0]
-			var end = move[1]
-			
-			var piece = board[start[0]][start[1]]
-			var was_king = is_king(start)
-			
-			board[start[0]][start[1]] = ' '
-			if was_king and start in kings:
-				kings.erase(start)
-			
-			board[end[0]][end[1]] = piece
-			
-			if was_king:
-				kings.append(end)
-			
-			if abs(start[0] - end[0]) == 2:
-				var middle_row = (start[0] + end[0]) / 2
-				var middle_col = (start[1] + end[1]) / 2
-				if [middle_row, middle_col] in kings:
-					kings.erase([middle_row, middle_col])
-				board[middle_row][middle_col] = ' '
-			
-			# Проверяем на превращение в дамку
-			check_for_king(end, piece)
+		var start = move[0]
+		var end = move[1]
+		
+		var piece = board[start[0]][start[1]]
+		var was_king = is_king(start)
+		
+		board[start[0]][start[1]] = ' '
+		if was_king and start in kings:
+			kings.erase(start)
+		
+		board[end[0]][end[1]] = piece
+		
+		if was_king:
+			kings.append(end)
+		
+		if abs(start[0] - end[0]) == 2:
+			var middle_row = (start[0] + end[0]) / 2
+			var middle_col = (start[1] + end[1]) / 2
+			if [middle_row, middle_col] in kings:
+				kings.erase([middle_row, middle_col])
+			board[middle_row][middle_col] = ' '
+		
+		# Проверяем на превращение в дамку
+		check_for_king(end, piece)
 
 	func make_ai_move():
 		var possible_moves = get_possible_moves(ai_color)
