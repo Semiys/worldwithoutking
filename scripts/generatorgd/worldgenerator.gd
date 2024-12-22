@@ -106,10 +106,21 @@ const MIN_REQUIRED_GRAVES = 10  # Минимальное количество н
 const SMALL_VILLAGE_WATER_SAFE_DISTANCE = 80  # Для маленькой деревни
 const MIDDLE_VILLAGE_WATER_SAFE_DISTANCE = 120  # Увеличенное расстояние для средней деревни
 
+# Добавьте переменные для хранения позиций
+var small_village_position: Vector2
+var middle_village_position: Vector2
+var walls_position: Vector2 = Vector2(512, 512) * 32  # Устанавливаем позицию по умолчанию в центре карты
+
+# В начале файла, после extends, добавляем объявление сигнала
+signal locations_updated(small_pos: Vector2, middle_pos: Vector2, walls_pos: Vector2)
+
 func _ready() -> void:
 	if !validate_requirements():
 		return
 		
+	# Отправляем начальный сигнал с позицией подземелья по умолчанию
+	emit_signal("locations_updated", small_village_position, middle_village_position, walls_position)
+	
 	await generate_valid_world()
 
 func validate_requirements() -> bool:
@@ -230,7 +241,7 @@ func clear_previous_generation() -> void:
 	
 	settlements.clear()
 	
-	# Очищаем карту и тайлмапы
+	# Очищаем карту и тйлмапы
 	cell_map.clear()
 	cell_map.resize(width)
 	for x in width:
@@ -513,6 +524,17 @@ func spawn_settlement(scene: PackedScene, pos: Vector2i, type: int, village_widt
 	settlement_instance.position = Vector2(pos.x * 32, pos.y * 32)
 	add_child(settlement_instance)
 	
+	# Сохраняем позиции при создании поселений
+	if scene == village_scene:
+		small_village_position = Vector2(pos.x * 32, pos.y * 32)
+	elif scene == village_middle_scene:
+		middle_village_position = Vector2(pos.x * 32, pos.y * 32)
+	elif scene == walls_scene:
+		walls_position = Vector2(pos.x * 32, pos.y * 32)
+	
+	# Отправляем сигнал с обновленными позициями
+	emit_signal("locations_updated", small_village_position, middle_village_position, walls_position)
+	
 	var settlement = Settlement.new(type, pos, settlement_instance)
 	settlements.append(settlement)
 	return true
@@ -576,7 +598,7 @@ func is_suitable_for_grave(pos: Vector2i) -> bool:
 	
 	# Проверяем расстояние до других пселений (деревень)
 	for settlement in settlements:
-		if settlement.type == SettlementType.VILLAGE:  # Проверяем только для деревень
+		if settlement.type == SettlementType.VILLAGE:  # Проверяем только для деевень
 			if pos.distance_to(settlement.position) < VILLAGE_SAFE_DISTANCE:
 				return false
 	
@@ -686,7 +708,7 @@ func place_graves() -> void:
 			
 		# Пытаемся разместить несколько надгробий в одном чанке
 		var graves_in_chunk = 0
-		var max_graves_per_chunk = 12  # Увеличиваем максимум надгробий в чанке
+		var max_graves_per_chunk = 12  # У��еличиваем максимум надгробий в чанке
 		var attempts = 0
 		
 		while graves_in_chunk < max_graves_per_chunk and graves_placed < GRAVES_PER_AREA and attempts < 20:
