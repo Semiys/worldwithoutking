@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bhm1pyt73nnvo"]
+[gd_scene load_steps=4 format=3 uid="uid://bhm1pyt73nnvo"]
 
 [ext_resource type="PackedScene" uid="uid://cnqfmmik5l8gl" path="res://scenes/player.tscn" id="4_17ljo"]
 [ext_resource type="PackedScene" uid="uid://bj84wjqc462sw" path="res://scenes/world_generator/worldgenerator.tscn" id="4_abyfj"]
+[ext_resource type="PackedScene" path="res://scenes/pause_menu.tscn" id="pause_menu_scene"]
 
 [node name="Game" type="Node2D"]
 position = Vector2(0, 1)
@@ -11,3 +12,6 @@ z_index = 1
 position = Vector2(438, 416)
 
 [node name="Worldgenerator" parent="." instance=ExtResource("4_abyfj")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("pause_menu_scene")]
+process_mode = 3  # Always

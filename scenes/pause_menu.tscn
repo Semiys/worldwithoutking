@@ -1,0 +1,116 @@
+[gd_scene load_steps=2 format=3 uid="uid://djumy2oghmyme"]
+
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="1_pause"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_pause")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.7)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Инструкция"
+horizontal_alignment = 1
+
+[node name="TabContainer" type="TabContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Управление" type="RichTextLabel" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+text = "Управление персонажем:
+• WASD - передвижение
+• Пробел - атака
+• V - серийная атака
+• E - взаимодействие
+• I - инвентарь
+• T - дерево талантов
+• Esc - меню паузы
+
+Способности:
+• 1 - Уклонение
+• 2 - АОЕ атака
+• 3 - Линейная атака
+• 4 - Неуязвимость
+• 5 - Аура урона"
+metadata/_tab_index = 0
+
+[node name="Бой" type="RichTextLabel" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+text = "Боевая система:
+• Используйте Пробел для базовой атаки
+• V для серийной атаки
+• Применяйте способности (1-5) для разных типов атак
+• Получайте опыт за победу над врагами
+• Повышайте уровень для получения очков талантов"
+metadata/_tab_index = 1
+
+[node name="Таланты" type="RichTextLabel" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+text = "Система талантов:
+• Получайте очки талантов при повышении уровня
+• Откройте дерево талантов клавишей T
+• Улучшайте характеристики:
+  - Здоровье
+  - Сила атаки
+  - Шанс крита
+  - Уклонение
+  - Сокращение перезарядки"
+metadata/_tab_index = 2
+
+[node name="Квесты" type="RichTextLabel" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+text = "Система заданий:
+• NPC с заданиями находятся:
+  - В маленькой деревне
+  - В средней деревне
+  - У входа в подземелье
+• Общайтесь с NPC для получения заданий
+• Следите за прогрессом в журнале (Tab)
+• Выполняйте задания для получения опыта и наград"
+metadata/_tab_index = 3
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ResumeButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+text = "Продолжить"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+text = "Выйти в меню"
+
+[connection signal="pressed" from="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsContainer/ResumeButton" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsContainer/QuitButton" to="." method="_on_quit_pressed"]
