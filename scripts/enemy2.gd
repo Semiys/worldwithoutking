@@ -1,11 +1,10 @@
 extends CharacterBody2D
 
-const SPEED = 40.0
-const DODGE_SPEED = 150.0
-const BASE_HEALTH = 60  # Делаем сильнее первого типа
-const BASE_ATTACK = 6   
-const BASE_DEFENSE = 5  
-const ATTACK_COOLDOWN = 0.3  # Уменьшаем с 1.0 до 0.5 для более частых атак
+var SPEED = 100.0
+var DODGE_SPEED = 300.0
+var BASE_HEALTH = 200
+var BASE_ATTACK = 15
+var BASE_DEFENSE = 10
 
 var health = BASE_HEALTH
 var max_health = BASE_HEALTH
@@ -14,44 +13,59 @@ var defense = BASE_DEFENSE
 var target = null
 var is_aggro = false
 var min_distance = 20.0
-var knockback_strength = 5.0
-var knockback_duration = 0.2
-var knockback_timer = 0.0
-var attack_cooldown = 1.0
-var current_cooldown = 0.0
-var is_dodging = false
-var dodge_cooldown = 2.0
-var current_dodge_cooldown = 0.0
-var dodge_duration = 0.5
-var current_dodge_duration = 0.0
-var dodge_direction = Vector2.ZERO
-var dodge_damage_reduction = 0.25
 
+# Базовые значения
+var base_max_health = BASE_HEALTH
+var base_attack_damage = BASE_ATTACK
+var base_defense = BASE_DEFENSE
+var base_speed = SPEED
+
+# Добавляем недостающие переменные
 @onready var anim = $AnimatedSprite2D
-@onready var aggro_area = $AggroArea
+var knockback_timer = 0.0
+var knockback_duration = 0.2
+var knockback_strength = 200.0
+
+var current_cooldown = 0.0
+var attack_cooldown = 0.8
+
+var is_dodging = false
+var dodge_duration = 0.3
+var current_dodge_duration = 0.0
+var dodge_cooldown = 1.5
+var current_dodge_cooldown = 0.0
+var dodge_direction = Vector2.ZERO
+var dodge_damage_reduction = 0.7
+
+func adapt_to_player_level(player_level):
+	# Значительно усиленные множители
+	var health_multiplier = 2.0 * player_level
+	var damage_multiplier = 1.8 * player_level
+	var defense_multiplier = 1.5 * player_level
+	var speed_multiplier = 1.3 * player_level
+	
+	# Применяем усиление
+	max_health = base_max_health * health_multiplier
+	health = max_health  # Обновляем текущее здоровье
+	
+	attack_power = base_attack_damage * damage_multiplier
+	defense = base_defense * defense_multiplier
+	SPEED = base_speed * speed_multiplier
+	
+	# Увеличен лимит максимальной скорости
+	SPEED = min(SPEED, base_speed * 5)
+	
+	print("Враг2 адаптирован под уровень игрока ", player_level)
+	print("Здоровье: ", max_health)
+	print("Урон: ", attack_power)
+	print("Защита: ", defense)
+	print("Скорость: ", SPEED)
 
 func _ready():
-	add_to_group("enemies")
-	target = get_tree().get_nodes_in_group("player")[0]
-	aggro_area.connect("body_entered", _on_aggro_area_body_entered)
-	aggro_area.connect("body_exited", _on_aggro_area_body_exited)
-	
-	# Устанавливаем начальное значение кулдауна
-	current_cooldown = ATTACK_COOLDOWN
-	
-	# Масштабируем характеристики в зависимости от уровня игрока
-	scale_stats_to_player_level()
-
-func scale_stats_to_player_level():
-	if target:
-		var player_level = target.level
-		var scaling_factor = 1.0 + (player_level - 1) * 0.1  # Увеличение на 10% за уровень
-		
-		# Масштабируем характеристики
-		max_health = int(BASE_HEALTH * scaling_factor)
-		health = max_health
-		attack_power = int(BASE_ATTACK * scaling_factor)
-		defense = int(BASE_DEFENSE * scaling_factor)
+	base_max_health = max_health
+	base_attack_damage = attack_power
+	base_defense = defense
+	base_speed = SPEED
 
 func _physics_process(delta):
 	if knockback_timer > 0:

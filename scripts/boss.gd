@@ -11,7 +11,7 @@ var current_phase = BossPhase.PHASE_1
 
 # Характеристики босса
 var boss_speed = 60.0
-const PHASE_THRESHOLD = 0.66  # 66% и 33% здоровья для смены фаз
+const PHASE_THRESHOLD = 0.66  # 66% и 33% здоровья дл смены фаз
 
 # Способности
 var dash_cooldown = 4.0
@@ -62,11 +62,26 @@ var current_attack_cooldown = 0.0
 var facing_direction = Vector2.RIGHT
 
 func _ready():
+	# Вызываем родительский _ready()
+	super._ready()
+	
+	# Устанавливаем новые значения для босса
+	health = 2000
+	max_health = 2000
+	attack_power = 100
+	defense = 15
+	
+	# Обновляем базовые значения для масштабирования
+	base_max_health = 2000
+	base_attack_damage = 100
+	base_defense = 15
+	base_speed = 200
+	
+	# Устанавливаем скорости
+	velocity = Vector2.ZERO
+	boss_speed = 200.0
+	
 	# Инициализация базовых характеристик
-	max_health = 1200
-	health = max_health
-	attack_power = 50
-	defense = 35
 	min_distance = ATTACK_DISTANCE  # Обновляем дистанцию атаки
 	
 	# Увеличиваем размер босса и его области агро
@@ -212,7 +227,7 @@ func perform_attack():
 	is_attacking = true
 	current_attack_cooldown = ATTACK_COOLDOWN
 	
-	# Инвертируем направление атаки
+	# Инвертируем направлене атаки
 	var direction = (target.global_position - global_position).normalized()
 	$AnimatedSprite2D2.flip_h = direction.x > 0  # Инвертировали условие
 	
@@ -234,7 +249,7 @@ func play_animation(anim_name: String):
 		if anim_name == "attack":
 			$AnimatedSprite2D2.speed_scale = 0.8
 		elif anim_name == "death":
-			$AnimatedSprite2D2.speed_scale = 1.0  # Нормальная скорость для анимации смерти
+			$AnimatedSprite2D2.speed_scale = 1.0  # Номальная скорость для анимации смерти
 		elif anim_name == "run":
 			$AnimatedSprite2D2.speed_scale = 1.0
 		else:
@@ -435,7 +450,7 @@ func create_flame_trail():
 	
 	for i in range(5):  # Создаём 5 точек огня
 		var flame = Node2D.new()
-		var pos = global_position - velocity.normalized() * (i * 30)  # Расстояние между точками
+		var pos = global_position - velocity.normalized() * (i * 30)  # Расстояние между тчками
 		flame.position = pos
 		get_parent().add_child(flame)
 		
@@ -522,3 +537,21 @@ func check_minion_spawn():
 	var existing_minions = get_tree().get_nodes_in_group("minions").size()
 	if existing_minions < 3 and current_summon_cooldown <= 0:
 		call_deferred("summon_minions")  # Используем call_deferred
+
+func adapt_to_player_level(player_level):
+	# Уменьшенные множители роста от уровня
+	var health_multiplier = 0.5 * player_level  # Уменьшен множитель здоровья
+	var damage_multiplier = 0.4 * player_level  # Уменьшен множитель урона
+	var defense_multiplier = 0.3 * player_level # Уменьшен множитель защиты
+	var speed_multiplier = 0.2 * player_level   # Уменьшен множитель скорости
+	
+	# Применяем усиление
+	max_health = base_max_health * health_multiplier
+	health = max_health  # Обновляем текущее здоровье
+	
+	attack_power = base_attack_damage * damage_multiplier
+	defense = base_defense * defense_multiplier
+	boss_speed = base_speed * speed_multiplier
+	
+	# Увеличен лимит максимальной скорости
+	boss_speed = min(boss_speed, base_speed * 6)  # Может быть в 6 раз быстрее базовой

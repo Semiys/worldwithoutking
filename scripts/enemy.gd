@@ -1,10 +1,10 @@
 extends CharacterBody2D
 
-const SPEED = 40.0
-const DODGE_SPEED = 150.0
-const BASE_HEALTH = 50  # Базовое здоровье
-const BASE_ATTACK = 5   # Базовая атака
-const BASE_DEFENSE = 5  # Базовая защита
+var SPEED = 100.0  # Увеличена базовая скорость
+var DODGE_SPEED = 300.0  # Увеличена скорость уклонения
+var BASE_HEALTH = 200  # Увеличено базовое здоровье
+var BASE_ATTACK = 15   # Увеличена базовая атака
+var BASE_DEFENSE = 10  # Увеличена базовая защита
 
 var health = BASE_HEALTH
 var max_health = BASE_HEALTH
@@ -26,6 +26,18 @@ var current_dodge_duration = 0.0
 var dodge_direction = Vector2.ZERO
 var dodge_damage_reduction = 0.25
 
+# Характеристики врага
+var enemy_max_health = 100
+var enemy_attack_damage = 10
+var enemy_defense = 5
+var enemy_speed = 100
+
+# Базовые значения
+var base_max_health = BASE_HEALTH
+var base_attack_damage = BASE_ATTACK
+var base_defense = BASE_DEFENSE
+var base_speed = SPEED
+
 @onready var anim = $AnimatedSprite2D
 @onready var aggro_area = $AggroArea
 
@@ -37,6 +49,11 @@ func _ready():
 	
 	# Масштабируем характеристики в зависимости от уровня игрока
 	scale_stats_to_player_level()
+	base_max_health = enemy_max_health
+	base_attack_damage = enemy_attack_damage
+	base_defense = enemy_defense
+	base_speed = enemy_speed
+	health = enemy_max_health
 
 func scale_stats_to_player_level():
 	if target:
@@ -48,6 +65,30 @@ func scale_stats_to_player_level():
 		health = max_health
 		attack_power = int(BASE_ATTACK * scaling_factor)
 		defense = int(BASE_DEFENSE * scaling_factor)
+
+func adapt_to_player_level(player_level):
+	# Значительно усиленные множители
+	var health_multiplier = 2.0 * player_level  # Увеличен множитель здоровья
+	var damage_multiplier = 1.8 * player_level  # Увеличен множитель урона
+	var defense_multiplier = 1.5 * player_level # Увеличен множитель защиты
+	var speed_multiplier = 1.3 * player_level   # Увеличен множитель скорости
+	
+	# Применяем усиление
+	max_health = base_max_health * health_multiplier
+	health = max_health  # Обновляем текущее здоровье
+	
+	attack_power = base_attack_damage * damage_multiplier
+	defense = base_defense * defense_multiplier
+	SPEED = base_speed * speed_multiplier
+	
+	# Увеличен лимит максимальной скорости
+	SPEED = min(SPEED, base_speed * 5)  # Теперь может быть в 5 раз быстрее базовой
+	
+	print("Враг адаптирован под уровень игрока ", player_level)
+	print("Здоровье: ", max_health)
+	print("Урон: ", attack_power)
+	print("Защита: ", defense)
+	print("Скорость: ", SPEED)
 
 func _physics_process(delta):
 	if knockback_timer > 0:
@@ -122,7 +163,7 @@ func attack():
 	anim.play("attack")
 	
 	# Ждем середины анимации для нанесения урона
-	# При speed = 10 fps и speed_scale = 2.0, один кадр = 0.05 секунды
+	# При speed = 10 fps и speed_scale = 2.0, один кадр = 0.05 се��унды
 	# У нас 10 кадров, значит до 5-го кадра нужно ждать 0.1 секунды
 	await get_tree().create_timer(0.1).timeout
 	
