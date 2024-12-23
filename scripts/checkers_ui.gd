@@ -43,6 +43,9 @@ func _ready():
 		$CenterContainer/Panel/VBoxContainer/CloseButton.grab_focus()
 	get_tree().paused = true
 	print("UI создан")
+	
+	# Добавляем обработчик для очистки при удалении сце��ы
+	tree_exited.connect(_cleanup_resources)
 
 func _exit_tree():
 	get_tree().paused = false
@@ -260,7 +263,7 @@ func is_valid_king_path(start_pos: Array, end_pos: Array, current_piece: String)
 			var next_x = x + dir_x
 			var next_y = y + dir_y
 			
-			# Если следующая клетка - конечная позиция
+			# Если следующая клетка - к��нечная позиция
 			if next_x == end_pos[1] and next_y == end_pos[0]:
 				return true  # Разрешаем взятие
 			
@@ -276,7 +279,29 @@ func is_valid_king_path(start_pos: Array, end_pos: Array, current_piece: String)
 	return false
 
 func _on_close_button_pressed():
-	print("Кнопка закрытия нажата")  # Отладка
+	print("Кнопка закрытия нажата")
+	
+	# Отключаем все сигналы кнопок
+	for row in board_buttons:
+		for button in row:
+			# Отключаем все сигналы кнопки перед удалением
+			button.pressed.disconnect(_on_cell_pressed.bind(board_buttons.find(row), row.find(button)))
+			button.queue_free()
+	board_buttons.clear()
+	
+	# Закрываем окно с правилами если оно открыто
+	if rules_window != null:
+		if rules_window.close_requested.is_connected(rules_window.queue_free):
+			rules_window.close_requested.disconnect(rules_window.queue_free)
+		rules_window.queue_free()
+		rules_window = null
+	
+	# Очищаем данные текущей игры
+	current_board.clear()
+	current_game = null
+	selected_piece = null
+	
+	# Освобождаем ресурсы UI
 	queue_free()
 
 func create_rules_button():
@@ -286,7 +311,9 @@ func create_rules_button():
 	var rules_button = Button.new()
 	rules_button.text = "Правила"
 	rules_button.custom_minimum_size = Vector2(100, 40)
-	rules_button.pressed.connect(_on_rules_button_pressed)
+	
+	# Используем CONNECT_ONE_SHOT для автоматического отключения сигнала
+	rules_button.pressed.connect(_on_rules_button_pressed, CONNECT_ONE_SHOT)
 	
 	var close_button = $CenterContainer/Panel/VBoxContainer/CloseButton
 	var parent = close_button.get_parent()
@@ -352,7 +379,7 @@ func is_king(pos: Array) -> bool:
 		return false
 		
 	var piece = current_board[pos[0]][pos[1]]
-	# Проверяем, является ли шашка дамкой (W для белых, B для черных)
+	# Проверяем, является ли шашка дамкой (W для белых, B д��я черных)
 	if piece == 'W' or piece == 'B':
 		return true
 		
@@ -569,3 +596,19 @@ func get_king_moves(pos: Vector2i) -> Array:
 			k += 1
 	
 	return moves
+
+func _cleanup_resources():
+	# Очищаем все кнопки
+	for row in board_buttons:
+		for button in row:
+			if button.pressed.is_connected(_on_cell_pressed.bind(board_buttons.find(row), row.find(button))):
+				button.pressed.disconnect(_on_cell_pressed.bind(board_buttons.find(row), row.find(button)))
+			button.queue_free()
+	board_buttons.clear()
+	
+	# Очищаем окно правил
+	if rules_window != null:
+		if rules_window.close_requested.is_connected(rules_window.queue_free):
+			rules_window.close_requested.disconnect(rules_window.queue_free)
+		rules_window.queue_free()
+		rules_window = null
