@@ -62,17 +62,29 @@ func adapt_to_player_level(player_level):
 	print("Скорость: ", SPEED)
 
 func _ready():
+	add_to_group("enemies")
+	
 	base_max_health = max_health
 	base_attack_damage = attack_power
 	base_defense = defense
 	base_speed = SPEED
+	
+	# Настраиваем область агро как у обычного enemy
+	var aggro_area = $AggroArea
+	var aggro_shape = aggro_area.get_node("CollisionShape2D")
+	if aggro_shape and aggro_shape.shape is CircleShape2D:
+		aggro_shape.shape.radius = 200.0  # Устанавливаем такой же радиус как у обычного enemy
+	
+	# Теперь НЕ ищем игрока сразу, а ждем когда он войдет в зону агро
+	$AggroArea.connect("body_entered", _on_aggro_area_body_entered)
+	$AggroArea.connect("body_exited", _on_aggro_area_body_exited)
 
 func _physics_process(delta):
 	if knockback_timer > 0:
 		knockback_timer -= delta
 		anim.play("hurt")
 		move_and_slide()
-	elif is_aggro and target:
+	elif is_aggro and target:  # Возвращаем проверку is_aggro
 		# Проверяем, не мертв ли игрок
 		if target.is_dead:
 			is_aggro = false
@@ -85,7 +97,6 @@ func _physics_process(delta):
 		
 		if distance > min_distance:
 			velocity = direction * SPEED
-			# Выбираем правильную анимацию бега в зависимости от направления
 			if direction.x < 0:
 				anim.play("run_left")
 			else:
@@ -93,15 +104,15 @@ func _physics_process(delta):
 		else:
 			velocity = Vector2.ZERO
 			if current_cooldown <= 0:
-				attack(direction.x < 0)  # Передаем направление атаки
+				attack(direction.x < 0)
 				current_cooldown = attack_cooldown
 		
 		current_cooldown -= delta
 		move_and_slide()
 	else:
-		# Если не преследуем цель, останавливаемся
+		# Если не в агро, просто стоим
 		velocity = Vector2.ZERO
-		anim.stop()  # Останавливаем анимацию
+		anim.play("idle")
 
 func should_dodge() -> bool:
 	if not target:
@@ -125,12 +136,15 @@ func start_dodge():
 	dodge_direction = dodge_direction.normalized()
 
 func _on_aggro_area_body_entered(body):
-	if body == target:
+	# Проверяем, является ли body игроком
+	if body.is_in_group("player"):
+		target = body
 		is_aggro = true
 		print("Враг заметил игрока!")
 
 func _on_aggro_area_body_exited(body):
-	if body == target:
+	# Проверяем, является ли body игроком
+	if body.is_in_group("player"):
 		is_aggro = false
 		print("Враг потерял игрока из виду.")
 
@@ -156,6 +170,7 @@ func attack(attack_left: bool = false):
 	anim.speed_scale = 1.0
 
 func take_damage(amount: int):
+	print("Попытка нанести урон врагу: ", amount)
 	# Если враг уже мертв, не обрабатываем урон
 	if health <= 0:
 		return
@@ -164,14 +179,14 @@ func take_damage(amount: int):
 	var actual_damage = max(int((amount - defense) * damage_multiplier), 0)
 	health -= actual_damage
 	
+	print("Враг получил урон. Текущее здоровье: ", health)
+	
 	# Прерываем текущую анимацию
 	anim.stop()
 	
 	# Проигрываем анимацию получения урона с увеличенной скоростью
 	anim.speed_scale = 2.0
 	anim.play("hurt")
-	
-	print("Враг получил", actual_damage, "урона. Осталось здоровья:", health)
 	
 	if target:
 		var knockback_direction = (position - target.position).normalized()
