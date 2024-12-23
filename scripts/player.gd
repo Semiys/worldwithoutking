@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const BASE_SPEED = 100.0
+const BASE_SPEED = 1000.0
 const BASE_ATTACK_COOLDOWN = 0.5
 
 var speed = BASE_SPEED
@@ -30,9 +30,9 @@ var is_invulnerable = false
 var aura_damage_active = false
 
 # Переменные для визуализации радиусов
-var dodge_range = 100.0 # Уменьшен базовый радиус
+var dodge_range = 200.0  # Увеличен в 10 раз с предыдущих 2700
 var aoe_radius = 50.0 # Уменьшен базовый радиус
-var line_width = 15.0 # Уменьшена базоая ширина
+var line_width = 15.0 # Уменьшена базовая ширина
 var line_length = 100.0 # Уменьшена базовая длина
 var aura_radius = 75.0 # Уменьшен базовый радиус
 
@@ -65,6 +65,8 @@ var crit_chance = 0.0      # Базовый шанс крита в процен�
 var dodge_chance = 0.0     # Базовый шанс уклонения в процентах
 var cooldown_reduction = 0.0 # Базовое сокращение перезарядки в процентах
 
+var equipped_armor = null
+
 func _ready():
 	add_to_group("player")
 	set_up_input_map()
@@ -93,7 +95,7 @@ func _ready():
 		event.keycode = KEY_T
 		InputMap.action_add_event("open_talents", event)
 	
-	# Добавляем регистрацию клавиши V для серийной атаки
+	# Добавляем регистрацию клавиши V для серии ой атаки
 	if not InputMap.has_action("serial_attack"):
 		InputMap.add_action("serial_attack")
 		var event = InputEventKey.new()
@@ -162,12 +164,22 @@ func _draw():
 
 func dodge():
 	if current_dodge_cooldown <= 0:
+		var actual_dodge_range = dodge_range * (1 + (level - 1) * 0.2)  # Увеличение дальности на 20% за уровень
+		print("Прыжок - Уровень: ", level)
+		print("Дальность прыжка: ", actual_dodge_range)
+		
+		# Определяем направление прыжка на основе того, куда смотрит персонаж
+		var dodge_direction = Vector2.RIGHT if !$AnimatedSprite2D.flip_h else Vector2.LEFT
+		
+		# Если есть движение вверх/вниз, учитываем его
+		if Input.is_action_pressed("move_up"):
+			dodge_direction += Vector2.UP
+		elif Input.is_action_pressed("move_down"):
+			dodge_direction += Vector2.DOWN
+			
+		dodge_direction = dodge_direction.normalized()
+		position += dodge_direction * actual_dodge_range
 		current_dodge_cooldown = dodge_cooldown
-		var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-		if direction == Vector2.ZERO:
-			direction = Vector2.RIGHT if !$AnimatedSprite2D.flip_h else Vector2.LEFT
-		velocity = direction * (speed * (2 + level * 0.2)) # Увеличение скорости уклонения с уровнем
-		move_and_slide()
 
 func start_aoe_targeting():
 	if current_aoe_cooldown <= 0:
@@ -218,8 +230,18 @@ func apply_aura_damage():
 	for enemy in enemies:
 		var distance = global_position.distance_to(enemy.global_position)
 		if distance <= aura_radius * (1 + level * 0.1):
-			enemy.take_damage(attack_power * (0.2 + level * 0.05)) # Увеличение урона с уровнем
-			spawn_damage_number(attack_power * (0.2 + level * 0.05), enemy.global_position + Vector2(0, -50), false)
+			# Увеличиваем базовый урон и множитель роста с уровнем
+			var base_damage = attack_power * 0.15  # Базовый урон примерно 4-5 единиц
+			var level_bonus = (level - 1) * (attack_power * 0.05)  # Бонус за уровень
+			var total_damage = base_damage + level_bonus
+			
+			print("Аура - Уровень: ", level)
+			print("Базовый урон: ", base_damage)
+			print("Бонус за уровень: ", level_bonus)
+			print("Итоговый урон: ", total_damage)
+			
+			enemy.take_damage(total_damage)
+			spawn_damage_number(total_damage, enemy.global_position + Vector2(0, -50), false)
 	await get_tree().create_timer(1.0).timeout
 
 func spawn_damage_number(damage: int, pos: Vector2, is_special: bool = false):
@@ -376,7 +398,7 @@ func level_up():
 		if talent_tree and talent_tree.has_node("Control"):
 			talent_tree.get_node("Control").add_talent_point()
 		else:
-			print("Ошибка: не найден узел Control в дереве талантов")
+			print("Ошибка: не найден узел Control в ереве талантов")
 
 func set_up_input_map():
 	if not InputMap.has_action("attack"):
@@ -451,14 +473,14 @@ func _input(event):
 		if player_ui:
 			player_ui.toggle_inventory()
 		else:
-			print("Ошибка: узел Player_UI не найден")
+			print("Ошибк��: узел Player_UI не найден")
 	elif event.is_action_pressed("open_talents"):
 		var player_ui = $player_ui
 		if player_ui:
 			player_ui.toggle_talents()
 		else:
 			print("Ошибка: player_ui не найден")
-	# Обработка способностей и их визуализации
+	# Обрботка способностей и их визуализации
 	elif event.is_action_pressed("ability_1"):
 		is_dodge_pressed = true
 		queue_redraw()
@@ -543,7 +565,7 @@ func save_player_stats():
 		var json_string = JSON.stringify(save_data())
 		file.store_string(json_string)
 		file.close()
-		print("Статистика игрока сохранена в: " + save_path)
+		print("Стаистика игрока сохранена в: " + save_path)
 	else:
 		print("Ошибка при сохранении статистики игрока")
 
@@ -589,7 +611,7 @@ func load_data(data):
 		data.get("position", {}).get("y", 0)
 	)
 	
-	# Загрузка ��кипировки
+	# Загрузка кипировки
 	if "equipment" in data:
 		if data["equipment"]["weapon"]:
 			equip_weapon(item_database.get_item(data["equipment"]["weapon"]))
@@ -598,7 +620,7 @@ func load_data(data):
 		if data["equipment"]["damage_item"]:
 			equip_damage_item(item_database.get_item(data["equipment"]["damage_item"]))
 	
-	# Загрузка инвентаря
+	# З��грузка инвентаря
 	if "inventory" in data:
 		inventory.load_inventory(data["inventory"])
 	
@@ -636,9 +658,13 @@ func equip_damage_item(damage_item):
 
 func equip_armor(armor_item):
 	if equipment["armor"]:
-		inventory.add_item(equipment["armor"].item_name)
+		equipment["armor"].remove_effect(self)
+		equipment["armor"].is_equipped = false
 	equipment["armor"] = armor_item
-	defense += armor_item.effect.get("defense", 0)
+	equipped_armor = armor_item
+	if armor_item:
+		armor_item.apply_effect(self)
+		armor_item.is_equipped = true
 	update_ui()
 
 func heal(amount):
@@ -656,7 +682,9 @@ func boost_attack(amount):
 	update_ui()
 
 func boost_defense(amount):
+	print("Current defense: ", defense, " Adding: ", amount)  # Отладочный вывод
 	defense += amount
+	print("New defense: ", defense)  # Отладочный вывод
 	update_ui()
 
 func use_item(item_name: String):
@@ -777,10 +805,12 @@ func _check_single_hit():
 	var bodies = attack_area.get_overlapping_bodies()
 	for body in bodies:
 		if body.is_in_group("enemies") and body.has_method("take_damage"):
-			body.take_damage(attack_power * 1) # Увеличенный урон для одиночной атаки
+			body.take_damage(attack_power * 1) # Увеличенный урон для один��чной атаки
 			spawn_damage_number(attack_power * 1, body.global_position + Vector2(0, -50))
 			print("Урон нанесен врагу одиночной атакой")
 		elif body.is_in_group("target") and body.has_method("take_damage"):
 			body.take_damage(attack_power * 1)
 			spawn_damage_number(attack_power * 1, body.global_position + Vector2(0, -50))
 			print("Урон нанесен мишени одиночной атакой")
+func get_equipped_armor():
+	return equipped_armor
