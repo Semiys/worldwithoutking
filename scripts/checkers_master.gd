@@ -202,7 +202,7 @@ class CheckersGame:
 		if not was_king:
 			check_for_king(end, piece)
 
-		# Проверяем на превращение в дамк��
+		# Проверяем на превращение в дамку
 		check_for_king(end, piece)
 
 
@@ -412,6 +412,20 @@ func _ready():
 	prompt.visible = false
 	prompt.name = "InteractionPrompt"
 	add_child(prompt)
+	
+	# Добавляем обработчик для очистки при удалении сцены
+	tree_exited.connect(_cleanup_resources)
+
+func _cleanup_resources():
+	# Очищаем сигналы области взаимодействия
+	if is_instance_valid(interaction_area):
+		if interaction_area.body_entered.is_connected(_on_body_entered):
+			interaction_area.body_entered.disconnect(_on_body_entered)
+		if interaction_area.body_exited.is_connected(_on_body_exited):
+			interaction_area.body_exited.disconnect(_on_body_exited)
+	
+	# Вызываем end_game для очистки игры
+	end_game()
 
 func _on_body_entered(body):
 	if body.is_in_group("player"):
@@ -432,11 +446,11 @@ func _input(event):
 			end_game()
 
 func start_game():
+	# Сначала очищаем предыдущую игру, если она есть
+	end_game()
+	
 	current_game = CheckersGame.new()
 	current_game.game_active = true
-	
-	if is_instance_valid(game_ui):
-		game_ui.queue_free()
 	
 	# Добавляем UI к текущей сцене вместо корневого узла
 	game_ui = preload("res://scenes/checkers_ui.tscn").instantiate()
@@ -453,9 +467,20 @@ func start_game():
 
 func end_game():
 	if is_instance_valid(game_ui):
-			game_ui.queue_free()
-			game_ui = null
-	current_game = null
+		# Отключаем сигнал перед удалением UI
+		if game_ui.is_connected("move_made", _on_player_move):
+			game_ui.move_made.disconnect(_on_player_move)
+		game_ui.queue_free()
+		game_ui = null
+	
+	# Очищаем все данные игры
+	if current_game:
+		current_game.board.clear()
+		current_game.kings.clear()
+		current_game = null
+	
+	# Восстанавливаем состояние игрового мира
+	get_tree().paused = false
 
 func update_game_display():
 	if current_game and game_ui:
@@ -523,9 +548,14 @@ func show_victory_message(message: String):
 		game_ui.add_child(dim)
 		game_ui.add_child(panel)
 		
-		# Подключаем сигнал кнопки
-		button.pressed.connect(func():
-			dim.queue_free()
-			panel.queue_free()
+		# Создаем callable для очистки
+		var cleanup_func = func():
+			if is_instance_valid(dim):
+				dim.queue_free()
+			if is_instance_valid(panel):
+				panel.queue_free()
 			end_game()
-		)
+			
+		# Подключаем сигнал кнопки с автоматическим отключением
+		if not button.pressed.is_connected(cleanup_func):
+			button.pressed.connect(cleanup_func, CONNECT_ONE_SHOT)
