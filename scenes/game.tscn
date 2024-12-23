@@ -14,4 +14,4 @@ position = Vector2(438, 416)
 [node name="Worldgenerator" parent="." instance=ExtResource("4_abyfj")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("pause_menu_scene")]
-process_mode = 3  # Always
+process_mode = 3  # Process даже когда игра на паузе

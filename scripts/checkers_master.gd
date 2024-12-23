@@ -424,8 +424,9 @@ func _cleanup_resources():
 		if interaction_area.body_exited.is_connected(_on_body_exited):
 			interaction_area.body_exited.disconnect(_on_body_exited)
 	
-	# Вызываем end_game для очистки игры
-	end_game()
+	# Вызываем end_game для очистки игры, только если объект еще действителен
+	if not is_queued_for_deletion():
+		end_game()
 
 func _on_body_entered(body):
 	if body.is_in_group("player"):
@@ -480,7 +481,10 @@ func end_game():
 		current_game = null
 	
 	# Восстанавливаем состояние игрового мира
-	get_tree().paused = false
+	# Добавляем проверку на существование дерева сцены
+	var tree = get_tree()
+	if tree and not tree.is_queued_for_deletion():
+		tree.paused = false
 
 func update_game_display():
 	if current_game and game_ui:
@@ -547,6 +551,10 @@ func show_victory_message(message: String):
 		# Добавляем все на экран
 		game_ui.add_child(dim)
 		game_ui.add_child(panel)
+		
+		# Обновляем прогресс квеста
+		if QuestManager:
+			QuestManager.update_quest_progress("play_checkers", 1, "play_checkers")
 		
 		# Создаем callable для очистки
 		var cleanup_func = func():
