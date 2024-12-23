@@ -18,3 +18,4 @@ max_stack_size = 1
 effect = {
 "attack": 15
 }
+is_equipped = false

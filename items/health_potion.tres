@@ -12,3 +12,4 @@ description = "Восстанавливает 50 очков здоровья"
 stackable = true
 max_stack_size = 10
 effect = {}
+is_equipped = false

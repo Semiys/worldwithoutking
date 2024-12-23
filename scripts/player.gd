@@ -32,7 +32,7 @@ var aura_damage_active = false
 # Переменные для визуализации радиусов
 var dodge_range = 200.0  # Увеличен в 10 раз с предыдущих 2700
 var aoe_radius = 50.0 # Уменьшен базовый радиус
-var line_width = 15.0 # Уменьшена базовая ширина
+var line_width = 15.0 # Уменьшена бзовая ширина
 var line_length = 100.0 # Уменьшена базовая длина
 var aura_radius = 75.0 # Уменьшен базовый радиус
 
@@ -473,7 +473,7 @@ func _input(event):
 		if player_ui:
 			player_ui.toggle_inventory()
 		else:
-			print("Ошибк��: узел Player_UI не найден")
+			print("Ошибка: узел Player_UI не найден")
 	elif event.is_action_pressed("open_talents"):
 		var player_ui = $player_ui
 		if player_ui:
@@ -620,7 +620,7 @@ func load_data(data):
 		if data["equipment"]["damage_item"]:
 			equip_damage_item(item_database.get_item(data["equipment"]["damage_item"]))
 	
-	# З��грузка инвентаря
+	# Згрузка инвентаря
 	if "inventory" in data:
 		inventory.load_inventory(data["inventory"])
 	
@@ -658,13 +658,21 @@ func equip_damage_item(damage_item):
 
 func equip_armor(armor_item):
 	if equipment["armor"]:
-		equipment["armor"].remove_effect(self)
-		equipment["armor"].is_equipped = false
+		# Сохраняем текущую броню
+		var old_armor = equipment["armor"]
+		# Удаляем эффекты старой брони
+		old_armor.remove_effect(self)
+		old_armor.is_equipped = false
+		# Возвращаем старую броню в инвентарь
+		inventory.add_item(old_armor.item_name)
+	
+	# Экипируем новую броню
 	equipment["armor"] = armor_item
 	equipped_armor = armor_item
 	if armor_item:
 		armor_item.apply_effect(self)
 		armor_item.is_equipped = true
+	
 	update_ui()
 
 func heal(amount):
@@ -682,7 +690,7 @@ func boost_attack(amount):
 	update_ui()
 
 func boost_defense(amount):
-	print("Current defense: ", defense, " Adding: ", amount)  # Отладочный вывод
+	print("Current defense: ", defense, " Adding: ", amount)  # Отладо��ный вывод
 	defense += amount
 	print("New defense: ", defense)  # Отладочный вывод
 	update_ui()
@@ -805,7 +813,7 @@ func _check_single_hit():
 	var bodies = attack_area.get_overlapping_bodies()
 	for body in bodies:
 		if body.is_in_group("enemies") and body.has_method("take_damage"):
-			body.take_damage(attack_power * 1) # Увеличенный урон для один��чной атаки
+			body.take_damage(attack_power * 1) # Увеличенный урон для одинчной атаки
 			spawn_damage_number(attack_power * 1, body.global_position + Vector2(0, -50))
 			print("Урон нанесен врагу одиночной атакой")
 		elif body.is_in_group("target") and body.has_method("take_damage"):

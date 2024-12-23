@@ -8,9 +8,10 @@ script = ExtResource("1_script")
 item_name = "Артефакт силы"
 icon = ExtResource("2_texture")
 type = "Consumable"
-description = "Древний артефакт, излучающий таинственную силу"
+description = "Древний артефакт, излучающий таинственную силу. Усиливает базовую атаку при использовании"
 stackable = false
 max_stack_size = 1
 effect = {
 "attack": 10
 }
+is_equipped = false

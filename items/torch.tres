@@ -12,3 +12,4 @@ description = "Используйте для поджога бочек"
 stackable = true
 max_stack_size = 5
 effect = {}
+is_equipped = false
