@@ -112,7 +112,7 @@ func _physics_process(delta):
 	else:
 		# Если не в агро, просто стоим
 		velocity = Vector2.ZERO
-		anim.play("idle")
+		anim.play("run_right")
 
 func should_dodge() -> bool:
 	if not target:
