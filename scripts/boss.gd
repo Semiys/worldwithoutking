@@ -11,7 +11,7 @@ var current_phase = BossPhase.PHASE_1
 
 # Характеристики босса
 var boss_speed = 60.0
-const PHASE_THRESHOLD = 0.66  # 66% и 33% здоровья дл смены фаз
+const PHASE_THRESHOLD = 0.66  # 66% и 33% здоровья для смены фаз
 
 # Способности
 var dash_cooldown = 4.0
@@ -203,7 +203,7 @@ func _physics_process(delta):
 		velocity = direction * boss_speed
 		
 		# Инвертируем логику направления
-		if direction.x > 0:  # Движение вправ
+		if direction.x > 0:  # Движение вправо
 			$AnimatedSprite2D2.flip_h = true  # Было false
 			play_animation("run")
 		else:  # Движение влево
@@ -249,7 +249,7 @@ func play_animation(anim_name: String):
 		if anim_name == "attack":
 			$AnimatedSprite2D2.speed_scale = 0.8
 		elif anim_name == "death":
-			$AnimatedSprite2D2.speed_scale = 1.0  # Номальная скорость для анимации смерти
+			$AnimatedSprite2D2.speed_scale = 1.0  
 		elif anim_name == "run":
 			$AnimatedSprite2D2.speed_scale = 1.0
 		else:

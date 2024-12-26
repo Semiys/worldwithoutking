@@ -75,7 +75,7 @@ func _ready():
 	if aggro_shape and aggro_shape.shape is CircleShape2D:
 		aggro_shape.shape.radius = 200.0  # Устанавливаем такой же радиус как у обычного enemy
 	
-	# Теперь НЕ ищем игрока сразу, а ждем когда он войдет в зону агро
+	
 	$AggroArea.connect("body_entered", _on_aggro_area_body_entered)
 	$AggroArea.connect("body_exited", _on_aggro_area_body_exited)
 
@@ -238,7 +238,7 @@ func die():
 	# Добавляем выпадение предметов
 	drop_loot()
 	
-	# Важно: устанавливаем loop = false для анимации смерти
+	
 	anim.sprite_frames.set_animation_loop("death", false)
 	
 	# Ждем завершения анимации смерти перед удалением

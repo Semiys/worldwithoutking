@@ -1,10 +1,10 @@
 extends CharacterBody2D
 
-var SPEED = 100.0  # Увеличена базовая скорость
-var DODGE_SPEED = 300.0  # Увеличена скорость уклонения
-var BASE_HEALTH = 200  # Увеличено базовое здоровье
-var BASE_ATTACK = 15   # Увеличена базовая атака
-var BASE_DEFENSE = 10  # Увеличена базовая защита
+var SPEED = 100.0  # базовая скорость
+var DODGE_SPEED = 300.0  #  скорость уклонения
+var BASE_HEALTH = 200  #  базовое здоровье
+var BASE_ATTACK = 15   # базовая атака
+var BASE_DEFENSE = 10  #  базовая защита
 
 var health = BASE_HEALTH
 var max_health = BASE_HEALTH
@@ -163,7 +163,7 @@ func attack():
 	anim.play("attack")
 	
 	# Ждем середины анимации для нанесения урона
-	# При speed = 10 fps и speed_scale = 2.0, один кадр = 0.05 се��унды
+	# При speed = 10 fps и speed_scale = 2.0, один кадр = 0.05 секунды
 	# У нас 10 кадров, значит до 5-го кадра нужно ждать 0.1 секунды
 	await get_tree().create_timer(0.1).timeout
 	
@@ -241,7 +241,7 @@ func die():
 	# Добавляем выпадение предметов
 	drop_loot()
 	
-	# Важно: устанавливаем loop = false для анимации смерти
+	
 	anim.sprite_frames.set_animation_loop("death", false)
 	
 	# Ждем завершения анимации смерти перед удалением

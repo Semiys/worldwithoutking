@@ -1,16 +1,16 @@
-extends Node2D # Наследуем от Node2D для работы с 2D графикой
+extends Node2D 
 
-# Переносим эти константы в начало файла, сразу после других констант
+
 const SAFETY_WATER_WEIGHT = 2.0
 const SAFETY_WALKABLE_WEIGHT = 1.0
 const SAFETY_CENTER_PENALTY = 0.5
 const CHECK_RADIUS = 5
-const WALLS_WIDTH = 140  # Размер большой локации
+const WALLS_WIDTH = 140  
 const WALLS_HEIGHT = 140
-const WALLS_MIN_DISTANCE = 200  # Увеличиваем минимальное расстояние между стенами и деревнями
-const WALLS_REQUIRED_COUNT = 1  # Уменьшаем до 1, так как локация большая
-const BORDER_SAFE_DISTANCE = 40  # Безопасное расстояние от края карты
-const VILLAGE_SAFE_DISTANCE = 100  # Безопасное расстояние для деревень
+const WALLS_MIN_DISTANCE = 200  
+const WALLS_REQUIRED_COUNT = 1  
+const BORDER_SAFE_DISTANCE = 40  
+const VILLAGE_SAFE_DISTANCE = 100  
 
 # Экспорт текстур шума для настройки через редактор
 @export var noise_height_text:NoiseTexture2D # Шум высоты для рельефа - определяет высоту местности
@@ -19,7 +19,7 @@ const VILLAGE_SAFE_DISTANCE = 100  # Безопасное расстояние �
 @export var noise_moisture_text:NoiseTexture2D # Шум влажности - влияет на тип биома
 @export var noise_settlement_text:NoiseTexture2D # Шум для поселений
 @export var grave_scene:PackedScene # Сцена надгробия
-@export var walls_scene: PackedScene
+@export var walls_scene: PackedScene # Сцена с боссом
 
 # Сцена поселения и игрока
 @export var village_scene:PackedScene
@@ -111,14 +111,14 @@ var small_village_position: Vector2
 var middle_village_position: Vector2
 var walls_position: Vector2 = Vector2(512, 512) * 32  # Устанавливаем позицию по умолчанию в центре карты
 
-# В начале файла, после extends, добавляем объявление сигнала
+
 signal locations_updated(small_pos: Vector2, middle_pos: Vector2, walls_pos: Vector2)
 
 func _ready() -> void:
 	if !validate_requirements():
 		return
 		
-	# Отправляем начальный сигнал с позицией подземелья по умолчанию
+	
 	emit_signal("locations_updated", small_village_position, middle_village_position, walls_position)
 	
 	await generate_valid_world()
@@ -236,12 +236,12 @@ func clear_previous_generation() -> void:
 		if is_instance_valid(settlement.scene):
 			settlement.scene.queue_free()
 	
-	# Ждем один кад для удаления объектов
+	
 	await get_tree().process_frame
 	
 	settlements.clear()
 	
-	# Очищаем карту и тйлмапы
+	# Очищаем карту и тайлмапы
 	cell_map.clear()
 	cell_map.resize(width)
 	for x in width:
@@ -262,7 +262,7 @@ func place_settlements() -> bool:
 	# Добавляем задержку для обработки размещения стен
 	await get_tree().create_timer(0.1).timeout
 	
-	# Затем среднюю деревню с увеличенным безопасным расстоянием
+	
 	var middle_locations = find_suitable_locations(village_middle_scene, WALLS_MIN_DISTANCE * 2)
 	print("Найдено подходящих мест для средней деревни: ", middle_locations.size())
 	
@@ -275,7 +275,7 @@ func place_settlements() -> bool:
 		return false
 	print("Создана средняя деревня в позиции: ", middle_pos)
 	
-	# Затем маленькую деревню
+	
 	var small_locations = find_suitable_locations(village_scene)
 	print("Найдено подходящих мест для маленькой деревни: ", small_locations.size())
 	
@@ -288,7 +288,7 @@ func place_settlements() -> bool:
 		return false
 	print("Создана маленькая деревня в позиции: ", best_small_pos)
 	
-	# В конце размещаем надгробия
+	
 	place_graves()
 	
 	return true
@@ -310,7 +310,7 @@ func calculate_safety_score(pos: Vector2i) -> float:
 	
 	# Проверяем расстояние до воды
 	var water_distance = get_min_water_distance(pos)
-	score += water_distance * 2  # Больши вес для расстояния до воды
+	score += water_distance * 2  
 	
 	# Проверяем количество проходимой территории вокруг
 	var walkable_tiles = count_walkable_tiles(pos)
@@ -596,9 +596,9 @@ func is_suitable_for_grave(pos: Vector2i) -> bool:
 	const WATER_SAFE_DISTANCE = 5    # Меньшее расстояние от воды
 	const TREE_SAFE_DISTANCE = 3      # Минимальное расстояние от деревьев
 	
-	# Проверяем расстояние до других пселений (деревень)
+	# Проверяем расстояние до других деревень
 	for settlement in settlements:
-		if settlement.type == SettlementType.VILLAGE:  # Проверяем только для деевень
+		if settlement.type == SettlementType.VILLAGE:  # Проверяем только для деревень
 			if pos.distance_to(settlement.position) < VILLAGE_SAFE_DISTANCE:
 				return false
 	
@@ -662,13 +662,13 @@ func setup_camera_and_player() -> void:
 	# Ищем маленькую деревню для спавна игрока
 	var small_village = find_small_village()
 	if small_village != null and player:
-		# Добавляем небольшой отступ от края деревни для безопасного спавна
+		
 		var spawn_offset = Vector2(SMALL_VILLAGE_WIDTH/2, SMALL_VILLAGE_HEIGHT/2) * 32
 		player.position = Vector2(small_village.position.x * 32, small_village.position.y * 32) + spawn_offset
 		player.add_to_group("player")
 		print("Игрок перемещен в маленькую деревню: ", player.position)
 	else:
-		# Если маленькая деревня не найдена - это критическая ошибка
+		
 		push_error("КРИТИЧЕСКАЯ ОШИБКА: Маленькая деревня не найдена!")
 		# Перезапускаем генерацию мира
 		clear_previous_generation()
@@ -708,7 +708,7 @@ func place_graves() -> void:
 			
 		# Пытаемся разместить несколько надгробий в одном чанке
 		var graves_in_chunk = 0
-		var max_graves_per_chunk = 12  # У��еличиваем максимум надгробий в чанке
+		var max_graves_per_chunk = 12  # Увеличиваем максимум надгробий в чанке
 		var attempts = 0
 		
 		while graves_in_chunk < max_graves_per_chunk and graves_placed < GRAVES_PER_AREA and attempts < 20:
